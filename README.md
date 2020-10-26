@@ -21,6 +21,7 @@
 
 ## ER
 ![ER_first](/images/er_first.jpg)
+![ER_second](/images/er_second.jpg)
 
 ## RoadMap
 
