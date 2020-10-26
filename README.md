@@ -20,7 +20,7 @@
 - Room для локальной BD
 
 ## ER
-![ER_first](/images/er_first.png)
+![ER_first](/images/er_first.jpg)
 
 ## RoadMap
 
