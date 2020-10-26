@@ -19,6 +19,9 @@
 - Firebase Cloud Firestore
 - Room для локальной BD
 
+## ER
+![ET_first](https://cloud.mail.ru/public/264U/4vQiGVuVb)
+
 ## RoadMap
 
 1. Запись аудио 
