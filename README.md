@@ -20,7 +20,7 @@
 - Room для локальной BD
 
 ## ER
-![ET_first](https://thumb.cloud.mail.ru/thumb/xw1/tCDOfB47kRM.jpg?x-email=dendolg1%40mail.ru)
+![ER_first](/images/er_first.png)
 
 ## RoadMap
 
