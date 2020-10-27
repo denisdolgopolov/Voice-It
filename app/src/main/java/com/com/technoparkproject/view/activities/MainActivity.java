@@ -1,9 +1,11 @@
-package com.com.technoparkproject;
+package com.com.technoparkproject.view.activities;
 
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.com.technoparkproject.R;
 
 public class MainActivity extends AppCompatActivity {
 
