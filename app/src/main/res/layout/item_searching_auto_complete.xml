@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="#B1B1B1"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:theme="@style/TextInputLayoutStyle"
+        app:hintTextAppearance="@style/HintText"
+        app:hintEnabled="true"
+        android:gravity="center_vertical"
+        app:endIconDrawable="@drawable/ic_search_black_24dp"
+        app:endIconMode="custom"
+        app:boxStrokeColor="@color/red"
+        app:endIconTint="@color/red"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <AutoCompleteTextView
+            style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/why_you_search"
+            android:textSize="16sp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:id="@+id/et_searching"
+            android:textColor="@color/text_black"
+            android:paddingVertical="10dp"
+            android:completionThreshold="0"
+            />
+</com.google.android.material.textfield.TextInputLayout>

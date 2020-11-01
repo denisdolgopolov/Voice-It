@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:textColor="#0F1E36"
+        android:textSize="16sp"
+        android:layout_marginHorizontal="@dimen/margin_horizontal"
+        android:textStyle="bold"
+        android:id="@+id/text_view_title"
+        android:layout_marginTop="14dp"
+        tools:text="#все"/>
