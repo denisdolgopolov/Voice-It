@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="" />
+
+    <item
+            android:id="@+id/nav_playlist"
+            android:icon="@drawable/ic_playlist"
+            android:title="" />
+
+    <item
+            android:id="@+id/nav_record"
+            android:icon="@drawable/ic_record"
+            android:title="" />
+
+    <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="" />
+
+    <item
+            android:id="@+id/nav_personal_page"
+            android:icon="@drawable/ic_personal_page"
+            android:title="" />
+
+</menu>
