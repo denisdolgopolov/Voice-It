@@ -2,9 +2,9 @@ package com.com.technoparkproject.view.activities;
 
 import android.annotation.SuppressLint;
 import android.graphics.Typeface;
+import android.icu.util.ICUUncheckedIOException;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,21 +23,21 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private View viewContent;
+    private String currentFragment = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        this.currentFragment = null;
+
         BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(navigationListener);
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                new HomeFragment()).commit();
+        bottomNavigation.setSelectedItemId(R.id.nav_home);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-
+        
         TextView txtView = findViewById(R.id.toolbar_title);
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/Roboto-Medium.ttf");
         txtView.setTypeface(typeface);
@@ -49,28 +49,36 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment selectedFragment = null;
+            String nameSelectedFragment = null;
 
             switch (item.getItemId()) {
                 case R.id.nav_home:
                     selectedFragment = new HomeFragment();
+                    nameSelectedFragment = "home";
                     break;
                 case R.id.nav_playlist:
                     selectedFragment = new PlaylistFragment();
+                    nameSelectedFragment = "playlist";
                     break;
                 case R.id.nav_record:
                     selectedFragment = new RecordFragment();
+                    nameSelectedFragment = "record";
                     break;
                 case R.id.nav_settings:
                     selectedFragment = new SettingsFragment();
+                    nameSelectedFragment = "settings";
                     break;
                 case R.id.nav_personal_page:
                     selectedFragment = new PersonalPageFragment();
+                    nameSelectedFragment = "personal_page";
                     break;
             }
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    selectedFragment).commit();
-
+            if (currentFragment != nameSelectedFragment) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        selectedFragment).commit();
+                currentFragment = nameSelectedFragment;
+            }
             return true;
         }
     };
