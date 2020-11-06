@@ -36,4 +36,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="selected_record_color">#FFC4C4</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_record_fragment">Record fragment</string>
+    <string name="text_record_permission_denied">Вы отказались предоставить разрешение на запись. Вы можете предоставить его в настройках.</string>
+    <string name="channel_audio_app">Voice-it channel</string>
+    <string name="channel_description">Notifications of Voice-it</string>
+    <string name="audio_record">Идет запись</string>
 </resources>

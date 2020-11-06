@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fragment_record">
-
+        android:gravity="center"
+        tools:context=".view.fragments.RecordFragment"
+        android:orientation="vertical">
     <TextView
+            android:id="@+id/record_time_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Record Fragment"
-            android:textSize="30sp" />
+            android:gravity="top"
+            tools:text="00:00"
+            android:textSize="30sp"
+            android:layout_marginBottom="100dp"/>
 
-</RelativeLayout>
+    <TextView
+            android:id="@+id/sample_record_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="@string/hello_record_fragment" />
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+        <Button
+                android:id="@+id/record_pause_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="record"/>
+        <Button
+                android:id="@+id/stop_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="stop"/>
+    </LinearLayout>
+
+
+
+</LinearLayout>
