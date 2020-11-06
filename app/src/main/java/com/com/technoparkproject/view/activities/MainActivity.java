@@ -1,16 +1,12 @@
 package com.com.technoparkproject.view.activities;
 
 import android.annotation.SuppressLint;
-import android.graphics.Typeface;
-import android.icu.util.ICUUncheckedIOException;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.com.technoparkproject.R;
@@ -22,7 +18,6 @@ import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
     private String currentFragment = null;
 
     @Override
@@ -31,16 +26,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.currentFragment = null;
-
         BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(navigationListener);
         bottomNavigation.setSelectedItemId(R.id.nav_home);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        
-        TextView txtView = findViewById(R.id.toolbar_title);
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "font/Roboto-Medium.ttf");
-        txtView.setTypeface(typeface);
     }
 
     private final BottomNavigationView.OnNavigationItemSelectedListener navigationListener =

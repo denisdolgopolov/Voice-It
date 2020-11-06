@@ -11,6 +11,8 @@
             android:layout_gravity="center"
             android:textSize="20sp"
             android:textColor="@color/colorBlack"
+            android:fontFamily="sans-serif-medium"
+            android:text="Лента"
             android:id="@+id/toolbar_title"/>
 
 </androidx.appcompat.widget.Toolbar>
