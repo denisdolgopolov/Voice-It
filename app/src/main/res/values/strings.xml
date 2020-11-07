@@ -2,4 +2,6 @@
     <string name="app_name">TechnoparkProject</string>
     <string name="record_image">record image</string>
     <string name="why_you_search">что хотите найти?</string>
+    <string name="add_to_queue">Добавить в очередь</string>
+    <string name="download">Загрузить</string>
 </resources>

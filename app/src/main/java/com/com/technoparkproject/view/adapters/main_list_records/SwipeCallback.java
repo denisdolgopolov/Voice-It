@@ -25,7 +25,7 @@ public class SwipeCallback extends ItemTouchHelper.SimpleCallback {
         backgroundInfo = new ColorDrawable(ContextCompat.getColor(context,
                 R.color.blue_info));
         iconInfo = ContextCompat.getDrawable(context,
-                R.drawable.ic_info_outline_black_24dp);
+                R.drawable.mlr_ic_info_outline_black_24dp);
     }
 
     @Override

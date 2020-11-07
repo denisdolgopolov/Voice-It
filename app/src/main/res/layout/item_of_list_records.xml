@@ -13,17 +13,17 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:background="@drawable/shape_round"
-            android:id="@+id/record_logo"
+            android:background="@drawable/mlr_image_shape_round"
+            android:id="@+id/mlr_record_logo"
             android:contentDescription="@string/record_image"/>
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/text_view_title"
-            app:layout_constraintTop_toTopOf="@id/record_logo"
-            app:layout_constraintStart_toEndOf="@id/record_logo"
-            app:layout_constraintBottom_toTopOf="@id/text_view_desc"
+            android:id="@+id/mlr_text_view_title"
+            app:layout_constraintTop_toTopOf="@id/mlr_record_logo"
+            app:layout_constraintStart_toEndOf="@id/mlr_record_logo"
+            app:layout_constraintBottom_toTopOf="@id/mlr_text_view_desc"
             android:textSize="16sp"
             android:textColor="#000000"
             android:layout_marginStart="@dimen/item_record_text_margin"
@@ -34,9 +34,9 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/text_view_desc"
-            app:layout_constraintStart_toEndOf="@id/record_logo"
-            app:layout_constraintTop_toBottomOf="@id/text_view_title"
+            android:id="@+id/mlr_text_view_desc"
+            app:layout_constraintStart_toEndOf="@id/mlr_record_logo"
+            app:layout_constraintTop_toBottomOf="@id/mlr_text_view_title"
             app:layout_constraintBottom_toBottomOf="parent"
             android:textSize="14sp"
             tools:text="Ыфвфывфывфывфыв"
@@ -54,7 +54,7 @@
             android:textSize="13sp"
             android:layout_marginEnd="6dp"
             tools:text="12:22"
-            android:id="@+id/text_view_record_time"
+            android:id="@+id/mlr_text_view_record_time"
             android:textColor="#545663"/>
 
     <ImageButton
@@ -65,7 +65,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/button_more"
             android:rotation="90"
-            android:src="@drawable/ic_more_horiz_black"
+            android:src="@drawable/mlr_ic_more_horiz_black"
             android:background="@android:color/transparent"
             android:padding="3dp"
             />

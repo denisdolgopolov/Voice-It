@@ -11,9 +11,7 @@ import com.com.technoparkproject.R;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
-import com.com.technoparkproject.models.TopicTypes;
 import com.com.technoparkproject.repositories.TestRecordsRepository;
-import com.com.technoparkproject.view.curstom_views.ItemListRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +26,13 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
         this.listener = listener;
     }
 
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch(viewType) {
             case ViewTypes.TYPE_TOPIC_NAME:
-                View viewTopicName = inflater.inflate(R.layout.item_topic_name,
+                View viewTopicName = inflater.inflate(R.layout.mlr_item_topic_name,
                         parent, false);
                 return new ItemTopicNameViewHolder(viewTopicName);
             case ViewTypes.TYPE_RECORD:
@@ -43,7 +40,7 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
                         parent, false);
                 return new ItemListRecordsViewHolder(viewRecord);
             default:
-                View viewButton = inflater.inflate(R.layout.item_show_all_records_in_topic,
+                View viewButton = inflater.inflate(R.layout.mlr_item_show_all_records_in_topic,
                         parent, false);
                 return new ItemShowAllRecordsInTopic(viewButton);
         }
@@ -57,23 +54,17 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
             case ViewTypes.TYPE_TOPIC_NAME:
                 Topic topic = (Topic) item;
                 ItemTopicNameViewHolder topicViewHolder = (ItemTopicNameViewHolder) holder;
-                String currentName = getTopicPrefixByType(topic.type) + topic.name.toLowerCase();
-                topicViewHolder.textViewTitle.setText(currentName);
+                topicViewHolder.bindViewHolder(topic);
                 break;
             case ViewTypes.TYPE_RECORD:
                 Record record = (Record) item;
                 ItemListRecordsViewHolder recordViewHolder = (ItemListRecordsViewHolder) holder;
-                ItemListRecord.inflateView(record, recordViewHolder);
+                recordViewHolder.bindViewHolder(listener, record);
                 break;
             case ViewTypes.TYPE_BUTTON_SHOW_ALL_RECORDS:
                 final String topicUUID = (String) item;
                 ItemShowAllRecordsInTopic buttonViewHolder = (ItemShowAllRecordsInTopic) holder;
-                buttonViewHolder.bShowAllRecords.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.showAllRecords(topicUUID);
-                    }
-                });
+                buttonViewHolder.bindViewHolder(listener, topicUUID);
                 break;
         }
     }
@@ -127,13 +118,4 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
         static final int TYPE_BUTTON_SHOW_ALL_RECORDS = 3;
     }
 
-    private String getTopicPrefixByType(String type) {
-        String prefix;
-        if(type.equals(TopicTypes.TOPIC_FRIEND)) {
-            prefix = "§";
-        } else {
-            prefix = "☀";
-        }
-        return prefix;
-    }
 }

@@ -10,4 +10,5 @@
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/red</color>
 
     <color name="blue_info">#039BE5</color>
+    <color name="mainBackgroundColor">#f9feff</color>
 </resources>

@@ -1,5 +1,7 @@
 package com.com.technoparkproject.view.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,16 +21,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.TestErrorShower;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
+import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view.adapters.main_list_records.SwipeCallback;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainListOfRecordsFragment extends Fragment {
-    //private LinearLayout containerTopics;
+public class MainListOfRecordsFragment extends Fragment implements MainListRecordsInterface {
     private RecyclerTopicsWithRecordsAdapter adapter;
     private AutoCompleteTextView searchingField;
 
@@ -37,25 +40,21 @@ public class MainListOfRecordsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getContext())
+        ViewGroup view = (ViewGroup) LayoutInflater.from(getContext())
                 .inflate(R.layout.fragment_main_list_records, container,
                         false);
 
-        RecyclerView rvMainList = view.findViewById(R.id.rv_main_list);
+        RecyclerView rvMainList = view.findViewById(R.id.mlr_rv_main_list);
         rvMainList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new RecyclerTopicsWithRecordsAdapter(new MainListRecordsInterface() {
-            @Override
-            public void showAllRecords(String topicUUID) {
-                TestErrorShower.showErrorDevelopment(getContext());
-            }
-        });
+        adapter = new RecyclerTopicsWithRecordsAdapter(this);
         rvMainList.setAdapter(adapter);
 
         ItemTouchHelper touchHelper = new ItemTouchHelper(new SwipeCallback(getContext()));
         touchHelper.attachToRecyclerView(rvMainList);
 
-        searchingField = view.findViewById(R.id.et_searching);
+        searchingField = view.findViewById(R.id.mlr_et_searching);
+
 
         return view;
     }
@@ -93,8 +92,42 @@ public class MainListOfRecordsFragment extends Fragment {
         for (Topic topic: topics)
             names.add(topic.name);
 
+        if(getContext() == null) return;
         ArrayAdapter adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, names);
         searchingField.setAdapter(adapter);
     }
+
+    @Override
+    public void showAllRecords(String topicUUID) {
+        TestErrorShower.showErrorDevelopment(getContext());
+    }
+
+    @Override
+    public void showRecordMoreFun(Record record) {
+        if(getContext() == null) return;
+
+        Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
+        @SuppressLint("InflateParams")
+        View bottomSheetView = getLayoutInflater()
+                .inflate(R.layout.mlr_bottom_sheet_record_functions, null);
+        dialog.setContentView(bottomSheetView);
+        bottomSheetView.findViewById(R.id.mlr_add_to_queue)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TestErrorShower.showErrorDevelopment(getContext());
+                    }
+                });
+        bottomSheetView.findViewById(R.id.mlr_download)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TestErrorShower.showErrorDevelopment(getContext());
+                    }
+                });
+        dialog.show();
+    }
+
+
 }

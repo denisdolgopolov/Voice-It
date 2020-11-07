@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.models.Record;
@@ -30,7 +29,7 @@ public class TestRecordsRepository {
     }
 
     static public Drawable getRecordImageByUserUUID(String UUID, Context context) {
-        return ContextCompat.getDrawable(context, R.drawable.test_record_image);
+        return ContextCompat.getDrawable(context, R.drawable.mlr_test_record_image);
     }
 
     static public List<Topic> getListTopics() {
