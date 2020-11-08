@@ -6,13 +6,42 @@
         android:elevation="4dp">
 
     <TextView
+            android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textSize="20sp"
-            android:textColor="@color/colorBlack"
             android:fontFamily="sans-serif-medium"
-            android:text="Лента"
-            android:id="@+id/toolbar_title"/>
+            android:textColor="@color/colorBlack"
+            android:textSize="20sp" />
+
+    <ImageButton
+            android:id="@+id/toolbar_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="@drawable/ic_left_arrow" />
+
+    <ImageButton
+            android:id="@+id/toolbar_logout_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="14dp"
+            android:background="@drawable/ic_logout" />
+
+    <ImageButton
+            android:id="@+id/toolbar_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="@drawable/ic_cancel" />
+
+    <ImageButton
+            android:id="@+id/toolbar_tick_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="14dp"
+            android:background="@drawable/ic_tick" />
 
 </androidx.appcompat.widget.Toolbar>
