@@ -30,6 +30,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -42,6 +43,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class RecordingService extends Service {
+
+    private ADTSStream mADTSStream;
 
     public interface OnRecordTimeListener{
         void OnRecordTick(final long seconds);
@@ -126,6 +129,8 @@ public class RecordingService extends Service {
         return mBinder;
     }
 
+
+    @Deprecated
     @Override
     public void onCreate() {
         mScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -140,6 +145,12 @@ public class RecordingService extends Service {
         int bitDepthInBytes = AUDIO_FORMAT == AudioFormat.ENCODING_PCM_16BIT ? 2 : 1;
         mSampleSizeInBytes = channelsCount * bitDepthInBytes;
         mBufferSizeInBytes = mFrameSizeInBytes*5; //for smoother recording
+
+
+        //TESTTTTTT
+        //mBufferSizeInBytes = mFrameSizeInBytes;
+
+
         /*int minFrameSize = bufferSizeInBytes / mSampleSizeInBytes;
         int minFramesInSecond = SAMPLING_RATE / minFrameSize;
         int framesInSecond = (minFramesInSecond / 10) * 10; //align min frame size to lower multiple of 10
@@ -226,6 +237,12 @@ public class RecordingService extends Service {
         //int bufferSizeInBytes = BYTE_BUFFER_SIZE * 4;
 
         mRecordTime = 0;
+        long startTime = System.nanoTime();
+        mADTSStream = new ADTSStream(SAMPLING_RATE,128000,CHANNEL_IN_CONFIG, AUDIO_FORMAT);
+
+        long endTime = System.nanoTime();
+        Log.d("Timing ADTSStream","construction of stream and encoder took"
+                +getMillis(startTime,endTime));
 
         mAudioRecord = new AudioRecord(AUDIO_SOURCE,
                 SAMPLING_RATE, CHANNEL_IN_CONFIG,
@@ -279,6 +296,8 @@ public class RecordingService extends Service {
 
         mAudioRecord.startRecording();
 
+        mADTSStream.start();
+
         RecordTask recordTask = new RecordTask(mAudioRecord, recordFileChannel, audioBuffer);
 
         //int samplesInFrame = mFrameSizeInBytes / mSampleSizeInBytes;
@@ -301,6 +320,9 @@ public class RecordingService extends Service {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
+
+        mADTSStream.stop();
+        mADTSStream.configure();
     }
 
     public void stopRecording(){
@@ -308,6 +330,8 @@ public class RecordingService extends Service {
         mRecordStatus = RECORD_STATUS_STOPPED;
         mAudioRecord.release();
         mAudioRecord = null;
+
+        mADTSStream.release();
         try {
             mRecordBOS.close();
         } catch (IOException e) {
@@ -350,6 +374,10 @@ public class RecordingService extends Service {
         return bytes;
     }
 
+    private long getMillis(long startTime, long endTime){
+        return (endTime-startTime)/1000000;
+    }
+
     public class RecordTask implements Runnable {
 
         private final ByteBuffer mAudioBuffer;
@@ -368,7 +396,11 @@ public class RecordingService extends Service {
         public void run() {
            while (isRecording()) {
                 Log.d("Task", "new call");
+                long startTime = System.nanoTime();
                 int bytesRead = mAudioRecord.read(mAudioBuffer, mBufferSizeInBytes);
+                long endTime = System.nanoTime();
+                Log.d("Timing AudioRecord","reading buffer took "
+                        +getMillis(startTime,endTime));
                 //int bytesRead = mAudioRecord.read(test,0,test.length );
                 Log.d("BytesRead", String.valueOf(bytesRead));
                 //bytesRead indicates number of bytes OR error status;
@@ -377,15 +409,27 @@ public class RecordingService extends Service {
                     Log.e("AudioRecord", "Error reading audio data!");
                     return;
                 }
+
                 try {
                     mAudioBuffer.limit(bytesRead); //manually set limit as it's not clear if it's set correctly
-                    //TODO: test limit and other pointers after read
 
-                    //write in loop in case not full buffer is written immediately
-                    while (mAudioBuffer.hasRemaining())
-                        mRecordFileChannel.write(mAudioBuffer);
+                    startTime = System.nanoTime();
+                    List<ByteBuffer> packets = mADTSStream.getADTSPackets(mAudioBuffer);
+                    endTime = System.nanoTime();
+                    Log.d("Timing Encoder", "encoding buffer took "
+                            + getMillis(startTime, endTime));
+                    for (ByteBuffer packet : packets) {
+                        //write in loop in case not full buffer is written immediately
+                        startTime = System.nanoTime();
+                        while (packet.hasRemaining())
+                            mRecordFileChannel.write(packet);
+                        endTime = System.nanoTime();
+                        Log.d("Timing FileChannel", "writing buffer took "
+                                + getMillis(startTime, endTime));
                         //mRecordBOS.write(shortArrToByteArr(mAudioBuffer));
-                } catch (IOException e) {
+                    }
+                }
+                catch (IOException e) {
                     Log.e("RecordFileChannel", "Error writing to the channel ", e);
                     return;
                 }
@@ -400,7 +444,7 @@ public class RecordingService extends Service {
         String fileName = sdf.format(new Date());
         try {
             File tempFileDir = this.getCacheDir();
-            File tempRecordFile = File.createTempFile(fileName, ".pcm", tempFileDir);
+            File tempRecordFile = File.createTempFile(fileName, ".aac", tempFileDir);
             return tempRecordFile;
         } catch (IOException e) {
             e.printStackTrace();
