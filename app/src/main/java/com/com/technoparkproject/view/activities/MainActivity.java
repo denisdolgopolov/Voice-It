@@ -24,17 +24,17 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
     private String currentFragment;
 
-    private final int TOOLBAR_HOME_TEXT = R.string.toolbar_home_text;
-    private final int TOOLBAR_PLAYLIST_TEXT = R.string.toolbar_playlist_text;
-    private final int TOOLBAR_RECORD_TEXT = R.string.toolbar_record_text;
-    private final int TOOLBAR_SETTINGS_TEXT = R.string.toolbar_settings_text;
-    private final int TOOLBAR_PERSONAL_PAGE_TEXT = R.string.toolbar_personal_page_text;
+    private static final int TOOLBAR_HOME_TEXT = R.string.toolbar_home_text;
+    private static final int TOOLBAR_PLAYLIST_TEXT = R.string.toolbar_playlist_text;
+    private static final int TOOLBAR_RECORD_TEXT = R.string.toolbar_record_text;
+    private static final int TOOLBAR_SETTINGS_TEXT = R.string.toolbar_settings_text;
+    private static final int TOOLBAR_PERSONAL_PAGE_TEXT = R.string.toolbar_personal_page_text;
 
-    private final int TOOLBAR_HOME_NAME = R.string.toolbar_home_name;
-    private final int TOOLBAR_PLAYLIST_NAME = R.string.toolbar_playlist_name;
-    private final int TOOLBAR_RECORD_NAME = R.string.toolbar_record_name;
-    private final int TOOLBAR_SETTINGS_NAME = R.string.toolbar_settings_name;
-    private final int TOOLBAR_PERSONAL_PAGE_NAME = R.string.toolbar_personal_page_name;
+    private static final int TOOLBAR_HOME_NAME = R.string.toolbar_home_name;
+    private static final int TOOLBAR_PLAYLIST_NAME = R.string.toolbar_playlist_name;
+    private static final int TOOLBAR_RECORD_NAME = R.string.toolbar_record_name;
+    private static final int TOOLBAR_SETTINGS_NAME = R.string.toolbar_settings_name;
+    private static final int TOOLBAR_PERSONAL_PAGE_NAME = R.string.toolbar_personal_page_name;
 
 
     @Override
