@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">TechnoparkProject</string>
-    <string name="Feed">Лента</string>
+    <string name="toolbar_home_text">Лента</string>
+    <string name="toolbar_playlist_text">Плейлист</string>
+    <string name="toolbar_record_text">Запись</string>
+    <string name="toolbar_settings_text">Настройки</string>
+    <string name="toolbar_personal_page_text">User Name</string>
+    <string name="toolbar_home_name">home</string>
+    <string name="toolbar_playlist_name">playlist</string>
+    <string name="toolbar_record_name">record</string>
+    <string name="toolbar_settings_name">settings</string>
+    <string name="toolbar_personal_page_name">personal_page</string>
 </resources>
