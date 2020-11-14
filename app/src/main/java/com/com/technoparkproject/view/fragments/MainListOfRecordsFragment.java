@@ -50,11 +50,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         adapter = new RecyclerTopicsWithRecordsAdapter(this);
         rvMainList.setAdapter(adapter);
 
-        ItemTouchHelper touchHelper = new ItemTouchHelper(new SwipeCallback(getContext()));
-        touchHelper.attachToRecyclerView(rvMainList);
-
         searchingField = view.findViewById(R.id.mlr_et_searching);
-
 
         return view;
     }

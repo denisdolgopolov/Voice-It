@@ -4,12 +4,12 @@
         android:layout_height="wrap_content"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:paddingVertical="8dp"
+        android:paddingVertical="@dimen/record_padding_vertical"
         android:paddingHorizontal="@dimen/margin_horizontal">
     
     <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/record_icon_size"
+            android:layout_height="@dimen/record_icon_size"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -25,7 +25,7 @@
             app:layout_constraintStart_toEndOf="@id/mlr_record_logo"
             app:layout_constraintBottom_toTopOf="@id/mlr_text_view_desc"
             android:textSize="16sp"
-            android:textColor="#000000"
+            android:textColor="@color/text_black"
             android:layout_marginStart="@dimen/item_record_text_margin"
             tools:text="Ыфвфывфывфывфыв"
             android:maxWidth="@dimen/item_record_max_width"
@@ -69,6 +69,5 @@
             android:background="@android:color/transparent"
             android:padding="3dp"
             />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

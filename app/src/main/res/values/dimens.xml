@@ -4,4 +4,6 @@
     <dimen name="item_record_max_width">200dp</dimen>
     <dimen name="margin_horizontal">14dp</dimen>
     <dimen name="bottom_sheet_text_record_size">18sp</dimen>
+    <dimen name="record_icon_size">50dp</dimen>
+    <dimen name="record_padding_vertical">8dp</dimen>
 </resources>
