@@ -3,6 +3,12 @@
         <item name="colorPrimary">@color/red</item>
         <item name="colorPrimaryDark">@color/red</item>
         <item name="colorAccent">@color/red</item>
+        <item name="searchViewStyle">@style/AppSearchViewStyle</item>
+    </style>
+
+   <style name="AppSearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="queryBackground">@android:color/transparent</item>
+        <item name="android:imeActionId">6</item>
     </style>
 
     <style name="HintText" parent="TextAppearance.Design.Hint">
