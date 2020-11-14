@@ -1,19 +1,19 @@
 package com.com.technoparkproject.models;
 
 public final class Record {
-    public final String UUID;
+    public final String uuid;
     public final String name;
     public final String topicUUID;
     public final String dateOfCreation;
     public final String userUUID;
     public final String length;
 
-    public Record(String UUID, String name,
+    public Record(String uuid, String name,
                   String topicUUID,
                   String dateOfCreation,
                   String userUUID,
                   String length) {
-        this.UUID = UUID;
+        this.uuid = uuid;
         this.name = name;
         this.topicUUID = topicUUID;
         this.dateOfCreation = dateOfCreation;

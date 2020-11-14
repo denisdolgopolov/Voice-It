@@ -6,7 +6,6 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:paddingVertical="@dimen/record_padding_vertical"
         android:paddingHorizontal="@dimen/margin_horizontal">
-    
     <ImageView
             android:layout_width="@dimen/record_icon_size"
             android:layout_height="@dimen/record_icon_size"
@@ -68,6 +67,7 @@
             android:src="@drawable/mlr_ic_more_horiz_black"
             android:background="@android:color/transparent"
             android:padding="3dp"
+            android:contentDescription="@string/record_logo"
             />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
