@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageButton
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/mlr_ic_more_horiz_black"
+        android:foregroundTint="@color/red"
+        android:foregroundTintMode="src_over"
+        android:id="@+id/mlr_b_show_all_records_in_topic"
+        android:paddingHorizontal="@dimen/margin_horizontal"
+        android:background="@android:color/transparent"
+        android:scaleType="fitStart" />

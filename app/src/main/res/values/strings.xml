@@ -10,4 +10,9 @@
     <string name="toolbar_record_name">record</string>
     <string name="toolbar_settings_name">settings</string>
     <string name="toolbar_personal_page_name">personal_page</string>
+    <string name="record_image">record image</string>
+    <string name="why_you_search">что хотите найти?</string>
+    <string name="add_to_queue">Добавить в очередь</string>
+    <string name="download">Загрузить</string>
+    <string name="record_logo">логотип записи</string>
 </resources>

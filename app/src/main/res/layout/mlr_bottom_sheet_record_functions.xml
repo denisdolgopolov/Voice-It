@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_to_queue"
+            android:id="@+id/mlr_add_to_queue"
+            android:textSize="@dimen/bottom_sheet_text_record_size"
+            android:paddingHorizontal="@dimen/margin_horizontal"
+            android:textColor="@color/text_black"
+            android:paddingVertical="20dp"/>
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CDCDCD"/>
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/download"
+            android:id="@+id/mlr_download"
+            android:textSize="@dimen/bottom_sheet_text_record_size"
+            android:paddingHorizontal="@dimen/margin_horizontal"
+            android:textColor="@color/text_black"
+            android:paddingVertical="20dp"/>
+</LinearLayout>
