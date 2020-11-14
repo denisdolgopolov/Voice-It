@@ -27,13 +27,14 @@ import com.com.technoparkproject.RecordingService;
 import org.jetbrains.annotations.NotNull;
 
 
-public class RecordFragment extends Fragment implements ServiceConnection, RecordingService.OnRecordTimeListener {
+public class RecordFragment extends Fragment implements ServiceConnection, RecordingService.RecordCallbacks {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1000;
     RecordingService mRecService;
     boolean mBound = false;
     private Button mRecPauseButton;
     private Button mStopButton;
     private TextView mTimeTextView;
+    private TextView mStateTextView;
 
     // Requesting permission to RECORD_AUDIO
     //private boolean permissionToRecordAccepted = false;
@@ -88,7 +89,7 @@ public class RecordFragment extends Fragment implements ServiceConnection, Recor
         RecordingService.RecordBinder binder = (RecordingService.RecordBinder) service;
         mRecService = binder.getService();
         mBound = true;
-        mRecService.setOnRecordTimeListener(this);
+        mRecService.setRecordCallbacks(this);
         activateButtons();
     }
 
@@ -180,6 +181,7 @@ public class RecordFragment extends Fragment implements ServiceConnection, Recor
         setButtonsEnabled();
         mStopButton.setText("Стоп");
         mTimeTextView = view.findViewById(R.id.record_time_text);
+        mStateTextView = view.findViewById(R.id.record_state_text);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkRecordPermissions();
@@ -192,5 +194,15 @@ public class RecordFragment extends Fragment implements ServiceConnection, Recor
     public void OnRecordTick(long seconds) {
         if (mTimeTextView!= null)
             mTimeTextView.setText(DateUtils.formatElapsedTime(seconds));
+    }
+
+    @Override
+    public void OnConfigure() {
+        mStateTextView.setText("Record configured");
+    }
+
+    @Override
+    public void OnRecordStop() {
+        mStateTextView.setText("Record stopped");
     }
 }

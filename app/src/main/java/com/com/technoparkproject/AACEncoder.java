@@ -10,62 +10,67 @@ import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AACEncoder {
 
+    public static final int MAX_INPUT_POLL_COUNT = 10;
     private final int mBytesPerSample;
     private final int mChannelCount;
     // The encoder instance
     private MediaCodec mEncoder;
 
-    private static final long mTimeoutUs = 100; //timeout value for working with codec buffers
+    private static final long TIMEOUT_US = 100; //timeout value for working with codec buffers
 
 
+    //TODO create method to get this length here and in ADTS stream
     public static final int MAX_AAC_FRAME_LENGTH = 1024; //one aac frame can't contain more than 1024 PCM samples
 
     private static final String DEFAULT_AAC_ENCODER_NAME = "OMX.google.aac.encoder";
 
 
     private MediaFormat mOutputFormat;
+    private MediaFormat mMediaFormat;
 
     public AACEncoder(int sampleRate, int channelCount, int bitrate, int bytesPerSample) {
         mBytesPerSample = bytesPerSample;
         mChannelCount = channelCount;
-        configure(sampleRate, channelCount, bitrate);
+        setup(sampleRate, channelCount, bitrate);
     }
 
-    public void configure(int sampleRate, int channelCount, int bitrate) {
+    public void setup(int sampleRate, int channelCount, int bitrate) {
 
         //setting up AAC-LC format info for codec
-        MediaFormat mediaFormat =
-                MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, sampleRate, channelCount);
-        mediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE,
+        mMediaFormat = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, sampleRate, channelCount);
+        mMediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE,
                 MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
+        mMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
 
 
         //get encoder name corresponding to AAL-LC
         MediaCodecList regularCodecs = new MediaCodecList(MediaCodecList.REGULAR_CODECS);
-        String encoderName = regularCodecs.findEncoderForFormat(mediaFormat);
+        String encoderName = regularCodecs.findEncoderForFormat(mMediaFormat);
 
-        if (encoderName == null){
+        if (encoderName == null) {
             encoderName = DEFAULT_AAC_ENCODER_NAME; //try to create encoder with default name
         }
 
         try {
             mEncoder = MediaCodec.createByCodecName(encoderName);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             Log.e("MediaCodec", "can't create MediaCodec with name: " + encoderName, e);
-            return;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.e("MediaCodec", "I/O errors occurred while creating encoder", e);
-            return;
         }
+        //mEncoder.configure(mMediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+        //mOutputFormat = mEncoder.getOutputFormat();
 
-        mEncoder.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+    }
+
+    public void configure(){
+        mEncoder.configure(mMediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         mOutputFormat = mEncoder.getOutputFormat();
-
     }
 
     public void start() {
@@ -93,7 +98,7 @@ public class AACEncoder {
                             " to buffer with a length " + inputBuffer.capacity(), e);
         }
         //reset position back to the original state
-        pcmFrame.position(pcmFrame.limit()-pcmLength);
+        pcmFrame.position(pcmFrame.limit() - pcmLength);
     }
 
 
@@ -121,16 +126,26 @@ public class AACEncoder {
     //pass input ByteBuffer to Encoder
     private void enqueueEncodeData(final ByteBuffer inputFrame) {
         try {
-            int inputBufferId = mEncoder.dequeueInputBuffer(mTimeoutUs);
-            if (inputBufferId < 0) {
-                Log.e(this.getClass().getSimpleName(),
-                        "No available input buffers for Encoding after " + mTimeoutUs + "Us");
-            } else {
-                Log.d("Encoding","Data put to buffer #"+inputBufferId);
-                final ByteBuffer inputBuffer = mEncoder.getInputBuffer(inputBufferId);
-                putDataToEncode(inputFrame, inputBuffer);
-                mEncoder.queueInputBuffer(inputBufferId, 0, inputFrame.remaining(), 0, 0);
+            int inputPollCount = 0; //try to get input buffer MAX_INPUT_POLL_COUNT
+            int inputBufferId = MediaCodec.INFO_TRY_AGAIN_LATER;
+            while (inputBufferId < 0 && inputPollCount < MAX_INPUT_POLL_COUNT) {
+                inputBufferId = mEncoder.dequeueInputBuffer(TIMEOUT_US);
+                if (inputBufferId == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                    //failed to retrieve bufferId
+                    inputPollCount++;
+                } else if (inputBufferId >= 0){
+                    Log.d("Encoding", "Data put to buffer #" + inputBufferId);
+                    final ByteBuffer inputBuffer = mEncoder.getInputBuffer(inputBufferId);
+                    putDataToEncode(inputFrame, inputBuffer);
+                    mEncoder.queueInputBuffer(inputBufferId, 0, inputFrame.remaining(), 0, 0);
+                }
             }
+            if (inputPollCount >= MAX_INPUT_POLL_COUNT){
+                Log.e(this.getClass().getSimpleName(),
+                        "No available input buffers for Encoding after " +
+                                MAX_INPUT_POLL_COUNT +" polls with time "+ TIMEOUT_US + "Us");
+            }
+
         } catch (MediaCodec.CodecException e) {
             Log.e(this.getClass().getSimpleName(),
                     "Internal codec error during working with input buffers", e);
@@ -143,16 +158,19 @@ public class AACEncoder {
     //retrieve encoded ByteBuffer from Encoder
     private ByteBuffer dequeueEncodedData(MediaCodec.BufferInfo bufferInfo) {
         try {
-            //bufferInfo = new MediaCodec.BufferInfo();
-            int outputBufferId = mEncoder.dequeueOutputBuffer(bufferInfo, mTimeoutUs);
+            MediaCodec.BufferInfo localBufferInfo = bufferInfo;
+            if (localBufferInfo == null) {
+                localBufferInfo = new MediaCodec.BufferInfo();
+            }
+            int outputBufferId = mEncoder.dequeueOutputBuffer(localBufferInfo, TIMEOUT_US);
             if (outputBufferId == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 Log.e(this.getClass().getSimpleName(),
-                        "No available Encoder output buffers after " + mTimeoutUs + "Us");
+                        "No available Encoder output buffers after " + TIMEOUT_US + "Us");
                 return null;
             } else if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 mOutputFormat = mEncoder.getOutputFormat(); //update format of buffers
             } else if (outputBufferId >= 0) {
-                Log.d("Receiving","Output data in buffer #"+outputBufferId);
+                Log.d("Receiving", "Output data in buffer #" + outputBufferId);
                 ByteBuffer outputBuffer = mEncoder.getOutputBuffer(outputBufferId);
                 final ByteBuffer outFrame = getEncodedData(outputBuffer);
                 mEncoder.releaseOutputBuffer(outputBufferId, false);
@@ -173,20 +191,56 @@ public class AACEncoder {
         return null;
     }
 
+    public ByteBuffer dequeueEncodedData() {
+        return dequeueEncodedData(null);
+    }
+
 
     //AAC encoding for one pcmFrame
     //bufferInfo will store flags and other data describing output buffer
     //NOTE: pcmFrame should have valid position and limit before invoking this method
     //      may return null buffer
-    public ByteBuffer encode(final ByteBuffer pcmFrame, MediaCodec.BufferInfo bufferInfo) {
-        if (pcmFrame.remaining() > MAX_AAC_FRAME_LENGTH*mBytesPerSample*mChannelCount)
-            throw new IllegalArgumentException
-                    ("Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
+    public ByteBuffer encode(final ByteBuffer pcmFrame) {
+        if (pcmFrame.remaining() > MAX_AAC_FRAME_LENGTH * mBytesPerSample * mChannelCount)
+            Log.e(this.getClass().getSimpleName(), "Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
+            //throw new IllegalArgumentException
+             //       ("Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
         enqueueEncodeData(pcmFrame);
-        final ByteBuffer outFrame = dequeueEncodedData(bufferInfo);
+        final ByteBuffer outFrame = dequeueEncodedData();
         if (outFrame != null)
             Log.d(this.getClass().getSimpleName(), "encoded buffer length" + outFrame.capacity());
         return outFrame;
+    }
+
+    public List<ByteBuffer> drainEncoder(){
+        List<ByteBuffer> residualBuffers = new ArrayList<>();
+        ByteBuffer residual;
+        while ((residual = dequeueEncodedData()) != null ){
+            residualBuffers.add(residual);
+        }
+        return residualBuffers;
+    }
+
+
+    public ByteBuffer getCodecConfig() {
+        MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
+        ByteBuffer codecConfig = null;
+        //test if indicates this buffer contains codec specific data
+        while ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) == 0) {
+            codecConfig = dequeueEncodedData(bufferInfo);
+        }
+        /*ByteBuffer empty = ByteBuffer.allocateDirect(100);
+        enqueueEncodeData(empty);
+        enqueueEncodeData(empty);
+        enqueueEncodeData(empty);
+        enqueueEncodeData(empty);
+        codecConfig = null;
+        while (codecConfig==null)
+            codecConfig = dequeueEncodedData(bufferInfo);
+        dequeueEncodedData(bufferInfo);*/
+        assert codecConfig != null;
+        Log.d(this.getClass().getSimpleName(), "ASC detected");
+        return codecConfig;
     }
 
 }

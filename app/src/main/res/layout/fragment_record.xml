@@ -14,7 +14,14 @@
             tools:text="00:00"
             android:textSize="30sp"
             android:layout_marginBottom="100dp"/>
-
+    <TextView
+            android:id="@+id/record_state_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            tools:text="state"
+            android:textSize="20sp"
+            android:layout_marginBottom="10dp"/>
     <TextView
             android:id="@+id/sample_record_text"
             android:layout_width="match_parent"

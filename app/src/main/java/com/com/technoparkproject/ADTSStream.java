@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ADTSStream {
-    private final AACEncoder mAACEncoder;
+    public final AACEncoder mAACEncoder;
 
 
     private static final byte ADTS_HEADER_LENGTH = 7;
@@ -24,6 +24,8 @@ public class ADTSStream {
     private int mSamplingFrequencyIndex = CD_FREQUENCY_INDEX;
     private int mChannelConfig = CHANNEL_CONFIG_MONO;
     private int mAACObjectType = AAC_LC_OBJECT_ID;
+
+    private boolean mIsConfigured = false;
 
     //ADTS header constants
     private static final byte CD_FREQUENCY_INDEX = 4; //44100
@@ -41,11 +43,22 @@ public class ADTSStream {
         mAACEncoder = new AACEncoder(mSampleRate, mChannelCount, mBitRate, mBytesPerSample);
     }
 
+
+    //setup parameters for ADTS header from codec config info
+    private void configureADTS(){
+        if (!mIsConfigured){
+            ByteBuffer asc = mAACEncoder.getCodecConfig();
+            parseAACAudioSpecificConfig(asc);
+            mIsConfigured = true;
+        }
+    }
+
     public void start() {
         mAACEncoder.start();
+        configureADTS();
     }
     public void configure(){
-        mAACEncoder.configure(mSampleRate, mChannelCount, mBitRate);
+        mAACEncoder.configure();
     }
 
     public void stop(){
@@ -82,30 +95,42 @@ public class ADTSStream {
         return packets;
     }
 
-    private ByteBuffer getADTSPacket(ByteBuffer pcmFrame){
-        try {
-            MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-            ByteBuffer aacLoad =  mAACEncoder.encode(pcmFrame,bufferInfo);
+    //returns all cached internal packets
+    public List<ByteBuffer> flushPackets(){
+        List<ByteBuffer> residualBuffers = mAACEncoder.drainEncoder();
+        List<ByteBuffer> residualPackets = new ArrayList<>();
+        for(ByteBuffer residualLoad : residualBuffers){
+            ByteBuffer header = writeADTSFrameHeader(residualLoad);
+            ByteBuffer packet =  createADTSPacket(header,residualLoad);
+            residualPackets.add(packet);
+        }
+        return residualPackets;
+    }
+
+    public ByteBuffer getADTSPacket(ByteBuffer pcmFrame){
+        //try {
+            ByteBuffer aacLoad =  mAACEncoder.encode(pcmFrame);
             if (aacLoad == null)
                 return null;
             //test to find out if this buffer contains codec specific data
-            if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
+            /*if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
                 Log.d(this.getClass().getSimpleName(),"ASC detected");
                 parseAACAudioSpecificConfig(aacLoad);
                 return null;
-            }
+            }*/
             else{
                 //buffer contains aac info
                 ByteBuffer header = writeADTSFrameHeader(aacLoad);
                 return createADTSPacket(header,aacLoad);
             }
 
-        }
+        //}
+        /*
         catch (IllegalArgumentException e){
             Log.e(this.getClass().getSimpleName(),
                     "Invalid frame size for aac encoding", e);
             return null;
-        }
+        }*/
     }
 
 
