@@ -8,6 +8,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
 
 import voice.it.firebaseloadermodule.model.FirebaseModel;
 import voice.it.firebaseloadermodule.model.FirebaseRecord;
@@ -55,22 +59,8 @@ public class FirebaseLoader {
 
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            switch (collection) {
-                                case Topics:
-                                    FirebaseTopic topic = document.toObject(FirebaseTopic.class);
-                                    listener.onGet(topic);
-                                    break;
-                                case Users:
-                                    FirebaseUser user = document.toObject(FirebaseUser.class);
-                                    listener.onGet(user);
-                                    break;
-                                case Records:
-                                    FirebaseRecord record = document.toObject(FirebaseRecord.class);
-                                    listener.onGet(record);
-                                    break;
-                                default:
-                                    throw new IllegalStateException();
-                            }
+                            FirebaseModel model = getModel(document, collection);
+                            listener.onGet(model);
                         }
                     }
                 })
@@ -80,6 +70,73 @@ public class FirebaseLoader {
                         listener.onFailure(e.getLocalizedMessage());
                     }
                 });
+    }
+
+    public <T extends FirebaseModel> void getAll(final FirebaseCollections collection, final FirebaseGetListListener<T> listener) {
+        db.collection(collection.toString())
+                .get()
+                .addOnCompleteListener(getListOnCompleteListener(listener, collection))
+                .addOnFailureListener(getListOnFailureListener(listener));
+    }
+
+    public <T extends FirebaseModel> void getAll(final FirebaseGetListListener<T> listener,
+                                                 final String parentUUID,
+                                                 final FirebaseCollections parentType) {
+        String key;
+        if (parentType == FirebaseCollections.Topics)
+            key = "topicUUID";
+        else
+            key = "userUUID";
+
+        db.collection(FirebaseCollections.Records.toString())
+                .whereEqualTo(key, parentUUID)
+                .get()
+                .addOnCompleteListener(getListOnCompleteListener(listener, FirebaseCollections.Records))
+                .addOnFailureListener(getListOnFailureListener(listener));
+    }
+
+
+    private <T extends FirebaseModel> OnCompleteListener<QuerySnapshot>
+    getListOnCompleteListener(final FirebaseGetListListener<T> listener,
+                              final FirebaseCollections collection) {
+        return new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (!task.isSuccessful() || task.getResult() == null) {
+                    listener.onFailure("I don't get value");
+                    return;
+                }
+
+                ArrayList list = new ArrayList<T>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    list.add(getModel(document, collection));
+                }
+                listener.onGet(list);
+            }
+        };
+    }
+
+    private <T extends FirebaseModel> OnFailureListener
+    getListOnFailureListener(final FirebaseGetListListener<T> listener) {
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFailure(e.getLocalizedMessage());
+            }
+        };
+    }
+
+    private FirebaseModel getModel(DocumentSnapshot document, FirebaseCollections collection) {
+        switch (collection) {
+            case Topics:
+                return document.toObject(FirebaseTopic.class);
+            case Users:
+                return document.toObject(FirebaseUser.class);
+            case Records:
+                return document.toObject(FirebaseRecord.class);
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     private String getCollectionNameByModel(FirebaseModel item) {
