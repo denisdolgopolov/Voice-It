@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "438806285858",
+    "firebase_url": "https://voiceit-39264.firebaseio.com",
+    "project_id": "voiceit-39264",
+    "storage_bucket": "voiceit-39264.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438806285858:android:e3cd6ae3bfaf3fc82e847b",
+        "android_client_info": {
+          "package_name": "voice.it.firebaseloadermodule"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "438806285858-vp8hania9f2o2u59hdq1l2hbf0f2se51.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "voice.it.firebaseloadermodule",
+            "certificate_hash": "c53dfb26b8054a2120aefd82abc31b308f92f0d5"
+          }
+        },
+        {
+          "client_id": "438806285858-afhaihno22dnja46gsvd6ohcbt084jt2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNBeklTYiLNNc13Q0en80FTqu37DXgT5A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "438806285858-afhaihno22dnja46gsvd6ohcbt084jt2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

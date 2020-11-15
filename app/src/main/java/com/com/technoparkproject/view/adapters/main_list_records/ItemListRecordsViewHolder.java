@@ -37,7 +37,7 @@ class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
 
         textViewTitle.setText(record.name);
         textViewDesc.setText(record.dateOfCreation);
-        textViewRecordTime.setText(record.length);
+        textViewRecordTime.setText(record.duration);
 
         Drawable image = TestRecordsRepository.getRecordImageByUserUUID(record.userUUID, context);
         recordImage.setImageDrawable(image);

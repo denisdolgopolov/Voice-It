@@ -1,2 +1,3 @@
 rootProject.name='TechnoparkProject'
 include ':app'
+include ':firebaseloadermodule'

@@ -6,18 +6,18 @@ public final class Record {
     public final String topicUUID;
     public final String dateOfCreation;
     public final String userUUID;
-    public final String length;
+    public final String duration;
 
     public Record(String uuid, String name,
                   String topicUUID,
                   String dateOfCreation,
                   String userUUID,
-                  String length) {
+                  String duration) {
         this.uuid = uuid;
         this.name = name;
         this.topicUUID = topicUUID;
         this.dateOfCreation = dateOfCreation;
         this.userUUID = userUUID;
-        this.length = length;
+        this.duration = duration;
     }
 }
