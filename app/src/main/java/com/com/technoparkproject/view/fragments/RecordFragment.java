@@ -27,7 +27,7 @@ import com.com.technoparkproject.RecordingService;
 import org.jetbrains.annotations.NotNull;
 
 
-public class RecordFragment extends Fragment implements ServiceConnection, RecordingService.RecordCallbacks {
+public class RecordFragment extends Fragment implements RecordingService.RecordCallbacks {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1000;
     RecordingService mRecService;
     boolean mBound = false;
@@ -71,33 +71,38 @@ public class RecordFragment extends Fragment implements ServiceConnection, Recor
         // start service before binding
         // to handle its lifecycle in an unbound manner
         requireActivity().startService(recServiceIntent);
-        requireActivity().bindService(recServiceIntent, this, Context.BIND_DEBUG_UNBIND);
+        requireActivity().bindService(recServiceIntent, mConnection, Context.BIND_DEBUG_UNBIND);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (mBound) {
-            requireActivity().unbindService(this);
+            requireActivity().unbindService(mConnection);
             mBound = false;
         }
     }
 
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        //get Recording Service instance
-        RecordingService.RecordBinder binder = (RecordingService.RecordBinder) service;
-        mRecService = binder.getService();
-        mBound = true;
-        mRecService.setRecordCallbacks(this);
-        activateButtons();
-    }
+    private final ServiceConnection mConnection = new ServiceConnection() {
 
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        mBound = false;
-        mRecService = null;
-    }
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            //get Recording Service instance
+            RecordingService.RecordBinder binder = (RecordingService.RecordBinder) service;
+            mRecService = binder.getService();
+            mBound = true;
+            mRecService.setRecordCallbacks(RecordFragment.this);
+            activateButtons();
+        }
+
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
+            mRecService.setRecordCallbacks(null);
+            mRecService = null;
+        }
+    };
 
 
     private void setButtonsEnabled(){

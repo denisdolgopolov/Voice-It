@@ -1,10 +1,12 @@
-package com.com.technoparkproject;
+package com.com.technoparkproject.service.coders;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.util.Log;
+
+import com.com.technoparkproject.RecordingProfile;
 
 import java.io.IOException;
 import java.nio.BufferOverflowException;
@@ -13,39 +15,43 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AACEncoder {
+public class AACEncoder implements Encoder<ByteBuffer> {
 
-    public static final int MAX_INPUT_POLL_COUNT = 10;
-    private final int mBytesPerSample;
-    private final int mChannelCount;
+    private static final int MAX_INPUT_POLL_COUNT = 10;
+    //private final int mBytesPerSample;
+   // private final int mChannelCount;
+    private final RecordingProfile mRecProfile;
     // The encoder instance
     private MediaCodec mEncoder;
 
     private static final long TIMEOUT_US = 100; //timeout value for working with codec buffers
 
 
-    //TODO create method to get this length here and in ADTS stream
-    public static final int MAX_AAC_FRAME_LENGTH = 1024; //one aac frame can't contain more than 1024 PCM samples
+    private static final int MAX_AAC_FRAME_LENGTH = 1024; //one aac frame can't contain more than 1024 PCM samples
 
     private static final String DEFAULT_AAC_ENCODER_NAME = "OMX.google.aac.encoder";
 
 
-    private MediaFormat mOutputFormat;
     private MediaFormat mMediaFormat;
 
-    public AACEncoder(int sampleRate, int channelCount, int bitrate, int bytesPerSample) {
+    /*public AACEncoder(int sampleRate, int channelCount, int bitrate, int bytesPerSample) {
         mBytesPerSample = bytesPerSample;
         mChannelCount = channelCount;
         setup(sampleRate, channelCount, bitrate);
+    }*/
+    public AACEncoder(RecordingProfile recProfile) {
+        mRecProfile = recProfile;
+        setup();
     }
 
-    public void setup(int sampleRate, int channelCount, int bitrate) {
-
+    //private void setup(int sampleRate, int channelCount, int bitrate) {
+    private void setup(){
         //setting up AAC-LC format info for codec
-        mMediaFormat = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, sampleRate, channelCount);
+        mMediaFormat = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC,
+                mRecProfile.getSamplingRate(), mRecProfile.getChannelsCount());
         mMediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE,
                 MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        mMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
+        mMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, mRecProfile.getBitRate());
 
 
         //get encoder name corresponding to AAL-LC
@@ -68,9 +74,12 @@ public class AACEncoder {
 
     }
 
+    public int getMaxFrameLength(){
+        return AACEncoder.MAX_AAC_FRAME_LENGTH;
+    }
+
     public void configure(){
         mEncoder.configure(mMediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-        mOutputFormat = mEncoder.getOutputFormat();
     }
 
     public void start() {
@@ -147,8 +156,7 @@ public class AACEncoder {
             }
 
         } catch (MediaCodec.CodecException e) {
-            Log.e(this.getClass().getSimpleName(),
-                    "Internal codec error during working with input buffers", e);
+            handleCodecEx(e);
         } catch (IllegalStateException e) {
             Log.e(this.getClass().getSimpleName(),
                     "Encoder is not in running state, can't work with input buffers", e);
@@ -167,8 +175,6 @@ public class AACEncoder {
                 Log.e(this.getClass().getSimpleName(),
                         "No available Encoder output buffers after " + TIMEOUT_US + "Us");
                 return null;
-            } else if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                mOutputFormat = mEncoder.getOutputFormat(); //update format of buffers
             } else if (outputBufferId >= 0) {
                 Log.d("Receiving", "Output data in buffer #" + outputBufferId);
                 ByteBuffer outputBuffer = mEncoder.getOutputBuffer(outputBufferId);
@@ -177,21 +183,32 @@ public class AACEncoder {
                 return outFrame;
             }
         } catch (MediaCodec.CodecException e) {
-            if (e.isRecoverable() | e.isTransient()) {
-                //TODO: try to recover from errors
-            }
-            Log.e(this.getClass().getSimpleName(),
-                    "Internal codec error during working with output buffers", e);
-            //return null;
+            handleCodecEx(e);
         } catch (IllegalStateException e) {
             Log.e(this.getClass().getSimpleName(),
                     "Encoder is not in running state, can't work with output buffers", e);
-            //return null;
         }
         return null;
     }
 
-    public ByteBuffer dequeueEncodedData() {
+    private void handleCodecEx(MediaCodec.CodecException e){
+        if (e.isRecoverable()){
+            //restart encoder to recover
+            stop();
+            configure();
+            start();
+            getCodecConfig();
+        }
+        else if (e.isTransient()) {
+            Log.d(this.getClass().getSimpleName(),
+                    "Retry to encode/decode later");
+        }
+        else
+            Log.e(this.getClass().getSimpleName(),
+                    "Internal codec error during working with output buffers", e);
+    }
+
+    private ByteBuffer dequeueEncodedData() {
         return dequeueEncodedData(null);
     }
 
@@ -201,7 +218,7 @@ public class AACEncoder {
     //NOTE: pcmFrame should have valid position and limit before invoking this method
     //      may return null buffer
     public ByteBuffer encode(final ByteBuffer pcmFrame) {
-        if (pcmFrame.remaining() > MAX_AAC_FRAME_LENGTH * mBytesPerSample * mChannelCount)
+        if (pcmFrame.remaining() > getMaxFrameLength() * mRecProfile.getFrameSize())
             Log.e(this.getClass().getSimpleName(), "Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
             //throw new IllegalArgumentException
              //       ("Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
@@ -229,15 +246,6 @@ public class AACEncoder {
         while ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) == 0) {
             codecConfig = dequeueEncodedData(bufferInfo);
         }
-        /*ByteBuffer empty = ByteBuffer.allocateDirect(100);
-        enqueueEncodeData(empty);
-        enqueueEncodeData(empty);
-        enqueueEncodeData(empty);
-        enqueueEncodeData(empty);
-        codecConfig = null;
-        while (codecConfig==null)
-            codecConfig = dequeueEncodedData(bufferInfo);
-        dequeueEncodedData(bufferInfo);*/
         assert codecConfig != null;
         Log.d(this.getClass().getSimpleName(), "ASC detected");
         return codecConfig;

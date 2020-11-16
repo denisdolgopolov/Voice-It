@@ -1,4 +1,4 @@
-package com.com.technoparkproject;
+package com.com.technoparkproject.service.utils;
 
 import android.media.AudioFormat;
 

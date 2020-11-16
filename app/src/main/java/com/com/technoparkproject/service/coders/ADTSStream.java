@@ -1,24 +1,24 @@
-package com.com.technoparkproject;
+package com.com.technoparkproject.service.coders;
 
-import android.media.MediaCodec;
 import android.util.Log;
+
+import com.com.technoparkproject.RecordingProfile;
+import com.com.technoparkproject.service.utils.AudioFormatUtils;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class ADTSStream {
-    public final AACEncoder mAACEncoder;
+//todo move encoder from this class possibly
+
+public class ADTSStream implements PacketStream<ByteBuffer>{
+    public final Encoder<ByteBuffer> mAACEncoder;
 
 
     private static final byte ADTS_HEADER_LENGTH = 7;
-    private final int mSampleRate;
-    private final int mBitRate;
+    private final RecordingProfile mRecProfile;
 
     //ADTS header parameters
     private int mSamplingFrequencyIndex = CD_FREQUENCY_INDEX;
@@ -32,15 +32,10 @@ public class ADTSStream {
     private static final byte AAC_LC_OBJECT_ID = 1;
     private static final byte CHANNEL_CONFIG_MONO = 1;
 
-    private final int mChannelCount;
-    private final int mBytesPerSample;
 
-    public ADTSStream(int sampleRate, int bitRate, int channelConfig, int bitDepth){
-        mChannelCount = AudioFormatUtils.getChannelCount(channelConfig);
-        mBytesPerSample = AudioFormatUtils.getBytesPerSample(bitDepth);
-        mSampleRate = sampleRate;
-        mBitRate = bitRate;
-        mAACEncoder = new AACEncoder(mSampleRate, mChannelCount, mBitRate, mBytesPerSample);
+    public ADTSStream(RecordingProfile recProfile){
+        mRecProfile = recProfile;
+        mAACEncoder = new AACEncoder(mRecProfile);
     }
 
 
@@ -72,23 +67,23 @@ public class ADTSStream {
 
     /**
      * Create 1 or more ADTS packets from PCM ByteBuffer.
-     * Number of packets is determined by {@link AACEncoder#MAX_AAC_FRAME_LENGTH}.
+     * Number of packets is determined by {@link #getMaxFrameLength()}.
      * 1 frame corresponds to 1 sample
      * 1 PCM sample representation = bitDepth*channelCount
      * @param pcmFrame: ByteBuffer containing PCM data
      * @return list of ADTS packets
      */
-
+    //todo add this to interface also probably
     public List<ByteBuffer> getADTSPackets(ByteBuffer pcmFrame){
         final int pcmLength = pcmFrame.remaining();
 
-        final int bytesPerFrame = AACEncoder.MAX_AAC_FRAME_LENGTH*mBytesPerSample*mChannelCount;
+        final int bytesPerFrame = getMaxFrameLength()*mRecProfile.getFrameSize();
 
         List<ByteBuffer> packets = new ArrayList<>();
         for (int i = 0; i < pcmLength; i+=bytesPerFrame) {
             pcmFrame.position(i);
             pcmFrame.limit(Math.min(i + bytesPerFrame, pcmLength));
-            ByteBuffer packet = getADTSPacket(pcmFrame);
+            ByteBuffer packet = getPacket(pcmFrame);
             if (packet != null)
                 packets.add(packet);
         }
@@ -107,30 +102,20 @@ public class ADTSStream {
         return residualPackets;
     }
 
-    public ByteBuffer getADTSPacket(ByteBuffer pcmFrame){
-        //try {
+    @Override
+    public int getMaxFrameLength() {
+        return mAACEncoder.getMaxFrameLength();
+    }
+
+    public ByteBuffer getPacket(ByteBuffer pcmFrame){
             ByteBuffer aacLoad =  mAACEncoder.encode(pcmFrame);
             if (aacLoad == null)
                 return null;
-            //test to find out if this buffer contains codec specific data
-            /*if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
-                Log.d(this.getClass().getSimpleName(),"ASC detected");
-                parseAACAudioSpecificConfig(aacLoad);
-                return null;
-            }*/
             else{
                 //buffer contains aac info
                 ByteBuffer header = writeADTSFrameHeader(aacLoad);
                 return createADTSPacket(header,aacLoad);
             }
-
-        //}
-        /*
-        catch (IllegalArgumentException e){
-            Log.e(this.getClass().getSimpleName(),
-                    "Invalid frame size for aac encoding", e);
-            return null;
-        }*/
     }
 
 
