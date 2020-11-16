@@ -2,8 +2,7 @@ package com.com.technoparkproject.service.coders;
 
 import android.util.Log;
 
-import com.com.technoparkproject.RecordingProfile;
-import com.com.technoparkproject.service.utils.AudioFormatUtils;
+import com.com.technoparkproject.service.storage.RecordingProfile;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;

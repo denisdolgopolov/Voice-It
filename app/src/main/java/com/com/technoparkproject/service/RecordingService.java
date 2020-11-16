@@ -1,4 +1,4 @@
-package com.com.technoparkproject;
+package com.com.technoparkproject.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -13,9 +13,10 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.com.technoparkproject.service.storage.RecordingProfile;
+import com.com.technoparkproject.service.storage.RecordingProfileStorage;
 import com.com.technoparkproject.service.coders.ADTSStream;
 import com.com.technoparkproject.service.coders.PacketStream;
-import com.com.technoparkproject.service.RecorderNotification;
 import com.com.technoparkproject.service.tasks.DrainWriterTask;
 import com.com.technoparkproject.service.tasks.RecorderTask;
 import com.com.technoparkproject.service.tasks.StreamWriterTask;
@@ -38,7 +39,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import com.com.technoparkproject.RecordingProfileStorage.AudioQuality;
+import com.com.technoparkproject.service.storage.RecordingProfileStorage.AudioQuality;
 
 public class RecordingService extends Service {
 

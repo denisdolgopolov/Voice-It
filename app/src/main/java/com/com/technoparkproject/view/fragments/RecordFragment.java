@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
-import com.com.technoparkproject.RecordingService;
+import com.com.technoparkproject.service.RecordingService;
 
 import org.jetbrains.annotations.NotNull;
 

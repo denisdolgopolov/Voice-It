@@ -6,7 +6,7 @@ import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.util.Log;
 
-import com.com.technoparkproject.RecordingProfile;
+import com.com.technoparkproject.service.storage.RecordingProfile;
 
 import java.io.IOException;
 import java.nio.BufferOverflowException;
