@@ -1,4 +1,4 @@
-package voice.it.firebaseloadermodule;
+package voice.it.firebaseloadermodule.listeners;
 
 public interface FirebaseListener {
     void onSuccess();

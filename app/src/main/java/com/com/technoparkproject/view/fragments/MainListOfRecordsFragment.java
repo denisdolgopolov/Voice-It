@@ -3,6 +3,7 @@ package com.com.technoparkproject.view.fragments;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,12 +64,20 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         observeToData(viewModel);
     }
 
-    private void observeToData(MainListOfRecordsViewModel viewModel) {
+    private void observeToData(final MainListOfRecordsViewModel viewModel) {
         viewModel.getTopics().observe(this, new Observer<List<Topic>>() {
             @Override
             public void onChanged(List<Topic> topics) {
-                adapter.setItems(topics);
+                for(Topic topic: topics)
+                    viewModel.queryRecord(topic);
                 setAutoCompleteValues(topics);
+            }
+        });
+
+        viewModel.getRecords().observe(this, new Observer<ArrayMap<Topic, List<Record>>>() {
+            @Override
+            public void onChanged(ArrayMap<Topic, List<Record>> map) {
+                adapter.setItems(map);
             }
         });
 

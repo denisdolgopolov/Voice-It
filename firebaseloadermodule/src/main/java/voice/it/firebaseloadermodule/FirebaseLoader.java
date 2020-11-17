@@ -13,6 +13,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
+import voice.it.firebaseloadermodule.listeners.FirebaseGetListListener;
+import voice.it.firebaseloadermodule.listeners.FirebaseGetListener;
+import voice.it.firebaseloadermodule.listeners.FirebaseListener;
 import voice.it.firebaseloadermodule.model.FirebaseModel;
 import voice.it.firebaseloadermodule.model.FirebaseRecord;
 import voice.it.firebaseloadermodule.model.FirebaseTopic;
@@ -72,16 +75,17 @@ public class FirebaseLoader {
                 });
     }
 
-    public <T extends FirebaseModel> void getAll(final FirebaseCollections collection, final FirebaseGetListListener<T> listener) {
+    public <T extends FirebaseModel> void getAll(final FirebaseCollections collection,
+                                                 final FirebaseGetListListener<T> listener) {
         db.collection(collection.toString())
                 .get()
                 .addOnCompleteListener(getListOnCompleteListener(listener, collection))
                 .addOnFailureListener(getListOnFailureListener(listener));
     }
 
-    public <T extends FirebaseModel> void getAll(final FirebaseGetListListener<T> listener,
+    public <T extends FirebaseModel> void getAll(final FirebaseCollections parentType,
                                                  final String parentUUID,
-                                                 final FirebaseCollections parentType) {
+                                                 final FirebaseGetListListener<T> listener) {
         String key;
         if (parentType == FirebaseCollections.Topics)
             key = "topicUUID";

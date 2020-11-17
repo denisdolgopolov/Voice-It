@@ -1,5 +1,6 @@
 package com.com.technoparkproject.view.adapters.main_list_records;
 
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +12,14 @@ import com.com.technoparkproject.R;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
-import com.com.technoparkproject.repositories.TestRecordsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     private ArrayList<Object> items = new ArrayList<>();
-    private ArrayList<Topic> allTopics = new ArrayList<>();
+    private ArrayMap allTopics = new ArrayMap<Topic, List<Record>>();
     private static final int COUNT_RECORDS_SHOW = 3;
     private MainListRecordsInterface listener;
 
@@ -30,7 +31,7 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        switch(viewType) {
+        switch (viewType) {
             case ViewTypes.TYPE_TOPIC_NAME:
                 View viewTopicName = inflater.inflate(R.layout.mlr_item_topic_name,
                         parent, false);
@@ -50,7 +51,7 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int type = getItemViewType(position);
         Object item = items.get(position);
-        switch(type) {
+        switch (type) {
             case ViewTypes.TYPE_TOPIC_NAME:
                 Topic topic = (Topic) item;
                 ItemTopicNameViewHolder topicViewHolder = (ItemTopicNameViewHolder) holder;
@@ -74,41 +75,57 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
         return items.size();
     }
 
-    private void showItems(List<Topic> topics) {
-        for(Topic topic: topics) {
+    private void showItems(ArrayMap<Topic, List<Record>> list) {
+        int startIndex = items.size() - 1;
+        for (int i = 0; i < list.size(); i++) {
+            Topic topic = list.keyAt(i);
             items.add(topic);
-
-            int countRecordShow = Math.min(topic.records.size(), COUNT_RECORDS_SHOW);
-            for (int i = 0; i < countRecordShow; i++) {
-                String recordUUID = topic.records.get(i);
-                Record record = TestRecordsRepository.getRecordByUUID(recordUUID);
-                items.add(record);
+            int countRecordShow = Math.min(list.valueAt(i).size(), COUNT_RECORDS_SHOW);
+            for (int g = 0; g < countRecordShow; g++) {
+                items.add(list.valueAt(i).get(g));
             }
-            if(countRecordShow == COUNT_RECORDS_SHOW)
+            if (countRecordShow == COUNT_RECORDS_SHOW)
                 items.add(topic.uuid);
+            notifyItemRangeChanged(startIndex, items.size() - startIndex);
         }
-        notifyDataSetChanged();
     }
 
+    /*
     public void setItems(List<Topic> topics) {
         this.allTopics.clear();
         this.allTopics.addAll(topics);
         showItems(allTopics);
     }
 
+     */
+
+    public void addItems(Topic topic, List<Record> list) {
+        allTopics.put(topic, list);
+        ArrayMap<Topic, List<Record>> map = new ArrayMap<>();
+        map.put(topic, list);
+        showItems(map);
+    }
+
+    public void setItems(ArrayMap<Topic, List<Record>> map) {
+        allTopics.clear();
+        items.clear();
+        allTopics.putAll(map);
+        showItems(allTopics);
+    }
+
     public void filterItemsByTopicName(String str) {
         items.clear();
-        ArrayList<Topic> filtered = new ArrayList<>();
-        for(Topic topic: allTopics)
-            if(topic.name.contains(str)) filtered.add(topic);
+        ArrayMap filtered = new ArrayMap();
+        for (Topic topic : (Set<Topic>) allTopics.keySet())
+            if (topic.name.contains(str)) filtered.put(topic, allTopics.get(topic));
         showItems(filtered);
     }
 
     @Override
     public int getItemViewType(int position) {
         Object item = items.get(position);
-        if(item instanceof Topic) return ViewTypes.TYPE_TOPIC_NAME;
-        if(item instanceof Record) return ViewTypes.TYPE_RECORD;
+        if (item instanceof Topic) return ViewTypes.TYPE_TOPIC_NAME;
+        if (item instanceof Record) return ViewTypes.TYPE_RECORD;
         return ViewTypes.TYPE_BUTTON_SHOW_ALL_RECORDS;
     }
 

@@ -23,12 +23,13 @@ class ItemTopicNameViewHolder extends RecyclerView.ViewHolder {
         textViewTitle.setText(currentName);
     }
 
-    private String getTopicPrefixByType(String type) {
-        String prefix;
-        if(type.equals(TopicTypes.TOPIC_FRIEND)) {
-            prefix = "§";
-        } else {
+    private String getTopicPrefixByType(TopicTypes type) {
+        String prefix = "";
+        if(type == TopicTypes.TOPIC_THEMATIC) {
             prefix = "☀";
+        }
+        if(type == TopicTypes.TOPIC_FRIEND) {
+            prefix = "§";
         }
         return prefix;
     }
