@@ -158,9 +158,6 @@ public class RecorderViewModel extends AndroidViewModel {
         rec.setTopic(mRecTopic);
 
         RecordRepo.getInstance(getApplication()).addRecord(rec);
-        Log.d("RECORD OBJ","name "+rec.getName()+
-                ",topic "+rec.getTopic()+
-                ",file "+rec.getRecordFile());
     }
 
     public void onSaveClick(String recName, String recTopic) {

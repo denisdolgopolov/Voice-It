@@ -12,7 +12,6 @@ import android.text.format.DateUtils;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.com.technoparkproject.repository.Record;
@@ -31,9 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +39,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.com.technoparkproject.service.storage.RecordingProfileStorage.AudioQuality;
 
 public class RecordingService extends Service {
@@ -70,6 +68,8 @@ public class RecordingService extends Service {
     private Future<?> mRecordResult;
     private AudioRecord mAudioRecord;
     private FileOutputStream mRecordBOS;
+
+    private final AtomicInteger mRecRawSize = new AtomicInteger();
 
     private int mRecordTimeInMills; //record time in seconds
 
@@ -290,6 +290,9 @@ public class RecordingService extends Service {
             Log.e("FileOutputStream", "File not found for recording ", e);
         }
 
+        mRecRawSize.set(0);
+        mRecordTimeInMills = 0;
+
         resumeRecording();
     }
 
@@ -314,7 +317,7 @@ public class RecordingService extends Service {
 
         RecorderTask recordTask = new RecorderTask(mAudioRecord, mADTSStream,
                 mBuffersQ, mRecProfile.getFrameSize()*mADTSStream.getMaxFrameLength(),
-                mIsTaskCancel);
+                mRecRawSize,mIsTaskCancel);
 
         mRecordResult = mRecordingExecutor.submit(recordTask);
 
@@ -446,6 +449,13 @@ public class RecordingService extends Service {
 
 
 
+    private int getCurrentRecDuration(){
+        int bytesPerSecond = mRecProfile.getFrameSize()*mRecProfile.getSamplingRate();
+        double recSeconds = (double)mRecRawSize.get() / bytesPerSecond;
+        int recMillis = (int)(recSeconds*1000);
+        return recMillis;
+    }
+
     //returns null if recording isn't finished yet
     public Record saveRecording(){
         if (mRecordState.getValue() != RecordState.STOP){
@@ -453,8 +463,10 @@ public class RecordingService extends Service {
         }
         Record rec = new Record();
         rec.setRecordFile(mRecordFile);
-        //don't know????????
-        //mRecordState.setValue(RecordState.READY);
+        int recDuration = getCurrentRecDuration();
+        rec.setDuration(recDuration);
+        mRecTime.setValue(0);
+        mRecordState.setValue(RecordState.READY);
         return rec;
     }
 

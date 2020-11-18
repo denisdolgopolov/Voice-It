@@ -150,6 +150,7 @@ public class RecordFragment extends Fragment {
             switch (recordState){
                 case READY:{
                     mStopButton.setEnabled(false);
+                    mRecPauseButton.setEnabled(true);
                     mDoneButton.setEnabled(false);
                     break;
                 }

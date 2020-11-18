@@ -10,6 +10,7 @@ import java.nio.ByteOrder;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RecorderTask implements Runnable {
 
@@ -18,14 +19,17 @@ public class RecorderTask implements Runnable {
     private final PacketStream<ByteBuffer> mADTSStream;
     private final int mBufferSize;
     private final AtomicBoolean mIsCancelled;
+    private final AtomicInteger mRecRawSize;
 
     public RecorderTask(final AudioRecord audioRecord, final PacketStream<ByteBuffer> adtsStream,
                       final BlockingDeque<ByteBuffer> packetsQ, final int bufferSize,
+                      AtomicInteger recRawSize,
                       AtomicBoolean isCancelled) {
         mAudioRecord = audioRecord;
         mADTSStream = adtsStream;
         mPacketsQ = packetsQ;
         mBufferSize = bufferSize;
+        mRecRawSize = recRawSize;
         mIsCancelled = isCancelled;
     }
 
@@ -48,6 +52,7 @@ public class RecorderTask implements Runnable {
     public void run() {
         //Log.d("RECORD TASK","START");
 
+        int samplesCount = 0;
         //long startTime = System.nanoTime();
         mADTSStream.configure();
         /*long endTime = System.nanoTime();
@@ -85,6 +90,7 @@ public class RecorderTask implements Runnable {
                 enqueuePacket(packet);
             }
 
+            samplesCount += bytesRead;
             //Log.d("Task", "new finish");
             audioBuffer.clear();
         }
@@ -94,6 +100,9 @@ public class RecorderTask implements Runnable {
         for (ByteBuffer packet : flushedPackets){
             enqueuePacket(packet);
         }
+
+        mRecRawSize.getAndAdd(samplesCount);
+
         mAudioRecord.stop();
 
         //startTime = System.nanoTime();
