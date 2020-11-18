@@ -10,12 +10,16 @@ public class RecordingProfile {
     private final int mConfigChannels;
     private final int mAudioFormat;
     private final int mBitRate;
+    private final String mFileFormat;
 
-    public RecordingProfile(int samplingRate, int configChannels, int audioFormat, int bitRate) {
+    public RecordingProfile(int samplingRate, int configChannels,
+                            int audioFormat, int bitRate,
+                            String fileFormat) {
         mSamplingRate = samplingRate;
         mConfigChannels = configChannels;
         mAudioFormat = audioFormat;
         mBitRate = bitRate;
+        mFileFormat = fileFormat;
     }
 
 
@@ -45,5 +49,9 @@ public class RecordingProfile {
 
     public int getFrameSize(){
         return getChannelsCount()*getBytesPerSample();
+    }
+
+    public String getFileFormat() {
+        return mFileFormat;
     }
 }

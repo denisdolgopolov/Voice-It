@@ -6,6 +6,28 @@
         android:gravity="center"
         tools:context=".view.fragments.RecordFragment"
         android:orientation="vertical">
+
+    <EditText
+            android:id="@+id/record_name_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="@string/default_record_name"
+            android:gravity="top"
+            android:textSize="20sp"
+            android:layout_marginBottom="8dp"
+            />
+    <EditText
+            android:id="@+id/topic_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="@string/default_topic_name"
+            android:gravity="top"
+            tools:text="topic name"
+            android:textSize="20sp"
+            android:layout_marginBottom="8dp"/>
+
     <TextView
             android:id="@+id/record_time_text"
             android:layout_width="wrap_content"
@@ -13,7 +35,7 @@
             android:gravity="top"
             tools:text="00:00"
             android:textSize="30sp"
-            android:layout_marginBottom="100dp"/>
+            android:layout_marginBottom="10dp"/>
     <TextView
             android:id="@+id/record_state_text"
             android:layout_width="wrap_content"
@@ -21,28 +43,35 @@
             android:gravity="top"
             tools:text="state"
             android:textSize="20sp"
-            android:layout_marginBottom="10dp"/>
-    <TextView
-            android:id="@+id/sample_record_text"
+            android:layout_marginBottom="0dp"
+            android:visibility="gone"/>
+    <ProgressBar
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:id="@+id/record_stop_progress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:text="@string/hello_record_fragment" />
+            android:layout_height="8dp"
+            android:layout_marginTop="24dp"
+            android:indeterminate="true"/>
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
         <Button
+                android:id="@+id/stop_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="stop"/>
+        <Button
                 android:id="@+id/record_pause_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="record"/>
         <Button
-                android:id="@+id/stop_button"
+                android:id="@+id/done_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="stop"/>
+                tools:text="done"/>
     </LinearLayout>
 
 

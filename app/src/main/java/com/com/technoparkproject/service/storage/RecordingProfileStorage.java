@@ -15,6 +15,9 @@ public class RecordingProfileStorage {
     private static final int CHANNEL_IN_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
 
+    //using only aac encoding
+    private static final String FILE_FORMAT = ".aac";
+
     public enum AudioQuality {
         LOW, STANDARD, HIGH
     }
@@ -22,11 +25,11 @@ public class RecordingProfileStorage {
     private static Map<AudioQuality, RecordingProfile> createMap() {
         Map<AudioQuality, RecordingProfile> profiles = new EnumMap<>(AudioQuality.class);
         profiles.put(AudioQuality.LOW,new RecordingProfile(SAMPLING_RATE,CHANNEL_IN_CONFIG,
-                AUDIO_FORMAT,64000));
+                AUDIO_FORMAT,64000, FILE_FORMAT));
         profiles.put(AudioQuality.STANDARD,new RecordingProfile(SAMPLING_RATE,CHANNEL_IN_CONFIG,
-                AUDIO_FORMAT,128000));
+                AUDIO_FORMAT,128000, FILE_FORMAT));
         profiles.put(AudioQuality.HIGH,new RecordingProfile(SAMPLING_RATE,CHANNEL_IN_CONFIG,
-                AUDIO_FORMAT,256000));
+                AUDIO_FORMAT,256000, FILE_FORMAT));
         return Collections.unmodifiableMap(profiles);
     }
 
