@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.repository.Record;
-import com.com.technoparkproject.repository.RecordRepo;
+import com.com.technoparkproject.repository.RecordRepoImpl;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class RecordsListFragment extends Fragment {
 
     private class RecordsAdapter extends RecyclerView.Adapter<RecordsListFragment.RecordViewHolder> {
 
-        private final List<Record> mRecords = RecordRepo.getInstance(getContext()).getRecords();
+        private final List<Record> mRecords = RecordRepoImpl.getInstance(getContext()).getRecords();
 
         @NonNull
         @Override

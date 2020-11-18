@@ -34,11 +34,6 @@ public class AACEncoder implements Encoder<ByteBuffer> {
 
     private MediaFormat mMediaFormat;
 
-    /*public AACEncoder(int sampleRate, int channelCount, int bitrate, int bytesPerSample) {
-        mBytesPerSample = bytesPerSample;
-        mChannelCount = channelCount;
-        setup(sampleRate, channelCount, bitrate);
-    }*/
     public AACEncoder(RecordingProfile recProfile) {
         mRecProfile = recProfile;
         setup();
@@ -69,9 +64,6 @@ public class AACEncoder implements Encoder<ByteBuffer> {
         } catch (IOException e) {
             Log.e("MediaCodec", "I/O errors occurred while creating encoder", e);
         }
-        //mEncoder.configure(mMediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-        //mOutputFormat = mEncoder.getOutputFormat();
-
     }
 
     public int getMaxFrameLength(){
@@ -143,7 +135,7 @@ public class AACEncoder implements Encoder<ByteBuffer> {
                     //failed to retrieve bufferId
                     inputPollCount++;
                 } else if (inputBufferId >= 0){
-                    Log.d("Encoding", "Data put to buffer #" + inputBufferId);
+                    //Log.d("Encoding", "Data put to buffer #" + inputBufferId);
                     final ByteBuffer inputBuffer = mEncoder.getInputBuffer(inputBufferId);
                     putDataToEncode(inputFrame, inputBuffer);
                     mEncoder.queueInputBuffer(inputBufferId, 0, inputFrame.remaining(), 0, 0);
@@ -176,7 +168,7 @@ public class AACEncoder implements Encoder<ByteBuffer> {
                         "No available Encoder output buffers after " + TIMEOUT_US + "Us");
                 return null;
             } else if (outputBufferId >= 0) {
-                Log.d("Receiving", "Output data in buffer #" + outputBufferId);
+                //Log.d("Receiving", "Output data in buffer #" + outputBufferId);
                 ByteBuffer outputBuffer = mEncoder.getOutputBuffer(outputBufferId);
                 final ByteBuffer outFrame = getEncodedData(outputBuffer);
                 mEncoder.releaseOutputBuffer(outputBufferId, false);
@@ -200,7 +192,7 @@ public class AACEncoder implements Encoder<ByteBuffer> {
             getCodecConfig();
         }
         else if (e.isTransient()) {
-            Log.d(this.getClass().getSimpleName(),
+            Log.e(this.getClass().getSimpleName(),
                     "Retry to encode/decode later");
         }
         else
@@ -213,6 +205,7 @@ public class AACEncoder implements Encoder<ByteBuffer> {
     }
 
 
+    //todo make new null contract - return empty buffer instead of null
     //AAC encoding for one pcmFrame
     //bufferInfo will store flags and other data describing output buffer
     //NOTE: pcmFrame should have valid position and limit before invoking this method
@@ -224,8 +217,8 @@ public class AACEncoder implements Encoder<ByteBuffer> {
              //       ("Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
         enqueueEncodeData(pcmFrame);
         final ByteBuffer outFrame = dequeueEncodedData();
-        if (outFrame != null)
-            Log.d(this.getClass().getSimpleName(), "encoded buffer length" + outFrame.capacity());
+        /*if (outFrame != null)
+            Log.d(this.getClass().getSimpleName(), "encoded buffer length" + outFrame.capacity());*/
         return outFrame;
     }
 

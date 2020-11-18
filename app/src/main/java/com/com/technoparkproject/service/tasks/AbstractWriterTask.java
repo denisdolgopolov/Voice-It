@@ -21,12 +21,8 @@ public abstract class AbstractWriterTask implements Runnable {
 
     public void writeBuffer(ByteBuffer buffer){
         try{
-            //long startTime = System.nanoTime();
             while (buffer.hasRemaining())
                 mRecordFileChannel.write(buffer);
-            /*long endTime = System.nanoTime();
-            Log.d("Timing FileChannel", "writing buffer took "
-                    + getMillis(startTime, endTime));*/
         }
         catch (ClosedByInterruptException e){
             Thread.currentThread().interrupt(); //restore interrupt status

@@ -7,7 +7,7 @@ import com.com.technoparkproject.service.RecordingServiceConnection;
 
 public class InjectorUtils {
     public static RecordingService provideRecordingService(Context context) {
-        RecordingServiceConnection recServiceConnection= RecordingServiceConnection.getInstance(context);
+        RecordingServiceConnection recServiceConnection = provideRecordingServiceConn(context);
         if (recServiceConnection.getRecordBinder()!= null)
             return recServiceConnection.getRecordBinder().getService();
         return null;

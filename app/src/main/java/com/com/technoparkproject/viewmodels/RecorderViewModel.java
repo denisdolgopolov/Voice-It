@@ -1,7 +1,6 @@
 package com.com.technoparkproject.viewmodels;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,92 +9,37 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.repository.Record;
-import com.com.technoparkproject.repository.RecordRepo;
+import com.com.technoparkproject.repository.RecordRepoImpl;
 import com.com.technoparkproject.service.RecordingService;
+import com.com.technoparkproject.service.RecordingServiceConnection;
 import com.com.technoparkproject.utils.InjectorUtils;
 
 public class RecorderViewModel extends AndroidViewModel {
 
-
-    public enum RecordState{
-        READY,
-        RECORDING,
-        PAUSE,
-        STOP
-    }
-
-    private MutableLiveData<RecordState> mRecState2;
-
-    public MutableLiveData<RecordState> getRecState2(){
-        return mRecState2;
-    }
-
-
-    private MediatorLiveData<RecordingService.RecordState> mRecState;
+    private final MediatorLiveData<RecordingService.RecordState> mRecState;
 
     public MediatorLiveData<RecordingService.RecordState> getRecState(){
         return mRecState;
     }
 
-    private MediatorLiveData<Integer> mRecTime = new MediatorLiveData<>();
+    private final MediatorLiveData<Integer> mRecTime;
 
     //todo remove variables and return service livedata straight from injector
-    public MutableLiveData<Integer> getRecTime() {
+    public MediatorLiveData<Integer> getRecTime() {
 
         return mRecTime;
     }
 
     public RecorderViewModel(@NonNull Application application) {
         super(application);
-        RecordingService recordingService = InjectorUtils.provideRecordingService(getApplication());
-
-        //todo clean restore state: after user relaunch app
-        //this is the case when app is closed by user, but recording may still be on
-        if (recordingService==null){
-            mRecState2 = new MutableLiveData<>(RecordState.READY);
-            //mRecTime.setValue(0);
-        }
-        else if (recordingService.isRecording()) {
-            mRecState2 = new MutableLiveData<>(RecordState.RECORDING);
-            /*mRecTime.addSource(recordingService.getRecTime(), new Observer<Integer>() {
-                @Override
-                public void onChanged(Integer timeInSec) {
-                    mRecTime.setValue(timeInSec);
-                }
-            });*/
-        }
-        mRecTime = InjectorUtils.provideRecordingServiceConn(getApplication()).testData;
-        mRecState = InjectorUtils.provideRecordingServiceConn(getApplication()).recState;
+        RecordingServiceConnection recServiceConn = InjectorUtils.provideRecordingServiceConn(getApplication());
+        mRecTime = recServiceConn.getTimeData();
+        mRecState = recServiceConn.getRecState();
     }
 
 
     public void OnRecPauseClick(){
         RecordingService recService = InjectorUtils.provideRecordingService(getApplication());
-
-        //if (mRecState.getValue() == RecordState.READY){
-                /*RecTime.addSource(recService.getRecTime(), new Observer<Integer>() {
-                @Override
-                public void onChanged(Integer timeInSec) {
-                    mRecTime.setValue(timeInSec);
-                }
-            });*/
-        //}
-
-        //OLD way
-        /*if (mRecState2.getValue() == RecordState.READY){
-            recService.startRecording();
-            mRecState2.setValue(RecordState.RECORDING);
-        }
-        else if ( mRecState2.getValue() == RecordState.PAUSE){
-            recService.resumeRecording();
-            mRecState2.setValue(RecordState.RECORDING);
-        }
-        else if (mRecState2.getValue() == RecordState.RECORDING){
-            recService.pauseRecording();
-            mRecState2.setValue(RecordState.PAUSE);
-        }*/
-
-
 
         if (mRecState.getValue() == RecordingService.RecordState.READY)
             recService.startRecording();
@@ -134,18 +78,7 @@ public class RecorderViewModel extends AndroidViewModel {
     }
 
     private String mRecName = "Новая запись";
-    private String mRecTopic = "";
-
-    public void onSaveClickOld() {
-        RecordingService recService = InjectorUtils.provideRecordingService(getApplication());
-        Record rec = recService.saveRecording();
-        if (rec == null) {
-            onStopClick(true);
-            return;
-        }
-        Log.d("Record object",rec.toString());
-        //mRecState2.setValue(RecordState.READY);
-    }
+    private String mRecTopic = "Топик записи";
 
     private void saveRec(){
         RecordingService recService = InjectorUtils.provideRecordingService(getApplication());
@@ -157,12 +90,12 @@ public class RecorderViewModel extends AndroidViewModel {
         rec.setName(mRecName);
         rec.setTopic(mRecTopic);
 
-        RecordRepo.getInstance(getApplication()).addRecord(rec);
+        RecordRepoImpl.getInstance(getApplication()).addRecord(rec);
     }
 
     public void onSaveClick(String recName, String recTopic) {
-        this.mRecName = recName;
-        this.mRecTopic = recTopic;
+        mRecName = recName;
+        mRecTopic = recTopic;
         saveRec();
     }
 

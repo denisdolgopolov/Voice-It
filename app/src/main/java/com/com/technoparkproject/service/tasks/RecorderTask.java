@@ -53,11 +53,7 @@ public class RecorderTask implements Runnable {
         //Log.d("RECORD TASK","START");
 
         int samplesCount = 0;
-        //long startTime = System.nanoTime();
         mADTSStream.configure();
-        /*long endTime = System.nanoTime();
-        Log.d("Timing ADTSStream", "configure took"
-                + getMillis(startTime, endTime));*/
 
         mADTSStream.start();
 
@@ -66,15 +62,8 @@ public class RecorderTask implements Runnable {
 
         mAudioRecord.startRecording();
         while (!mIsCancelled.get()) {
-            //Log.d("Task", "new call");
-            //startTime = System.nanoTime();
             int bytesRead = mAudioRecord.read(audioBuffer,
                     mBufferSize);
-           // endTime = System.nanoTime();
-            //Log.d("Timing AudioRecord","reading buffer took "
-            //        +getMillis(startTime,endTime));
-            //int bytesRead = mAudioRecord.read(test,0,test.length );
-            //Log.d("BytesRead", String.valueOf(bytesRead));
 
             //bytesRead indicates number of bytes OR error status;
             if (bytesRead == AudioRecord.ERROR_INVALID_OPERATION ||
@@ -105,12 +94,8 @@ public class RecorderTask implements Runnable {
 
         mAudioRecord.stop();
 
-        //startTime = System.nanoTime();
         mADTSStream.stop();
-        /*endTime = System.nanoTime();
-        Log.d("Timing ADTSStream","stop took"
-                +getMillis(startTime,endTime));
 
-        Log.d("RECORD TASK","END");*/
+        //Log.d("RECORD TASK","END");
     }
 }

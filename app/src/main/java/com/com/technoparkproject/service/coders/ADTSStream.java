@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 //todo move encoder from this class possibly
-
 public class ADTSStream implements PacketStream<ByteBuffer>{
     public final Encoder<ByteBuffer> mAACEncoder;
 

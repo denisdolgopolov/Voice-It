@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.com.technoparkproject.repository.Record;
-import com.com.technoparkproject.repository.RecordRepo;
+import com.com.technoparkproject.repository.RecordRepoImpl;
 import com.com.technoparkproject.service.storage.RecordingProfile;
 import com.com.technoparkproject.service.storage.RecordingProfileStorage;
 import com.com.technoparkproject.service.coders.ADTSStream;
@@ -56,15 +56,12 @@ public class RecordingService extends Service {
     private File mRecordFile;
 
 
-    private static final String CHANNEL_AUDIO_APP = "Voice-it channel";
     private static final int FOREGROUND_ID = 1111;
-    //public static int SAMPLING_RATE = 44100;
     public static int AUDIO_SOURCE = MediaRecorder.AudioSource.MIC;
 
     private ExecutorService mRecordingExecutor;
     private ExecutorService mWriterExecutor;
     private ScheduledExecutorService mScheduledExecutor;
-    //private ScheduledFuture<?> mRecordFuture;
     private Future<?> mRecordResult;
     private AudioRecord mAudioRecord;
     private FileOutputStream mRecordBOS;
@@ -72,14 +69,6 @@ public class RecordingService extends Service {
     private final AtomicInteger mRecRawSize = new AtomicInteger();
 
     private int mRecordTimeInMills; //record time in seconds
-
-
-    private volatile int mRecordStatus; //current status of the service, one of the constants
-
-    public static final int RECORD_STATUS_READY = 100;
-    public static final int RECORD_STATUS_RECORDING = 200;
-    public static final int RECORD_STATUS_PAUSED = 300;
-    public static final int RECORD_STATUS_STOPPED = 400;
 
     public enum RecordState{
         READY,
@@ -98,34 +87,12 @@ public class RecordingService extends Service {
     private final IBinder mBinder = new RecordBinder();
     private int mBufferSizeInBytes;
 
-    public int getStatus() {
-        return mRecordStatus;
-    }
-
-
 
     public class RecordBinder extends Binder {
         public RecordingService getService() {
             return RecordingService.this;
         }
     }
-
-    public boolean isReady(){
-        return mRecordStatus == RECORD_STATUS_READY;
-    }
-
-    public boolean isRecording(){
-        return mRecordStatus == RECORD_STATUS_RECORDING;
-    }
-
-    public boolean isPaused(){
-        return mRecordStatus == RECORD_STATUS_PAUSED;
-    }
-    public boolean isStopped(){
-        return mRecordStatus == RECORD_STATUS_STOPPED;
-    }
-
-
 
     @Nullable
     @Override
@@ -140,9 +107,7 @@ public class RecordingService extends Service {
         mScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         mRecordingExecutor = Executors.newSingleThreadExecutor();
         mWriterExecutor = Executors.newSingleThreadExecutor();
-        //getBufferSize();
-        mRecordStatus = RECORD_STATUS_READY;
-        //TODO test max queue capacity
+
         mBuffersQ = new LinkedBlockingDeque<>(QUEUE_CAPACITY);
 
         mRecProfile = RecordingProfileStorage.getRecordingProfile(AudioQuality.STANDARD);
@@ -186,10 +151,8 @@ public class RecordingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent == null)
-            return START_NOT_STICKY;
-
-
+        /*if (intent == null)
+            return START_NOT_STICKY;*/
         return START_NOT_STICKY;
     }
 
@@ -201,17 +164,7 @@ public class RecordingService extends Service {
                 configure();
             }
         };
-        /*Runnable configureCallback = new Runnable() {
-            @Override
-            public void run() {
-                //resumeRecording();
-                if (mRecordCallbacks!=null)
-                    mRecordCallbacks.OnConfigure();
-            }
-        };*/
-        /*CompletionRunner completionRunner = new CompletionRunner(configureRunner,
-                configureCallback,null);
-        mRecordingExecutor.execute(completionRunner);*/
+
         mRecordingExecutor.execute(configureRunner);
     }
 
@@ -232,54 +185,12 @@ public class RecordingService extends Service {
                 mRecProfile.getSamplingRate(), mRecProfile.getConfigChannels(),
                 mRecProfile.getAudioFormat(), mBufferSizeInBytes);
 
-        /*
-        //notification period is 100 msec
-        //so clients may use it as a timer callback
-        mAudioRecord.setPositionNotificationPeriod(SAMPLING_RATE/10);
-
-        mAudioRecord.setRecordPositionUpdateListener(new AudioRecord.OnRecordPositionUpdateListener() {
-            @Override
-            public void onMarkerReached(AudioRecord recorder) {
-                //not using marker callback for now
-            }
-
-            @Override
-            public void onPeriodicNotification(AudioRecord recorder) {
-                if (mRecordCallbacks == null){
-                    Log.e("RecordCallbacks","RecordCallbacks is not set on RecordingService");
-                    return;
-                }
-                mRecordTimeInMills+=100; //callback is called 10 times a second
-                if (mRecordTimeInMills % 1000 == 0) {
-                    String notifyText = "Имя записи..." + DateUtils.formatElapsedTime(mRecordTimeInMills/1000);
-                    RecorderNotification.updateNotification(notifyText,RecordingService.this,FOREGROUND_ID);
-                    mRecordCallbacks.OnRecordTick(mRecordTimeInMills/1000);
-                }
-            }
-        });*/
-
-        /*if (mAudioRecord.getState() ==
-                AudioRecord.STATE_UNINITIALIZED)
-            Log.e("AudioRecord init error", "AudioRecord state is uninitialized after constructor called");
-
-
-        File recordFile = RecordRepo.getInstance(this)
-                .createTempFile(mRecProfile.getFileFormat(),this);
-
-        mRecordBOS = null;
-        try {
-            mRecordBOS = new FileOutputStream(recordFile);
-            //mRecordBOS = new BufferedOutputStream(recordFOS);
-        } catch (FileNotFoundException e) {
-            Log.e("FileOutputStream", "File not found for recording ", e);
-        }*/
-
         mRecordState.postValue(RecordState.READY);
     }
 
     public void startRecording() {
 
-        mRecordFile = RecordRepo.getInstance(this)
+        mRecordFile = RecordRepoImpl.getInstance(this)
                 .createTempFile(mRecProfile.getFileFormat(),this);
 
         mRecordBOS = null;
@@ -306,7 +217,6 @@ public class RecordingService extends Service {
     public void resumeRecording(){
         final Intent serviceIntent = new Intent(getApplicationContext(), RecordingService.class);
         startService(serviceIntent);
-        mRecordStatus = RECORD_STATUS_RECORDING;
         mRecordState.setValue(RecordState.RECORDING);
         runForeground(true);
 
@@ -324,23 +234,7 @@ public class RecordingService extends Service {
         StreamWriterTask writeTask = new StreamWriterTask(recordFileChannel, mBuffersQ,mIsTaskCancel);
         mWriteFuture = mWriterExecutor.submit(writeTask);
 
-        /*Runnable timeRunner = new Runnable() {
-            @Override
-            public void run() {
-                mRecordTimeInMills+=100; //callback is called 10 times a second
-            }
-        };
-        Runnable timeCallback = new Runnable() {
-            @Override
-            public void run() {
-                if (mRecordTimeInMills % 1000 == 0) {
-                    String notifyText = "Имя записи..." + DateUtils.formatElapsedTime(mRecordTimeInMills/1000);
-                    RecorderNotification.updateNotification(notifyText,RecordingService.this,FOREGROUND_ID);
-                    //mRecordCallbacks.OnRecordTick(mRecordTimeInMills/1000);
-                }
-            }
-        };*/
-        //CompletionRunner completionRunner = new CompletionRunner(timeRunner,timeCallback,null);
+
         Runnable timer = new Runnable() {
             @Override
             public void run() {
@@ -359,7 +253,6 @@ public class RecordingService extends Service {
     }
 
     public void pauseRecording(){
-        mRecordStatus = RECORD_STATUS_PAUSED;
 
         runForeground(false);
         if (mAudioRecord == null) {
@@ -369,7 +262,6 @@ public class RecordingService extends Service {
 
         mIsTaskCancel.set(true);
         mTimeFuture.cancel(false);
-
 
         mRecordState.setValue(RecordState.PAUSE);
     }
@@ -403,7 +295,7 @@ public class RecordingService extends Service {
 
 
     private void onWriteComplete(){
-        Log.d("ONWRITECOMPLETE","called");
+        //Log.d("ONWRITECOMPLETE","called");
         try {
             mRecordBOS.close();
         } catch (IOException e) {
@@ -419,12 +311,7 @@ public class RecordingService extends Service {
         mAudioRecord = null;
         mADTSStream.release();
         mBuffersQ.clear();
-        Log.e("RECORD RELEASE", "release called");
-        //notify fragment about recording stop
-        //if (mRecordCallbacks !=null)
-        //    mRecordCallbacks.OnRecordStop();
-
-        mRecordStatus = RECORD_STATUS_READY;
+        //Log.e("RECORD RELEASE", "release called");
     }
 
     public void stopRecording(){
@@ -442,8 +329,6 @@ public class RecordingService extends Service {
 
         CompletionRunner completionRunner = new CompletionRunner(writeTask, writeComplete,null);
         mWriteFuture = mRecordingExecutor.submit(completionRunner);
-
-        mRecordStatus = RECORD_STATUS_STOPPED;
 
     }
 
@@ -483,19 +368,4 @@ public class RecordingService extends Service {
     private static long getMillis(long startTime, long endTime){
         return (endTime-startTime)/1000000;
     }
-
-
-
-    /*File createTempFile() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH);
-        String fileName = sdf.format(new Date());
-        try {
-            File tempFileDir = this.getCacheDir();
-            File tempRecordFile = File.createTempFile(fileName, ".aac", tempFileDir);
-            return tempRecordFile;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
 }

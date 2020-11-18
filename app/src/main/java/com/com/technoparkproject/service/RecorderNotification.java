@@ -33,6 +33,7 @@ public class RecorderNotification {
         }
     }
 
+    //todo update notification style
     public static void updateNotification(String text, Context serviceCtx, int foregroundId){
         Notification recordNotification = buildForegroundNotification(text, serviceCtx);
         NotificationManager notificationManager =
