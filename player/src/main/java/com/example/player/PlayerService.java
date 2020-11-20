@@ -334,7 +334,6 @@ final public class PlayerService extends Service {
             Log.d(TAG, "onAudioFocusChange");
             if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                 mediaSessionCallback.onPlay();
-                // TODO WTF DON'T WORKING
                 Log.d(TAG, "onAudioFocusChange: GAIN");
             }
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
