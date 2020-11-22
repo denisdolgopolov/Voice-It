@@ -17,6 +17,7 @@ import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.fragments.HomeFragment;
 import com.com.technoparkproject.view.fragments.MainListOfRecordsFragment;
 import com.com.technoparkproject.view.fragments.PersonalPageFragment;
+import com.com.technoparkproject.view.fragments.PlaylistFragment;
 import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -74,12 +75,12 @@ public class MainActivity extends AppCompatActivity {
 
             switch (item.getItemId()) {
                 case R.id.nav_home:
-                    selectedFragment = new HomeFragment();
+                    selectedFragment = new MainListOfRecordsFragment();
                     nameSelectedFragment = getResources().getString(TOOLBAR_HOME_NAME);
                     toolbarTitleView.setText(TOOLBAR_HOME_TEXT);
                     break;
                 case R.id.nav_playlist:
-                    selectedFragment = new MainListOfRecordsFragment();
+                    selectedFragment = new PlaylistFragment();
                     nameSelectedFragment = getResources().getString(TOOLBAR_PLAYLIST_NAME);
                     toolbarTitleView.setText(TOOLBAR_PLAYLIST_TEXT);
                     break;

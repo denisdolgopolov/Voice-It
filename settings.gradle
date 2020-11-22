@@ -1,3 +1,4 @@
+include ':firebaseloadermodule'
 include ':player'
 rootProject.name='TechnoparkProject'
 include ':app'

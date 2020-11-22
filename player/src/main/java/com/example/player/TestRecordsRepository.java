@@ -1,14 +1,9 @@
-package com.com.technoparkproject.repositories;
+package com.example.player;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
-
-import com.com.technoparkproject.R;
-import com.com.technoparkproject.models.Record;
-import com.com.technoparkproject.models.Topic;
-import com.com.technoparkproject.models.TopicTypes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,7 +62,7 @@ public class TestRecordsRepository {
     static public List<Topic> getListTopics() {
         return Arrays.asList(
                 new Topic(UUID.randomUUID().toString(), "Friends", UUID.randomUUID().toString(),
-                        Arrays.asList(SOURCE1_URL, SOURCE2_URL, SOURCE3_URL, SOURCE4_URL), TopicTypes.TOPIC_FRIEND)/*,
+                        Arrays.asList("1", "2", "3"), TopicTypes.TOPIC_FRIEND),
                 new Topic(UUID.randomUUID().toString(), "Dogs", UUID.randomUUID().toString(),
                         Arrays.asList("1", "2", "3"), TopicTypes.TOPIC_THEMATIC),
                 new Topic(UUID.randomUUID().toString(), "Дача", UUID.randomUUID().toString(),
@@ -75,7 +70,7 @@ public class TestRecordsRepository {
                 new Topic(UUID.randomUUID().toString(), "Дом", UUID.randomUUID().toString(),
                         Arrays.asList("1", "2"), TopicTypes.TOPIC_THEMATIC),
                 new Topic(UUID.randomUUID().toString(), "Кухня", UUID.randomUUID().toString(),
-                        Arrays.asList("1", "2", "3"), TopicTypes.TOPIC_THEMATIC)*/
+                        Arrays.asList("1", "2", "3"), TopicTypes.TOPIC_THEMATIC)
         );
     }
 }

@@ -32,6 +32,7 @@ import java.util.List;
 public class MainListOfRecordsFragment extends Fragment implements MainListRecordsInterface {
     private RecyclerTopicsWithRecordsAdapter adapter;
     private AutoCompleteTextView searchingField;
+    MainListOfRecordsViewModel viewModel;
 
     @Nullable
     @Override
@@ -56,10 +57,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        MainListOfRecordsViewModel viewModel = new ViewModelProvider(this,
-                new ViewModelProvider.NewInstanceFactory())
-                .get(MainListOfRecordsViewModel.class);
+        viewModel = new ViewModelProvider(
+                this,
+                new MainListOfRecordsViewModel.Factory(getActivity())
+        ).get(MainListOfRecordsViewModel.class);
         observeToData(viewModel);
     }
 
@@ -110,7 +111,8 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TestErrorShower.showErrorDevelopment(getContext());
+                        viewModel.addToPlaylistClicked(record);
+                        dialog.dismiss();
                     }
                 });
         bottomSheetView.findViewById(R.id.mlr_download)

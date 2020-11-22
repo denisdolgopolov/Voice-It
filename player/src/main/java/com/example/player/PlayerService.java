@@ -14,19 +14,26 @@ import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
+import android.media.MediaMetadata;
 import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -42,9 +49,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.google.android.exoplayer2.ExoPlayerLibraryInfo.TAG;
-
 final public class PlayerService extends Service {
+    private static MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
     private final int NOTIFICATION_ID = 404;
     private final String NOTIFICATION_DEFAULT_CHANNEL_ID = "default_channel";
     private final PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder().setActions(
@@ -61,16 +67,18 @@ final public class PlayerService extends Service {
     private AudioFocusRequest audioFocusRequest;
     private boolean audioFocusRequested = false;
     private SimpleExoPlayer exoPlayer;
+    private static final String TAG = "PLAYER_SERVICE";
 
-    public void setPlaylistAndCurrentItemNumber(List<MediaMetadataCompat> playlist, int number) {
+    /*public void setPlaylistAndCurrentItemNumber(List<String> playlist, int number) {
         this.playlist = playlist;
         this.maxIndex = playlist.size() - 1;
         this.currentItemIndex = number;
-    }
+    }*/
 
-    public List<MediaMetadataCompat> playlist = new ArrayList<>();
+
     public int currentItemIndex = 0;
     public int maxIndex;
+    public List<String> playlist;
 
     public MediaMetadataCompat getNext() {
         if (currentItemIndex == maxIndex)
@@ -89,11 +97,12 @@ final public class PlayerService extends Service {
     }
 
     public MediaMetadataCompat getCurrent() {
-        return playlist.get(currentItemIndex);
+        return getMediaMetadataFromUUID(playlist.get(currentItemIndex));
     }
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "onCreate: ");
         super.onCreate();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             @SuppressLint("WrongConstant")
@@ -145,6 +154,7 @@ final public class PlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand: ");
         MediaButtonReceiver.handleIntent(mediaSession, intent);
         return super.onStartCommand(intent, flags, startId);
     }
@@ -376,6 +386,21 @@ final public class PlayerService extends Service {
                 break;
             }
         }
+    }
+
+    MediaMetadataCompat getMediaMetadataFromUUID(String UUID){
+        Record record = TestRecordsRepository.getRecordByUUID(UUID);
+        return recordToMediaMetadataCompat(record);
+    }
+    public MediaMetadataCompat recordToMediaMetadataCompat(Record record){
+     metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, BitmapFactory.decodeResource(getResources(), R.drawable.mlr_test_record_image));
+        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, record.name);
+        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, record.topicUUID);
+        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, record.userUUID);
+        metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, Long.parseLong(record.duration));
+        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, record.uuid);
+        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, TestRecordsRepository.getUriFromRecordUUID(record.uuid));
+        return metadataBuilder.build();
     }
 }
 

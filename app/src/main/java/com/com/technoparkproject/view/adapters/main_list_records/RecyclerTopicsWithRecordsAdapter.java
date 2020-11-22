@@ -19,7 +19,7 @@ import java.util.List;
 public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     private ArrayList<Object> items = new ArrayList<>();
     private ArrayList<Topic> allTopics = new ArrayList<>();
-    private static final int COUNT_RECORDS_SHOW = 3;
+    private static final int COUNT_RECORDS_SHOW = 4;
     private MainListRecordsInterface listener;
 
     public RecyclerTopicsWithRecordsAdapter(MainListRecordsInterface listener) {
