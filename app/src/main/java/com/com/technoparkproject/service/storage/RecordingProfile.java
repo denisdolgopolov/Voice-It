@@ -1,7 +1,6 @@
 package com.com.technoparkproject.service.storage;
 
-import com.com.technoparkproject.service.utils.AudioFormatUtils;
-
+import android.media.AudioFormat;
 
 
 public class RecordingProfile {
@@ -53,5 +52,39 @@ public class RecordingProfile {
 
     public String getFileFormat() {
         return mFileFormat;
+    }
+
+    //Helper methods for conversion of AudioFormat constants
+    //to meaningful numerical values
+    private static final class AudioFormatUtils {
+
+        private AudioFormatUtils(){}
+
+        //convert AudioFormat bit depth
+        public static int getBytesPerSample(int audioFormat)
+        {
+            switch (audioFormat) {
+                case AudioFormat.ENCODING_PCM_8BIT:
+                    return 1;
+                case AudioFormat.ENCODING_PCM_16BIT:
+                    return 2;
+                //non-pcm encoding aren't used in this implementation
+                default:
+                    throw new IllegalArgumentException("Unrecognized audio format " + audioFormat);
+            }
+        }
+
+        //convert AudioFormat channel config
+        public static int getChannelCount(int channelConfig){
+            switch (channelConfig) {
+                case AudioFormat.CHANNEL_IN_MONO:
+                    return 1;
+                case AudioFormat.CHANNEL_IN_STEREO:
+                    return 2;
+                default:
+                    throw new IllegalArgumentException("Unrecognized channel config "+channelConfig);
+            }
+        }
+
     }
 }
