@@ -5,13 +5,14 @@ import android.content.Context;
 
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.com.technoparkproject.repository.RecordRepo;
 import com.com.technoparkproject.repository.RecordRepoImpl;
 import com.com.technoparkproject.service.RecorderConnection;
 import com.example.player.PlayerServiceConnection;
 
 public class VoiceItApplication extends Application {
 
-    private RecordRepoImpl mRecordRepoImpl;
+    private RecordRepo mRecordRepoImpl;
     public PlayerServiceConnection playerServiceConnection;
 
     public PlayerServiceConnection getPlayerServiceConnection() {
@@ -33,7 +34,7 @@ public class VoiceItApplication extends Application {
         return (VoiceItApplication) context.getApplicationContext();
     }
 
-    public RecordRepoImpl getRecordRepo() {
+    public RecordRepo getRecordRepo() {
         return mRecordRepoImpl;
     }
 }

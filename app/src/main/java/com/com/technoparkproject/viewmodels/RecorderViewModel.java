@@ -8,12 +8,15 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
+import com.com.technoparkproject.SingleLiveEvent;
 import com.com.technoparkproject.repository.Record;
 import com.com.technoparkproject.repository.RecordRepoImpl;
 import com.com.technoparkproject.service.RecordState;
 import com.com.technoparkproject.service.Recorder;
 import com.com.technoparkproject.service.RecorderConnection;
 import com.com.technoparkproject.utils.InjectorUtils;
+
+import java.io.File;
 
 public class RecorderViewModel extends AndroidViewModel {
 
@@ -76,6 +79,21 @@ public class RecorderViewModel extends AndroidViewModel {
     private String mRecName = "Новая запись";
     private String mRecTopic = "Топик записи";
 
+
+    public void dismissRecording(){
+        File recFile = mRec.getRecordFile();
+        RecordRepoImpl.getInstance(getApplication()).deleteTempFile(recFile);
+        mRec = null;
+    }
+
+    public void saveRecording(){
+        if (mRec!=null) {
+            RecordRepoImpl.getInstance(getApplication()).addRecord(mRec);
+        }
+    }
+
+    private Record mRec;
+
     private void saveRec(){
         Recorder recorder = InjectorUtils.provideRecorder(getApplication());
 
@@ -86,10 +104,15 @@ public class RecorderViewModel extends AndroidViewModel {
         }
         rec.setName(mRecName);
         rec.setTopic(mRecTopic);
-
-        RecordRepoImpl.getInstance(getApplication()).addRecord(rec);
+        mRec = rec;
+        mSaveEvent.call(); //recording is ready to be saved to repo/other storage
     }
 
+    private final SingleLiveEvent<Void> mSaveEvent = new SingleLiveEvent<>();
+
+    public SingleLiveEvent<Void> getSaveEvent() {
+        return mSaveEvent;
+    }
     public void onSaveClick(String recName, String recTopic) {
         mRecName = recName;
         mRecTopic = recTopic;

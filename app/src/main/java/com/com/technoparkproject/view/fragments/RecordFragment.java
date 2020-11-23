@@ -20,11 +20,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.service.RecordState;
 import com.com.technoparkproject.viewmodels.RecorderViewModel;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -126,6 +129,36 @@ public class RecordFragment extends Fragment {
                     stopProgress.setVisibility(View.GONE);
             }
         });
+
+
+        final Snackbar saveSnack = Snackbar
+                .make(view, "Отменить сохранение аудио", BaseTransientBottomBar.LENGTH_LONG)
+                .setAction("ОТМЕНА", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        recViewModel.dismissRecording();
+                    }
+                });
+        saveSnack.addCallback(new Snackbar.Callback(){
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+                recViewModel.saveRecording();
+            }
+        });
+        /*Decorations
+        snackbar.setActionTextColor(Color.RED);
+        View sbView = snackbar.getView();
+        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.YELLOW);*/
+
+        recViewModel.getSaveEvent().observe(getViewLifecycleOwner(), new Observer<Void>() {
+            @Override
+            public void onChanged(Void aVoid) {
+                saveSnack.show();
+            }
+        });
+
 
     }
 

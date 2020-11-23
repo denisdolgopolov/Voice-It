@@ -1,79 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+<!-- hack to get snackbar bounded to this layout only-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        tools:context=".view.fragments.RecordFragment"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-    <EditText
-            android:id="@+id/record_name_edit_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:hint="@string/default_record_name"
-            android:gravity="top"
-            android:textSize="20sp"
-            android:layout_marginBottom="8dp"
-            />
-    <EditText
-            android:id="@+id/topic_edit_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:hint="@string/default_topic_name"
-            android:gravity="top"
-            tools:text="topic name"
-            android:textSize="20sp"
-            android:layout_marginBottom="8dp"/>
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            tools:context=".view.fragments.RecordFragment">
 
-    <TextView
-            android:id="@+id/record_time_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="top"
-            tools:text="00:00"
-            android:textSize="30sp"
-            android:layout_marginBottom="10dp"/>
-    <TextView
-            android:id="@+id/record_state_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="top"
-            tools:text="state"
-            android:textSize="20sp"
-            android:layout_marginBottom="0dp"
-            android:visibility="gone"/>
-    <ProgressBar
-            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-            android:id="@+id/record_stop_progress"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_marginTop="24dp"
-            android:indeterminate="true"/>
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-        <Button
-                android:id="@+id/stop_button"
+        <EditText
+                android:id="@+id/record_name_edit_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="stop"/>
-        <Button
-                android:id="@+id/record_pause_button"
+                android:layout_marginBottom="8dp"
+                android:gravity="top"
+                android:hint="@string/default_record_name"
+                android:inputType="text"
+                android:textSize="20sp" />
+
+        <EditText
+                android:id="@+id/topic_edit_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="record"/>
-        <Button
-                android:id="@+id/done_button"
+                android:layout_marginBottom="8dp"
+                android:gravity="top"
+                android:hint="@string/default_topic_name"
+                android:inputType="text"
+                android:textSize="20sp"
+                tools:text="topic name" />
+
+        <TextView
+                android:id="@+id/record_time_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="done"/>
+                android:layout_marginBottom="10dp"
+                android:gravity="top"
+                android:textSize="30sp"
+                tools:text="00:00" />
+
+        <TextView
+                android:id="@+id/record_state_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:gravity="top"
+                android:textSize="20sp"
+                android:visibility="gone"
+                tools:text="state" />
+
+        <ProgressBar
+                android:id="@+id/record_stop_progress"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="24dp"
+                android:indeterminate="true" />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+            <Button
+                    android:id="@+id/stop_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="stop" />
+
+            <Button
+                    android:id="@+id/record_pause_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="record" />
+
+            <Button
+                    android:id="@+id/done_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="done" />
+        </LinearLayout>
+
+
     </LinearLayout>
-
-
-
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

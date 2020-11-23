@@ -17,6 +17,7 @@ import com.com.technoparkproject.R;
 import com.com.technoparkproject.repository.Record;
 import com.com.technoparkproject.repository.RecordRepoImpl;
 
+import java.util.Collection;
 import java.util.List;
 
 public class RecordsListFragment extends Fragment {

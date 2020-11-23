@@ -16,7 +16,7 @@ public class RecordRepoImpl implements RecordRepo{
 
     private static final String DEFAULT_RECORD_NAME = "Моя запись";
 
-    public static RecordRepoImpl getInstance(Context context) {
+    public static RecordRepo getInstance(Context context) {
         return VoiceItApplication.from(context).getRecordRepo();
     }
 
@@ -43,5 +43,12 @@ public class RecordRepoImpl implements RecordRepo{
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void deleteTempFile(File recFile){
+        boolean isFileDel =  recFile.delete();
+        if (!isFileDel)
+            Log.e(this.getClass().getSimpleName(),
+                    "can't delete file: "+recFile.toString());
     }
 }
