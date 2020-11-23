@@ -157,6 +157,7 @@ public class AACEncoder implements Encoder<ByteBuffer> {
 
     //retrieve encoded ByteBuffer from Encoder
     private ByteBuffer dequeueEncodedData(MediaCodec.BufferInfo bufferInfo) {
+        ByteBuffer emptyBuf = ByteBuffer.allocateDirect(0);
         try {
             MediaCodec.BufferInfo localBufferInfo = bufferInfo;
             if (localBufferInfo == null) {
@@ -166,7 +167,7 @@ public class AACEncoder implements Encoder<ByteBuffer> {
             if (outputBufferId == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 Log.e(this.getClass().getSimpleName(),
                         "No available Encoder output buffers after " + TIMEOUT_US + "Us");
-                return null;
+                return emptyBuf;
             } else if (outputBufferId >= 0) {
                 //Log.d("Receiving", "Output data in buffer #" + outputBufferId);
                 ByteBuffer outputBuffer = mEncoder.getOutputBuffer(outputBufferId);
@@ -180,7 +181,7 @@ public class AACEncoder implements Encoder<ByteBuffer> {
             Log.e(this.getClass().getSimpleName(),
                     "Encoder is not in running state, can't work with output buffers", e);
         }
-        return null;
+        return emptyBuf;
     }
 
     private void handleCodecEx(MediaCodec.CodecException e){
@@ -209,7 +210,6 @@ public class AACEncoder implements Encoder<ByteBuffer> {
     //AAC encoding for one pcmFrame
     //bufferInfo will store flags and other data describing output buffer
     //NOTE: pcmFrame should have valid position and limit before invoking this method
-    //      may return null buffer
     public ByteBuffer encode(final ByteBuffer pcmFrame) {
         if (pcmFrame.remaining() > getMaxFrameLength() * mRecProfile.getFrameSize())
             Log.e(this.getClass().getSimpleName(), "Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
@@ -217,16 +217,15 @@ public class AACEncoder implements Encoder<ByteBuffer> {
              //       ("Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
         enqueueEncodeData(pcmFrame);
         final ByteBuffer outFrame = dequeueEncodedData();
-        /*if (outFrame != null)
-            Log.d(this.getClass().getSimpleName(), "encoded buffer length" + outFrame.capacity());*/
         return outFrame;
     }
 
     public List<ByteBuffer> drainEncoder(){
         List<ByteBuffer> residualBuffers = new ArrayList<>();
-        ByteBuffer residual;
-        while ((residual = dequeueEncodedData()) != null ){
+        ByteBuffer residual = dequeueEncodedData();
+        while (residual.capacity() != 0){
             residualBuffers.add(residual);
+            residual = dequeueEncodedData();
         }
         return residualBuffers;
     }

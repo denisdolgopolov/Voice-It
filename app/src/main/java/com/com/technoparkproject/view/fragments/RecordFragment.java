@@ -1,10 +1,6 @@
 package com.com.technoparkproject.view.fragments;
 
 import android.Manifest;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,13 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.os.IBinder;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +23,7 @@ import android.widget.TextView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
-import com.com.technoparkproject.service.RecordingService;
+import com.com.technoparkproject.service.RecordState;
 import com.com.technoparkproject.viewmodels.RecorderViewModel;
 
 import org.jetbrains.annotations.NotNull;
@@ -144,9 +137,9 @@ public class RecordFragment extends Fragment {
     }
 
 
-    private class MyObserver implements Observer<RecordingService.RecordState> {
+    private class MyObserver implements Observer<RecordState> {
         @Override
-        public void onChanged(RecordingService.RecordState recordState) {
+        public void onChanged(RecordState recordState) {
             switch (recordState){
                 case READY:{
                     mStopButton.setEnabled(false);

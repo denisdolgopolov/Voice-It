@@ -82,7 +82,7 @@ public class ADTSStream implements PacketStream<ByteBuffer>{
             pcmFrame.position(i);
             pcmFrame.limit(Math.min(i + bytesPerFrame, pcmLength));
             ByteBuffer packet = getPacket(pcmFrame);
-            if (packet != null)
+            if (packet.capacity() != 0)
                 packets.add(packet);
         }
         return packets;
@@ -107,8 +107,8 @@ public class ADTSStream implements PacketStream<ByteBuffer>{
 
     public ByteBuffer getPacket(ByteBuffer pcmFrame){
             ByteBuffer aacLoad =  mAACEncoder.encode(pcmFrame);
-            if (aacLoad == null)
-                return null;
+            if (aacLoad.capacity() == 0)
+                return aacLoad;
             else{
                 //buffer contains aac info
                 ByteBuffer header = writeADTSFrameHeader(aacLoad);

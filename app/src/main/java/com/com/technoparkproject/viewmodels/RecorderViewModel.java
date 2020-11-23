@@ -1,52 +1,48 @@
 package com.com.technoparkproject.viewmodels;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.repository.Record;
 import com.com.technoparkproject.repository.RecordRepoImpl;
-import com.com.technoparkproject.service.RecordingService;
-import com.com.technoparkproject.service.RecordingServiceConnection;
+import com.com.technoparkproject.service.RecordState;
+import com.com.technoparkproject.service.Recorder;
+import com.com.technoparkproject.service.RecorderConnection;
 import com.com.technoparkproject.utils.InjectorUtils;
 
 public class RecorderViewModel extends AndroidViewModel {
 
-    private final MediatorLiveData<RecordingService.RecordState> mRecState;
-
-    public MediatorLiveData<RecordingService.RecordState> getRecState(){
-        return mRecState;
+    public MediatorLiveData<RecordState> getRecState(){
+        return mRecLiveData.getRecState();
     }
 
-    private final MediatorLiveData<Integer> mRecTime;
+    private final RecorderConnection.RecordingLiveData mRecLiveData;
 
-    //todo remove variables and return service livedata straight from injector
+
     public MediatorLiveData<Integer> getRecTime() {
-
-        return mRecTime;
+       return mRecLiveData.getTimeData();
     }
 
     public RecorderViewModel(@NonNull Application application) {
         super(application);
-        RecordingServiceConnection recServiceConn = InjectorUtils.provideRecordingServiceConn(getApplication());
-        mRecTime = recServiceConn.getTimeData();
-        mRecState = recServiceConn.getRecState();
+        mRecLiveData = InjectorUtils.provideRecordingLiveData(getApplication());
     }
 
 
     public void OnRecPauseClick(){
-        RecordingService recService = InjectorUtils.provideRecordingService(getApplication());
+        Recorder recorder = InjectorUtils.provideRecorder(getApplication());
 
-        if (mRecState.getValue() == RecordingService.RecordState.READY)
-            recService.startRecording();
-        else if (mRecState.getValue() == RecordingService.RecordState.PAUSE)
-            recService.resumeRecording();
-        else if (mRecState.getValue() == RecordingService.RecordState.RECORDING)
-            recService.pauseRecording();
+        if (getRecState().getValue() == RecordState.READY)
+            recorder.startRecording();
+        else if (getRecState().getValue() == RecordState.PAUSE)
+            recorder.resumeRecording();
+        else if (getRecState().getValue() == RecordState.RECORDING)
+            recorder.pauseRecording();
 
     }
 
@@ -58,17 +54,17 @@ public class RecorderViewModel extends AndroidViewModel {
     }
 
     private void onStopClick(final boolean isOnSave){
-        RecordingService recService = InjectorUtils.provideRecordingService(getApplication());
+        Recorder recorder = InjectorUtils.provideRecorder(getApplication());
 
         //handle async recording stop
         mRecStopState.setValue(RecStopState.STOP_IN_PROGRESS);
-        recService.stopRecording();
-        mRecStopState.addSource(mRecState, new Observer<RecordingService.RecordState>() {
+        recorder.stopRecording();
+        mRecStopState.addSource(getRecState(), new Observer<RecordState>() {
             @Override
-            public void onChanged(RecordingService.RecordState recordState) {
-                if (recordState == RecordingService.RecordState.STOP){
+            public void onChanged(RecordState recordState) {
+                if (recordState == RecordState.STOP){
                     mRecStopState.setValue(RecStopState.STOP_COMPLETED);
-                    mRecStopState.removeSource(mRecState);
+                    mRecStopState.removeSource(getRecState());
                     if (isOnSave)
                         saveRec();
                 }
@@ -81,8 +77,9 @@ public class RecorderViewModel extends AndroidViewModel {
     private String mRecTopic = "Топик записи";
 
     private void saveRec(){
-        RecordingService recService = InjectorUtils.provideRecordingService(getApplication());
-        Record rec = recService.saveRecording();
+        Recorder recorder = InjectorUtils.provideRecorder(getApplication());
+
+        Record rec = recorder.saveRecording();
         if (rec == null) {
             onStopClick(true);
             return;

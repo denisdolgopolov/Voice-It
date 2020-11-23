@@ -75,7 +75,7 @@ public class RecorderTask implements Runnable {
 
             ByteBuffer packet = mADTSStream.getPacket(audioBuffer);
 
-            if (packet != null) {
+            if (packet.capacity() != 0) {
                 enqueuePacket(packet);
             }
 

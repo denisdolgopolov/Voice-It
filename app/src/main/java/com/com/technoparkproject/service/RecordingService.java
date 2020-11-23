@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.com.technoparkproject.service.storage.RecordingProfileStorage.AudioQuality;
 
-public class RecordingService extends Service {
+public class RecordingService extends Service implements Recorder{
 
     private static final int QUEUE_CAPACITY = 20;
     private PacketStream<ByteBuffer> mADTSStream;
@@ -70,13 +70,6 @@ public class RecordingService extends Service {
 
     private int mRecordTimeInMills; //record time in seconds
 
-    public enum RecordState{
-        READY,
-        RECORDING,
-        PAUSE,
-        STOP
-    }
-
     public MutableLiveData<RecordState> getRecordState(){
         return mRecordState;
     }
@@ -89,7 +82,7 @@ public class RecordingService extends Service {
 
 
     public class RecordBinder extends Binder {
-        public RecordingService getService() {
+        public Recorder getRecorder() {
             return RecordingService.this;
         }
     }
@@ -138,7 +131,7 @@ public class RecordingService extends Service {
 
 
     //start/stops the service in foreground mode
-    public void runForeground(boolean isForeground){
+    private void runForeground(boolean isForeground){
         if (isForeground){
             RecorderNotification.createNotificationChannel(this);
             startForeground(FOREGROUND_ID,
