@@ -45,7 +45,7 @@ import com.com.technoparkproject.service.storage.RecordingProfileStorage.AudioQu
 
 public class RecordingService extends Service implements Recorder{
 
-    private static final int QUEUE_CAPACITY = 20;
+    private static final int QUEUE_CAPACITY = 100;
     private PacketStream<ByteBuffer> mADTSStream;
     private BlockingDeque<ByteBuffer> mBuffersQ;
     private Future<?> mWriteFuture;
