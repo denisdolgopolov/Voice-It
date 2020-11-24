@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
@@ -54,7 +55,8 @@ public class RecorderNotification {
         builder.setOngoing(true)
                 .setContentTitle(serviceCtx.getString(R.string.audio_record))
                 .setContentText(text)
-                .setSmallIcon(android.R.drawable.presence_audio_busy);
+                .setSmallIcon(R.drawable.ic_round_fiber_manual_record_24)
+                .setColor(serviceCtx.getResources().getColor(R.color.red_default));
 
         Intent intent = new Intent(serviceCtx, MainActivity.class);
         intent.putExtra("showFragment", "RecordFragment");

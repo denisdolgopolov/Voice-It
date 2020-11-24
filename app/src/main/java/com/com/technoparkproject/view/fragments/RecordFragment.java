@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,6 +27,7 @@ import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.service.RecordState;
 import com.com.technoparkproject.viewmodels.RecorderViewModel;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -34,10 +36,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class RecordFragment extends Fragment {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1000;
-    private Button mRecPauseButton;
-    private Button mStopButton;
+    private MaterialButton mRecPauseButton;
+    private MaterialButton mStopButton;
     private TextView mTimeTextView;
-    private Button mDoneButton;
+    private MaterialButton mDoneButton;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -72,11 +74,11 @@ public class RecordFragment extends Fragment {
         }
 
         mRecPauseButton = view.findViewById(R.id.record_pause_button);
-        mRecPauseButton.setText("Запись");
+        mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_fiber_manual_record_24));
         mStopButton = view.findViewById(R.id.stop_button);
-        mStopButton.setText("Стоп");
+        //mStopButton.setText("Стоп");
         mDoneButton = view.findViewById(R.id.done_button);
-        mDoneButton.setText("Готово");
+        //mDoneButton.setText("Готово");
         mTimeTextView = view.findViewById(R.id.record_time_text);
 
         final RecorderViewModel recViewModel = new ViewModelProvider(requireActivity()).get(RecorderViewModel.class);
@@ -146,11 +148,6 @@ public class RecordFragment extends Fragment {
                 recViewModel.saveRecording();
             }
         });
-        /*Decorations
-        snackbar.setActionTextColor(Color.RED);
-        View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.YELLOW);*/
 
         recViewModel.getSaveEvent().observe(getViewLifecycleOwner(), new Observer<Void>() {
             @Override
@@ -181,16 +178,19 @@ public class RecordFragment extends Fragment {
                     break;
                 }
                 case RECORDING:{
-                    mRecPauseButton.setText("Пауза");
+                    //mRecPauseButton.setText("Пауза");
+                    mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_pause_24));
                     mStopButton.setEnabled(true);
                     mDoneButton.setEnabled(true);
                     break;
                 }
                 case PAUSE:
-                    mRecPauseButton.setText("Запись");
+                    mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_fiber_manual_record_24));
+                    //mRecPauseButton.setText("Запись");
                     break;
                 case STOP:{
-                    mRecPauseButton.setText("Запись");
+                    mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_fiber_manual_record_24));
+                    //mRecPauseButton.setText("Запись");
                     mStopButton.setEnabled(false);
                     mRecPauseButton.setEnabled(false);
                     break;

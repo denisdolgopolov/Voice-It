@@ -43,5 +43,7 @@
     <string name="channel_description">Notifications of Voice-it</string>
     <string name="audio_record">Идет запись</string>
     <string name="default_record_name">Моя запись</string>
-    <string name="default_topic_name">Топик</string>
+    <string name="default_topic_name">Мой Топик</string>
+    <string name="record_hint_text">Запись</string>
+    <string name="topic_hint_text">Топик</string>
 </resources>

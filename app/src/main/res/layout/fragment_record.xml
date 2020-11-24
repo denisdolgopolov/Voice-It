@@ -1,45 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- hack to get snackbar bounded to this layout only-->
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+    <ProgressBar
+            android:id="@+id/record_stop_progress"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
+            android:layout_height="8dp"
+            android:indeterminate="true" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
+            android:paddingTop="16dp"
             tools:context=".view.fragments.RecordFragment">
 
-        <EditText
-                android:id="@+id/record_name_edit_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:gravity="top"
-                android:hint="@string/default_record_name"
-                android:inputType="text"
-                android:textSize="20sp" />
+        <com.google.android.material.textfield.TextInputLayout
+                android:hint="@string/record_hint_text"
+                app:boxBackgroundColor="@android:color/white"
+                app:endIconDrawable="@drawable/ic_round_create_24"
+                app:endIconMode="custom"
+                app:placeholderText="@string/default_record_name"
+                style="@style/RecordTextInput">
 
-        <EditText
-                android:id="@+id/topic_edit_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:gravity="top"
-                android:hint="@string/default_topic_name"
-                android:inputType="text"
-                android:textSize="20sp"
-                tools:text="topic name" />
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/record_name_edit_text"
+                    style="@style/RecordEditText" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-                android:id="@+id/record_time_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="top"
-                android:textSize="30sp"
-                tools:text="00:00" />
+        <com.google.android.material.textfield.TextInputLayout
+                app:endIconMode="custom"
+                android:hint="@string/topic_hint_text"
+                app:boxBackgroundColor="@android:color/white"
+                app:endIconDrawable="@drawable/ic_round_create_24"
+                app:placeholderText="@string/default_topic_name"
+                style="@style/RecordTextInput">
+
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/topic_edit_text"
+                    style="@style/RecordEditText" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <FrameLayout
+                android:id="@+id/record_time_layout"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="24dp">
+
+
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/record_timer_background" />
+
+
+            <TextView
+                    android:id="@+id/record_time_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@android:color/black"
+                    android:textSize="30sp"
+                    tools:text="00:00" />
+        </FrameLayout>
 
         <TextView
                 android:id="@+id/record_state_text"
@@ -51,39 +86,37 @@
                 android:visibility="gone"
                 tools:text="state" />
 
-        <ProgressBar
-                android:id="@+id/record_stop_progress"
-                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="8dp"
-                android:layout_marginTop="24dp"
-                android:indeterminate="true" />
+    </LinearLayout>
 
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
 
-            <Button
-                    android:id="@+id/stop_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="stop" />
+    <LinearLayout
+            android:id="@+id/buttons_layout"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="24dp">
 
-            <Button
-                    android:id="@+id/record_pause_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="record" />
+        <Button
+                android:id="@+id/stop_button"
+                style="@style/RecordButton.NoElevation"
+                android:theme="@style/Theme.BlackButtons"
+                app:icon="@drawable/ic_round_stop_24" />
 
-            <Button
-                    android:id="@+id/done_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="done" />
-        </LinearLayout>
+        <Button
+                android:id="@+id/record_pause_button"
+                style="@style/RecordButton.Elevation"
+                android:layout_marginHorizontal="32dp"
+                android:theme="@style/Theme.RedButtons"
+                app:icon="@drawable/ic_round_fiber_manual_record_24" />
+
+
+        <Button
+                android:id="@+id/done_button"
+                style="@style/RecordButton.NoElevation"
+                android:theme="@style/Theme.BlackButtons"
+                app:icon="@drawable/ic_round_done_24" />
 
 
     </LinearLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

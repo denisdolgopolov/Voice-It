@@ -135,7 +135,7 @@ public class RecordingService extends Service implements Recorder{
         if (isForeground){
             RecorderNotification.createNotificationChannel(this);
             startForeground(FOREGROUND_ID,
-                    RecorderNotification.buildForegroundNotification("Имя записи...",this));
+                    RecorderNotification.buildForegroundNotification("",this));
         }
         else{
             stopForeground(true);
@@ -235,7 +235,7 @@ public class RecordingService extends Service implements Recorder{
                 //callback to ui elements every second
                 if (mRecordTimeInMills % 1000 == 0) {
                     int seconds = mRecordTimeInMills/1000;
-                    String notifyText = "Имя записи..." + DateUtils.formatElapsedTime(seconds);
+                    String notifyText = DateUtils.formatElapsedTime(seconds);
                     RecorderNotification.updateNotification(notifyText,RecordingService.this,FOREGROUND_ID);
                     mRecTime.postValue(seconds);
                 }
