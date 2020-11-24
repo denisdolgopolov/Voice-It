@@ -13,6 +13,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
+import voice.it.firebaseloadermodule.cnst.FirebaseCollections;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetListListener;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetListener;
 import voice.it.firebaseloadermodule.listeners.FirebaseListener;
@@ -22,7 +23,7 @@ import voice.it.firebaseloadermodule.model.FirebaseTopic;
 import voice.it.firebaseloadermodule.model.FirebaseUser;
 
 public class FirebaseLoader {
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public void add(FirebaseModel item, final FirebaseListener listener) {
         String collectionName = getCollectionNameByModel(item);
@@ -86,11 +87,7 @@ public class FirebaseLoader {
     public <T extends FirebaseModel> void getAll(final FirebaseCollections parentType,
                                                  final String parentUUID,
                                                  final FirebaseGetListListener<T> listener) {
-        String key;
-        if (parentType == FirebaseCollections.Topics)
-            key = "topicUUID";
-        else
-            key = "userUUID";
+        String key = getKeyByParentType(parentType);
 
         db.collection(FirebaseCollections.Records.toString())
                 .whereEqualTo(key, parentUUID)
@@ -148,6 +145,13 @@ public class FirebaseLoader {
         if (item instanceof FirebaseRecord) return FirebaseCollections.Records.toString();
         if (item instanceof FirebaseUser) return FirebaseCollections.Users.toString();
         throw new IllegalArgumentException();
+    }
+
+    private String getKeyByParentType(FirebaseCollections parentType) {
+        if (parentType == FirebaseCollections.Topics)
+            return "topicUUID";
+        else
+            return "userUUID";
     }
 
 }

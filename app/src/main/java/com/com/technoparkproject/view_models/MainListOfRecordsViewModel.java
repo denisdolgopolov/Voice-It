@@ -15,8 +15,8 @@ import com.com.technoparkproject.models.Topic;
 
 import java.util.List;
 
-import voice.it.firebaseloadermodule.FirebaseCollections;
 import voice.it.firebaseloadermodule.FirebaseLoader;
+import voice.it.firebaseloadermodule.cnst.FirebaseCollections;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetListListener;
 import voice.it.firebaseloadermodule.model.FirebaseRecord;
 import voice.it.firebaseloadermodule.model.FirebaseTopic;

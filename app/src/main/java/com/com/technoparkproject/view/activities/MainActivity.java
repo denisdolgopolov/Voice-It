@@ -2,7 +2,6 @@ package com.com.technoparkproject.view.activities;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -22,9 +21,7 @@ import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import voice.it.firebaseloadermodule.FirebaseLoader;
-import voice.it.firebaseloadermodule.listeners.FirebaseListener;
-import voice.it.firebaseloadermodule.model.FirebaseRecord;
+import voice.it.firebaseloadermodule.FirebaseFileLoader;
 
 public class MainActivity extends AppCompatActivity {
     private String currentFragment;
@@ -56,18 +53,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        new FirebaseLoader().add(new FirebaseRecord("sad1", "sad so", "sad",
-                "20.20.20", "212", 100L), new FirebaseListener() {
-            @Override
-            public void onSuccess() {
-                Log.d("firebase", "success");
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Log.d("firebase", "error");
-            }
-        });
+        new FirebaseFileLoader(this);
     }
 
 
