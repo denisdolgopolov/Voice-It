@@ -13,7 +13,7 @@ import androidx.core.app.NotificationCompat;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
 
-public class RecorderNotification {
+public final class RecorderNotification {
 
     private RecorderNotification(){}
 

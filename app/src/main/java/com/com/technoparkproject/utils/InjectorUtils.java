@@ -5,7 +5,7 @@ import android.content.Context;
 import com.com.technoparkproject.service.Recorder;
 import com.com.technoparkproject.service.RecorderConnection;
 
-public class InjectorUtils {
+public final class InjectorUtils {
 
     private InjectorUtils(){}
 
