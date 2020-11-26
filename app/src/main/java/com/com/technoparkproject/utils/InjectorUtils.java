@@ -6,6 +6,9 @@ import com.com.technoparkproject.service.Recorder;
 import com.com.technoparkproject.service.RecorderConnection;
 
 public class InjectorUtils {
+
+    private InjectorUtils(){}
+
     public static Recorder provideRecorder(Context context) {
         RecorderConnection recServiceConnection = provideRecordingServiceConn(context);
         return recServiceConnection.getRecorder();

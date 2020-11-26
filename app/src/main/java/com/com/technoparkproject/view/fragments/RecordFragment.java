@@ -17,12 +17,10 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
@@ -59,8 +57,8 @@ public class RecordFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions,
                                            @NotNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_RECORD_AUDIO) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
                 LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
                 recLayout.setVisibility(View.VISIBLE);
@@ -188,19 +186,17 @@ public class RecordFragment extends Fragment {
                     break;
                 }
                 case RECORDING:{
-                    //mRecPauseButton.setText("Пауза");
                     mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_pause_24));
                     mStopButton.setEnabled(true);
                     mDoneButton.setEnabled(true);
                     break;
                 }
-                case PAUSE:
-                    mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_fiber_manual_record_24));
-                    //mRecPauseButton.setText("Запись");
+                case PAUSE: {
+                    mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_round_fiber_manual_record_24));
                     break;
+                }
                 case STOP:{
                     mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_fiber_manual_record_24));
-                    //mRecPauseButton.setText("Запись");
                     mStopButton.setEnabled(false);
                     mRecPauseButton.setEnabled(false);
                     break;

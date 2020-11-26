@@ -9,12 +9,13 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
 
 public class RecorderNotification {
+
+    private RecorderNotification(){}
 
     private static final String CHANNEL_AUDIO_APP = "Voice-it channel";
 

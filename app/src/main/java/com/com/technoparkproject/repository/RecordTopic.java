@@ -57,9 +57,9 @@ public final class RecordTopic {
     @NonNull
     @Override
     public String toString() {
-        return "name "+getName()+
-        ",topic "+getTopic()+
-        ",file "+getRecordFile()+
-        ",duration "+getDuration();
+        return "name "+getName()
+        + ",topic "+getTopic()
+        + ",file "+getRecordFile()
+        + ",duration "+getDuration();
     }
 }

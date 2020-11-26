@@ -95,8 +95,8 @@ public class AACEncoder implements Encoder<ByteBuffer> {
             inputBuffer.put(pcmFrame);
         } catch (BufferOverflowException e) {
             Log.e(this.getClass().getSimpleName(),
-                    "Can't put" + pcmFrame +
-                            " to buffer with a length " + inputBuffer.capacity(), e);
+                    "Can't put" + pcmFrame
+                            + " to buffer with a length " + inputBuffer.capacity(), e);
         }
         //reset position back to the original state
         pcmFrame.position(pcmFrame.limit() - pcmLength);
@@ -107,16 +107,16 @@ public class AACEncoder implements Encoder<ByteBuffer> {
     private ByteBuffer getEncodedData(final ByteBuffer outputBuffer) {
         //Create outFrame with capacity = length of encoded data
         //Set direction and order based on encoder's buffer
-        final ByteBuffer outFrame = (outputBuffer.isDirect()) ?
-                ByteBuffer.allocateDirect(outputBuffer.remaining()) :
-                ByteBuffer.allocate(outputBuffer.remaining());
+        final ByteBuffer outFrame = (outputBuffer.isDirect())
+                ? ByteBuffer.allocateDirect(outputBuffer.remaining())
+                : ByteBuffer.allocate(outputBuffer.remaining());
         outFrame.order(ByteOrder.nativeOrder());
         try {
             outFrame.put(outputBuffer);
         } catch (BufferOverflowException e) {
             Log.e(this.getClass().getSimpleName(),
-                    "Can't put" + outFrame.remaining() +
-                            " to buffer with a capacity " + outFrame.capacity(), e);
+                    "Can't put" + outFrame.remaining()
+                            + " to buffer with a capacity " + outFrame.capacity(), e);
             return null;
         }
         outFrame.rewind();
@@ -143,8 +143,8 @@ public class AACEncoder implements Encoder<ByteBuffer> {
             }
             if (inputPollCount >= MAX_INPUT_POLL_COUNT){
                 Log.e(this.getClass().getSimpleName(),
-                        "No available input buffers for Encoding after " +
-                                MAX_INPUT_POLL_COUNT +" polls with time "+ TIMEOUT_US + "Us");
+                        "No available input buffers for Encoding after "
+                                + MAX_INPUT_POLL_COUNT +" polls with time "+ TIMEOUT_US + "Us");
             }
 
         } catch (MediaCodec.CodecException e) {

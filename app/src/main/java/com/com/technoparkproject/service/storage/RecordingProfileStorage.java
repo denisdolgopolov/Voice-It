@@ -6,7 +6,10 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class RecordingProfileStorage {
+public final class RecordingProfileStorage {
+
+    private RecordingProfileStorage(){}
+
     private static final Map<AudioQuality, RecordingProfile> PROFILES_MAP = createMap();
 
 

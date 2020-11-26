@@ -10,6 +10,8 @@ import java.io.IOException;
 //todo: move this method to a class that works with local repo
 public final class RecordRepo{
 
+    private RecordRepo(){}
+
     private static final String DEFAULT_RECORD_NAME = "Моя запись";
 
     //generates temporary file for recording

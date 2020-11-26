@@ -14,7 +14,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.OnLifecycleEvent;
 
-public class RecorderConnection {
+public final class RecorderConnection {
     private volatile static RecorderConnection CONNECTION_INSTANCE;
     private RecordingService.RecordBinder mRecServiceBinder;
 

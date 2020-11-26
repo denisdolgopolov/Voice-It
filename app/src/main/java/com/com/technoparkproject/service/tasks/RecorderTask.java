@@ -66,8 +66,8 @@ public class RecorderTask implements Runnable {
                     mBufferSize);
 
             //bytesRead indicates number of bytes OR error status;
-            if (bytesRead == AudioRecord.ERROR_INVALID_OPERATION ||
-                    bytesRead == AudioRecord.ERROR_BAD_VALUE) {
+            if (bytesRead == AudioRecord.ERROR_INVALID_OPERATION
+                    || bytesRead == AudioRecord.ERROR_BAD_VALUE) {
                 Log.e("AudioRecord", "Error reading audio data!");
                 return;
             }
