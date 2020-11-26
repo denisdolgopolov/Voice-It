@@ -18,6 +18,7 @@ import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.fragments.LanguageFragment;
 import com.com.technoparkproject.view.fragments.PasswordFragment;
 import com.com.technoparkproject.view.fragments.HomeFragment;
+import com.com.technoparkproject.view.fragments.MainListOfRecordsFragment;
 import com.com.technoparkproject.view.fragments.PersonalPageFragment;
 import com.com.technoparkproject.view.fragments.PlaylistFragment;
 import com.com.technoparkproject.view.fragments.RecordFragment;
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                             nameSelectedFragment = getResources().getString(FRAGMENT_HOME_NAME);
                             break;
                         case R.id.nav_playlist:
-                            selectedFragment = new PlaylistFragment();
+                            selectedFragment = new MainListOfRecordsFragment();
                             nameSelectedFragment = getResources().getString(FRAGMENT_PLAYLIST_NAME);
                             break;
                         case R.id.nav_record:
