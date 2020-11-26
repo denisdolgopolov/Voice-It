@@ -14,8 +14,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
-import com.com.technoparkproject.repository.Record;
-import com.com.technoparkproject.repository.RecordRepoImpl;
+import com.com.technoparkproject.repository.RecordRepo;
+import com.com.technoparkproject.repository.RecordTopic;
 import com.com.technoparkproject.service.storage.RecordingProfile;
 import com.com.technoparkproject.service.storage.RecordingProfileStorage;
 import com.com.technoparkproject.service.coders.ADTSStream;
@@ -183,8 +183,7 @@ public class RecordingService extends Service implements Recorder{
 
     public void startRecording() {
 
-        mRecordFile = RecordRepoImpl.getInstance(this)
-                .createTempFile(mRecProfile.getFileFormat(),this);
+        mRecordFile = RecordRepo.createTempFile(mRecProfile.getFileFormat(),this);
 
         mRecordBOS = null;
         try {
@@ -334,12 +333,11 @@ public class RecordingService extends Service implements Recorder{
         return recMillis;
     }
 
-    //returns null if recording isn't finished yet
-    public Record saveRecording(){
+    public RecordTopic saveRecording(){
         if (mRecordState.getValue() != RecordState.STOP){
             return null;
         }
-        Record rec = new Record();
+        RecordTopic rec = new RecordTopic();
         rec.setRecordFile(mRecordFile);
         int recDuration = getCurrentRecDuration();
         rec.setDuration(recDuration);

@@ -9,8 +9,8 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.SingleLiveEvent;
-import com.com.technoparkproject.repository.Record;
-import com.com.technoparkproject.repository.RecordRepoImpl;
+import com.com.technoparkproject.repository.RecordRepo;
+import com.com.technoparkproject.repository.RecordTopic;
 import com.com.technoparkproject.service.RecordState;
 import com.com.technoparkproject.service.Recorder;
 import com.com.technoparkproject.service.RecorderConnection;
@@ -82,22 +82,27 @@ public class RecorderViewModel extends AndroidViewModel {
 
     public void dismissRecording(){
         File recFile = mRec.getRecordFile();
-        RecordRepoImpl.getInstance(getApplication()).deleteTempFile(recFile);
+        RecordRepo.deleteTempFile(recFile);
         mRec = null;
     }
 
     public void saveRecording(){
         if (mRec!=null) {
-            RecordRepoImpl.getInstance(getApplication()).addRecord(mRec);
+            loadFile(mRec);
         }
     }
 
-    private Record mRec;
+    //todo upload recording
+    private void loadFile(RecordTopic recTopic){
+        Log.d("save file","saving record: "+recTopic.toString());
+    }
+
+    private RecordTopic mRec;
 
     private void saveRec(){
         Recorder recorder = InjectorUtils.provideRecorder(getApplication());
 
-        Record rec = recorder.saveRecording();
+        RecordTopic rec = recorder.saveRecording();
         if (rec == null) {
             onStopClick(true);
             return;
@@ -114,8 +119,10 @@ public class RecorderViewModel extends AndroidViewModel {
         return mSaveEvent;
     }
     public void onSaveClick(String recName, String recTopic) {
-        mRecName = recName;
-        mRecTopic = recTopic;
+        if (recName != null & !recName.isEmpty())
+            mRecName = recName;
+        if (recTopic != null & !recTopic.isEmpty())
+            mRecTopic = recTopic;
         saveRec();
     }
 
