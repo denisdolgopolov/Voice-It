@@ -7,12 +7,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.com.technoparkproject.R;
+import com.com.technoparkproject.service.RecordIntentConstants;
 import com.com.technoparkproject.view.fragments.LanguageFragment;
 import com.com.technoparkproject.view.fragments.MainListOfRecordsFragment;
 import com.com.technoparkproject.view.fragments.PasswordFragment;
@@ -68,12 +70,21 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment == null) {
             bottomNavigation.setSelectedItemId(R.id.nav_home);
         }
-
+        checkRecordIntent(bottomNavigation);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
+    private void checkRecordIntent(BottomNavigationView btmNav){
+        String nextFragment = getIntent().getStringExtra(RecordIntentConstants.NAME);
+        if (nextFragment != null) {
+            //if activity received intent from record notification go to record fragment
+            if (nextFragment.equals(RecordIntentConstants.VALUE)) {
+                btmNav.setSelectedItemId(R.id.nav_record);
+            }
+        }
+    }
     @SuppressLint("NonConstantResourceId")
     public void onClickChangePasswordOrLanguageButton(View view) {
         switch (view.getId()) {

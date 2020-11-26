@@ -59,7 +59,7 @@ public class RecorderNotification {
                 .setColor(serviceCtx.getResources().getColor(R.color.red_default));
 
         Intent intent = new Intent(serviceCtx, MainActivity.class);
-        intent.putExtra("showFragment", "RecordFragment");
+        intent.putExtra(RecordIntentConstants.NAME, RecordIntentConstants.VALUE);
         PendingIntent pendingIntent=PendingIntent.getActivity(serviceCtx,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
 

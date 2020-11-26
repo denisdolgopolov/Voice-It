@@ -83,11 +83,11 @@
     </style>
 
 
-    <style name="Theme.RedButtons" parent="AppTheme">
+    <style name="Theme.RedButtons" parent="MyTheme">
         <item name="colorOnSurface">@color/red_default</item>
     </style>
 
-    <style name="Theme.BlackButtons" parent="AppTheme">
+    <style name="Theme.BlackButtons" parent="MyTheme">
         <item name="colorOnSurface">@android:color/black</item>
     </style>
 
