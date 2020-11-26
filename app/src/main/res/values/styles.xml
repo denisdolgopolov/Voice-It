@@ -29,7 +29,6 @@
     <style name="bottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/mlr_bottom_sheet_corner</item>
     </style>
-    
 
     <style name="Button">
         <item name="android:layout_width">match_parent</item>

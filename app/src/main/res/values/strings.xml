@@ -27,7 +27,7 @@
     <string name="button_settings_itd">И так далее</string>
     <string name="frag_change_language">CHANGE LANGUAGE</string>
     <string name="frag_change_password">CHANGE PASSWORD</string>
-    <string name="current_fragment">Current fragment </string>
+    <string name="current_fragment">Current fragment</string>
     <string name="record_image">record image</string>
     <string name="why_you_search">что хотите найти?</string>
     <string name="add_to_queue">Добавить в очередь</string>

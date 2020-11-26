@@ -16,10 +16,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.fragments.LanguageFragment;
-import com.com.technoparkproject.view.fragments.MainListOfRecordsFragment;
 import com.com.technoparkproject.view.fragments.PasswordFragment;
 import com.com.technoparkproject.view.fragments.HomeFragment;
-import com.com.technoparkproject.view.fragments.OnBackPressedListener;
 import com.com.technoparkproject.view.fragments.PersonalPageFragment;
 import com.com.technoparkproject.view.fragments.PlaylistFragment;
 import com.com.technoparkproject.view.fragments.RecordFragment;
@@ -180,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                             nameSelectedFragment = getResources().getString(FRAGMENT_HOME_NAME);
                             break;
                         case R.id.nav_playlist:
-                            selectedFragment = new MainListOfRecordsFragment();
+                            selectedFragment = new PlaylistFragment();
                             nameSelectedFragment = getResources().getString(FRAGMENT_PLAYLIST_NAME);
                             break;
                         case R.id.nav_record:
@@ -228,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    public interface OnBackPressedListener {
+        void onBackPressed();
     }
 
     @Override
