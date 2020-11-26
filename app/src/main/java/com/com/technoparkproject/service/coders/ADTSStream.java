@@ -72,7 +72,7 @@ public class ADTSStream implements PacketStream<ByteBuffer>{
      * @return list of ADTS packets
      */
     //todo add this to interface also probably
-    public List<ByteBuffer> getADTSPackets(ByteBuffer pcmFrame){
+    public List<ByteBuffer> getPackets(ByteBuffer pcmFrame){
         final int pcmLength = pcmFrame.remaining();
 
         final int bytesPerFrame = getMaxFrameLength()*mRecProfile.getFrameSize();

@@ -73,11 +73,15 @@ public class RecorderTask implements Runnable {
             }
             audioBuffer.limit(bytesRead); //manually set limit as it's not clear if it's set correctly
 
-            ByteBuffer packet = mADTSStream.getPacket(audioBuffer);
+            List<ByteBuffer> packets = mADTSStream.getPackets(audioBuffer);
+            for (ByteBuffer packet : packets){
+                enqueuePacket(packet);
+            }
+            /*ByteBuffer packet = mADTSStream.getPacket(audioBuffer);
 
             if (packet.capacity() != 0) {
                 enqueuePacket(packet);
-            }
+            }*/
 
             samplesCount += bytesRead;
             //Log.d("Task", "new finish");

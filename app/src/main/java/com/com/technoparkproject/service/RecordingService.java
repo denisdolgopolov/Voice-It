@@ -121,7 +121,7 @@ public class RecordingService extends Service implements Recorder{
                 mRecProfile.getSamplingRate(),
                 mRecProfile.getConfigChannels(),
                 mRecProfile.getAudioFormat()); //minimum buffer size in bytes
-        mBufferSizeInBytes = minBufferSize * 2;
+        mBufferSizeInBytes = minBufferSize * 4;
         //round buffer size up to nearest multiple of encoder's max frame length
         mBufferSizeInBytes = roundUp(mBufferSizeInBytes,
                 mADTSStream.getMaxFrameLength()* mRecProfile.getFrameSize());
@@ -218,7 +218,7 @@ public class RecordingService extends Service implements Recorder{
         mIsTaskCancel.set(false);
 
         RecorderTask recordTask = new RecorderTask(mAudioRecord, mADTSStream,
-                mBuffersQ, mRecProfile.getFrameSize()*mADTSStream.getMaxFrameLength(),
+                mBuffersQ, mBufferSizeInBytes,
                 mRecRawSize,mIsTaskCancel);
 
         mRecordResult = mRecordingExecutor.submit(recordTask);
