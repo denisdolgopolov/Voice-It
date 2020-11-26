@@ -1,6 +1,8 @@
 package voice.it.firebaseloadermodule.model;
 
-public class FirebaseModel {
+import java.io.Serializable;
+
+public class FirebaseModel implements Serializable {
     private String uuid;
 
     public FirebaseModel(String uuid) {

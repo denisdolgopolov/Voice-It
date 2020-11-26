@@ -21,7 +21,10 @@ import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
+
 import voice.it.firebaseloadermodule.FirebaseFileLoader;
+import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 
 public class MainActivity extends AppCompatActivity {
     private String currentFragment;
@@ -53,7 +56,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        new FirebaseFileLoader(this);
+        try {
+            new FirebaseFileLoader(this).uploadFile(getAssets()
+                    .open("12345.mp3"), FirebaseFileTypes.RECORDS,
+                    "dasd213-213",
+                    getAssets().openFd("12345.mp3").getLength());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

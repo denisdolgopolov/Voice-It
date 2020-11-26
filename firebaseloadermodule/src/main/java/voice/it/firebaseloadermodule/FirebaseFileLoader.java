@@ -1,8 +1,8 @@
 package voice.it.firebaseloadermodule;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -16,67 +16,61 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.InputStream;
 
+import voice.it.firebaseloadermodule.cnst.FileLoadState;
 import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetUriListener;
-import voice.it.firebaseloadermodule.listeners.FirebaseUploadListener;
+import voice.it.firebaseloadermodule.model.FirebaseModel;
+import voice.it.firebaseloadermodule.service.IntentManager;
+import voice.it.firebaseloadermodule.service.ServiceAction;
+import voice.it.firebaseloadermodule.service.ServiceLoadFileState;
 
 public class FirebaseFileLoader {
     private final FirebaseStorage db = FirebaseStorage.getInstance();
+    private Context context;
 
     public FirebaseFileLoader(Context context) {
-        try {
-            loadFile(context.getAssets()
-                            .open("12345.mp3"),
-                    FirebaseFileTypes.RECORDS,
-                    "5673",
-                    new FirebaseUploadListener() {
-                @Override
-                public void onFailure(String error) {
-                    Log.d("firebase", error);
-                }
-
-                @Override
-                public void onSuccess() {
-                    Log.d("firebase", "onSuccess");
-                }
-
-                @Override
-                public void onProgress(int progress) {
-                    Log.d("firebase", "progress " + progress);
-                }
-            });
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.context = context;
     }
 
-    public void loadFile(InputStream stream,
-                         FirebaseFileTypes type,
-                         String uuid,
-                         final FirebaseUploadListener listener) {
+
+    public void uploadFile(final InputStream stream,
+                           FirebaseFileTypes type,
+                           final Long size,
+                           final FirebaseModel item) {
+        final Intent intent = new Intent(context, ServiceLoadFileState.class);
+        final IntentManager manager = new IntentManager(context);
+        manager.sendIntent(intent);
+
         db.getReference(type.toString())
-                .child(uuid)
+                .child(item.getUuid())
                 .putStream(stream)
                 .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                        int progress = (int) Math.floor(snapshot.getBytesTransferred());
-                        listener.onProgress(progress);
+                        int progress = (int) Math.floor(snapshot.getBytesTransferred()*100/size);
+
+                        intent.setAction(ServiceAction.PROGRESS);
+                        intent.putExtra(FileLoadState.PROGRESS, progress);
+                        manager.sendIntent(intent);
                     }
                 })
                 .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if(task.isSuccessful())
-                            listener.onSuccess();
-                        else
-                            listener.onFailure("fail");
+                        if(task.isSuccessful()){
+                            intent.setAction(ServiceAction.SUCCESS);
+                            intent.putExtra(FileLoadState.COMPLETED, item);
+                        }
+                        else {
+                            intent.setAction(ServiceAction.FAILED);
+                        }
+                        manager.sendIntent(intent);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        listener.onFailure(e.getLocalizedMessage());
+                        intent.setAction(ServiceAction.FAILED);
                     }
                 });
     }
@@ -99,5 +93,9 @@ public class FirebaseFileLoader {
                         listener.onFailure(e.getLocalizedMessage());
                     }
                 });
+    }
+
+    public void stopUpload() {
+        //TO_DO
     }
 }
