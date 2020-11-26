@@ -16,6 +16,7 @@
             android:indeterminate="true" />
 
     <LinearLayout
+            android:id="@+id/record_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -76,18 +77,18 @@
                     tools:text="00:00" />
         </FrameLayout>
 
-        <TextView
-                android:id="@+id/record_state_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:gravity="top"
-                android:textSize="20sp"
-                android:visibility="gone"
-                tools:text="state" />
-
     </LinearLayout>
 
+    <TextView
+            android:id="@+id/record_deny_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:visibility="gone"
+            android:textColor="@color/design_default_color_error"
+            tools:text="state" />
 
     <LinearLayout
             android:id="@+id/buttons_layout"

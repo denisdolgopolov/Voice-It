@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,10 @@ public class RecordFragment extends Fragment {
     private void checkRecordPermissions() {
         if (requireActivity().checkSelfPermission(Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
+            LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
+            LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
+            recLayout.setVisibility(View.GONE);
+            recButtonsLayout.setVisibility(View.GONE);
             requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
@@ -53,13 +58,18 @@ public class RecordFragment extends Fragment {
 
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions,
                                            @NotNull int[] grantResults) {
-        if (requestCode != PERMISSIONS_REQUEST_RECORD_AUDIO
-                || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-
-
-            //TODO: imitate exiting fragment or other behaviour
-            TextView textView = requireActivity().findViewById(R.id.record_state_text);
-            textView.setText(R.string.text_record_permission_denied);
+        if (requestCode == PERMISSIONS_REQUEST_RECORD_AUDIO) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
+                LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
+                recLayout.setVisibility(View.VISIBLE);
+                recButtonsLayout.setVisibility(View.VISIBLE);
+            } else {
+                TextView recDenyTextView = requireActivity().findViewById(R.id.record_deny_text);
+                recDenyTextView.setText(R.string.text_record_permission_denied);
+                recDenyTextView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
