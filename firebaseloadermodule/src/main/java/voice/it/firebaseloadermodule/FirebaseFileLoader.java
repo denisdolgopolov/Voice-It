@@ -51,7 +51,8 @@ public class FirebaseFileLoader {
     }
 
     public void loadFile(InputStream stream,
-                         FirebaseFileTypes type, String uuid,
+                         FirebaseFileTypes type,
+                         String uuid,
                          final FirebaseUploadListener listener) {
         db.getReference(type.toString())
                 .child(uuid)
