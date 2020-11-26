@@ -20,12 +20,9 @@ import com.com.technoparkproject.view.fragments.PasswordFragment;
 import com.com.technoparkproject.view.fragments.HomeFragment;
 import com.com.technoparkproject.view.fragments.MainListOfRecordsFragment;
 import com.com.technoparkproject.view.fragments.PersonalPageFragment;
-import com.com.technoparkproject.view.fragments.PlaylistFragment;
 import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import org.jetbrains.annotations.NotNull;
 
 public class MainActivity extends AppCompatActivity {
     private String currentFragment = null;
@@ -234,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(@NotNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(CURRENT_FRAGMENT, currentFragment);
     }
