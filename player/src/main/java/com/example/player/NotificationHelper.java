@@ -65,9 +65,10 @@ public class NotificationHelper {
         );
 
 
-        builder.setStyle(new androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle()
+        builder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                 .setShowActionsInCompactView(0, 2, 3, 4)
                 .setShowCancelButton(true)
+                .setMediaSession(mediaSession.getSessionToken())
                 .setCancelButtonIntent(MediaButtonReceiver
                         .buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_STOP))
                 .setMediaSession(mediaSession.getSessionToken())

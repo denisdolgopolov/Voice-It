@@ -1,4 +1,4 @@
-package com.com.technoparkproject.models;
+package com.example.repo;
 
 public final class Record {
     public final String uuid;

@@ -20,10 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.TestErrorShower;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
-import com.com.technoparkproject.models.Record;
-import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
+import com.example.repo.Record;
+import com.example.repo.Topic;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
@@ -57,15 +57,12 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        viewModel = new ViewModelProvider(
-                this,
-                new MainListOfRecordsViewModel.Factory(getActivity())
-        ).get(MainListOfRecordsViewModel.class);
+        viewModel = new ViewModelProvider(getActivity()).get(MainListOfRecordsViewModel.class);
         observeToData(viewModel);
     }
 
     private void observeToData(MainListOfRecordsViewModel viewModel) {
-        viewModel.getTopics().observe(this, new Observer<List<Topic>>() {
+        viewModel.getTopics().observe(getViewLifecycleOwner(), new Observer<List<Topic>>() {
             @Override
             public void onChanged(List<Topic> topics) {
                 adapter.setItems(topics);
@@ -74,7 +71,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         });
 
         viewModel.setSearchingInput(searchingField);
-        viewModel.getSearchingValue().observe(this, new Observer<String>() {
+        viewModel.getSearchingValue().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 adapter.filterItemsByTopicName(s);
@@ -84,10 +81,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
     private void setAutoCompleteValues(List<Topic> topics) {
         ArrayList<String> names = new ArrayList<>();
-        for (Topic topic: topics)
+        for (Topic topic : topics)
             names.add(topic.name);
 
-        if(getContext() == null) return;
+        if (getContext() == null) return;
         ArrayAdapter adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, names);
         searchingField.setAdapter(adapter);
@@ -100,8 +97,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
     @Override
     public void showRecordMoreFun(Record record) {
-        if(getContext() == null) return;
-
+        if (getContext() == null) return;
         Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
         @SuppressLint("InflateParams")
         View bottomSheetView = getLayoutInflater()
@@ -124,6 +120,4 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                 });
         dialog.show();
     }
-
-
 }

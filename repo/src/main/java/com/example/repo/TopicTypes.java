@@ -1,4 +1,4 @@
-package com.com.technoparkproject.models;
+package com.example.repo;
 
 public final class TopicTypes {
     public static final String TOPIC_FRIEND = "topic_friends";

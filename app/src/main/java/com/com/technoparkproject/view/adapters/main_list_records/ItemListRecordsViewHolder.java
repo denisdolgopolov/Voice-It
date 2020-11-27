@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
-import com.com.technoparkproject.models.Record;
-import com.com.technoparkproject.repositories.TestRecordsRepository;
+import com.example.repo.Record;
+import com.example.repo.TestRecordsRepository;
 
 class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
     private TextView textViewTitle;
@@ -46,6 +46,12 @@ class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 listener.showRecordMoreFun(record);
+            }
+        });
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               /* listener.getViewModel().itemClicked(record.uuid);*/
             }
         });
     }

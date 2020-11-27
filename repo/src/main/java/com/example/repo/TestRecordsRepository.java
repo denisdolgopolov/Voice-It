@@ -1,14 +1,10 @@
-package com.com.technoparkproject.repositories;
+package com.example.repo;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.icu.text.AlphabeticIndex;
 
 import androidx.core.content.ContextCompat;
-
-import com.com.technoparkproject.R;
-import com.com.technoparkproject.models.Record;
-import com.com.technoparkproject.models.Topic;
-import com.com.technoparkproject.models.TopicTypes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +16,7 @@ public class TestRecordsRepository {
     private static final String SOURCE2_URL = "https://storage.googleapis.com/uamp/The_Kyoto_Connection_-_Wake_Up/02_-_Geisha.mp3";
     private static final String SOURCE3_URL = "https://freemusicarchive.org/track/Peculate_-_There_Are_No_Angels_-_09_The_Immediate_Task_1053/download";
     private static final String SOURCE4_URL = "https://freemusicarchive.org/track/Peculate_-_There_Are_No_Angels_-_07_Vale_of_Tears_1866/download";
+    private static final String IMAGE_SOURCE_URL = "https://lh3.googleusercontent.com/proxy/C5OFULJaiZ0vhWYsiDCSDcd-YolXcUDLHvwUpSPMADKL9-dyVwYyhsznbKDZRSTVIwLMhxJtIHCzUVdnSh298nQUAk_Q7kJMDxc4ePyJk8QbD1J4uGycmtBUNguZkuB4HtzcpXfQWEanK7LPyIGRebG6FqNOQUpW958nWhPCZlAjRGh81gcxMYTh5tkMBxreBCH5BzcDQzbx8JJKiFRg1rrQPVb75hlDU1h_5yCqCAUSTlDo2FINmBPk0ymDGcktQa5r4PdNSg";
 
     public static List<Record> getListRecord() {
         return Arrays.asList(
@@ -28,13 +25,13 @@ public class TestRecordsRepository {
                         "TopicUUID",
                         "29.30.3030",
                         "asdsad",
-                        "296000"),
+                        "264000"),
                 new Record(SOURCE2_URL,
                         "RECORD #2",
                         "TopicUUID",
                         "29.30.3030",
                         "asdsad",
-                        "474000"),
+                        "267000"),
                 new Record(SOURCE3_URL,
                         "RECORD #3",
                         "TopicUUID",
@@ -67,15 +64,12 @@ public class TestRecordsRepository {
     static public List<Topic> getListTopics() {
         return Arrays.asList(
                 new Topic(UUID.randomUUID().toString(), "Friends", UUID.randomUUID().toString(),
-                        Arrays.asList(SOURCE1_URL, SOURCE2_URL, SOURCE3_URL, SOURCE4_URL), TopicTypes.TOPIC_FRIEND)/*,
-                new Topic(UUID.randomUUID().toString(), "Dogs", UUID.randomUUID().toString(),
-                        Arrays.asList("1", "2", "3"), TopicTypes.TOPIC_THEMATIC),
-                new Topic(UUID.randomUUID().toString(), "Дача", UUID.randomUUID().toString(),
-                        Arrays.asList("1"), TopicTypes.TOPIC_THEMATIC),
-                new Topic(UUID.randomUUID().toString(), "Дом", UUID.randomUUID().toString(),
-                        Arrays.asList("1", "2"), TopicTypes.TOPIC_THEMATIC),
-                new Topic(UUID.randomUUID().toString(), "Кухня", UUID.randomUUID().toString(),
-                        Arrays.asList("1", "2", "3"), TopicTypes.TOPIC_THEMATIC)*/
+                        Arrays.asList(SOURCE1_URL, SOURCE2_URL, SOURCE3_URL), TopicTypes.TOPIC_FRIEND)
         );
     }
+
+    static public String getImageSourceURLByUUID(String UUID){
+        return IMAGE_SOURCE_URL;
+    }
+
 }

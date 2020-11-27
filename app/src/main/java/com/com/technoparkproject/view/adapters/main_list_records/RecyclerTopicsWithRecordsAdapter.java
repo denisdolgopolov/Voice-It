@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
-import com.com.technoparkproject.models.Record;
-import com.com.technoparkproject.models.Topic;
-import com.com.technoparkproject.repositories.TestRecordsRepository;
+import com.example.repo.Record;
+import com.example.repo.TestRecordsRepository;
+import com.example.repo.Topic;
 
 import java.util.ArrayList;
 import java.util.List;

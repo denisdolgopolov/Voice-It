@@ -4,11 +4,10 @@
     >
     <corners
         android:topRightRadius="@dimen/player_fragment_rad"
-        android:topLeftRadius="@dimen/player_fragment_rad"/>
-
+        android:topLeftRadius="@dimen/player_fragment_rad" />
     <gradient
-        android:startColor="#2BC42014"
-        android:endColor="#38FFFFFF"
+        android:startColor="#FFC4C4"
+        android:endColor="#FFFFFF"
         android:angle="270">
     </gradient>
 </shape>
