@@ -17,25 +17,17 @@ import java.util.UUID;
 import voice.it.firebaseloadermodule.R;
 
 public class NotificationBuilder {
-    private final Context context;
+    private final Service context;
 
     private static final int  NOTIFICATION_ID = 639;
 
     private NotificationCompat.Builder builder;
 
-    public NotificationBuilder(Context context) {
+    public NotificationBuilder(Service context) {
         this.context = context;
     }
 
     public void showNotification(Service service) {
-        IntentManager intentManager = new IntentManager(context);
-        Intent intentStop = intentManager.getActionIntent(ServiceAction.STOP);
-        PendingIntent pendingStop = intentManager.getPendingIntent(intentStop);
-
-        NotificationCompat.Action actionStop =
-                new NotificationCompat.Action.Builder(null, "stop", pendingStop)
-                .build();
-
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
             String channelId = UUID.randomUUID().toString();
             createChannel(service, channelId);
@@ -46,28 +38,48 @@ public class NotificationBuilder {
 
         Notification notification = builder
                 .setSmallIcon(R.drawable.ic_download)
-                .setContentTitle("Загрузка файла")
-                .addAction(actionStop)
+                .setContentTitle("Загрузка файла: ")
                 .build();
         service.startForeground(NOTIFICATION_ID, notification);
     }
 
-    public void setProgress(int progress, Service service) {
+    public void setProgress(int progress) {
         builder.setProgress(100, progress, false);
+        notifyNotification();
+    }
+
+    public void setTitle(String title) {
+        builder.setContentTitle(title);
+        notifyNotification();
+    }
+
+    public void setButton(String text) {
+        IntentManager intentManager = new IntentManager(context);
+        Intent intentStop = intentManager.getActionIntent(ServiceAction.STOP);
+        PendingIntent pendingStop = intentManager.getPendingIntent(intentStop);
+
+        NotificationCompat.Action actionStop =
+                new NotificationCompat.Action.Builder(null, text, pendingStop)
+                        .build();
+        builder.addAction(actionStop);
+        notifyNotification();
+    }
+
+    private void notifyNotification() {
         NotificationManager notificationManager = (NotificationManager)
-                service.getSystemService(Context.NOTIFICATION_SERVICE);
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
         assert notificationManager != null;
         notificationManager.notify(NOTIFICATION_ID, builder.build());
-
     }
 
     @TargetApi(26)
     private void createChannel(Service service, String channelId) {
-        NotificationManager notificationManager = (NotificationManager)
-                service.getSystemService(Context.NOTIFICATION_SERVICE);
         String channelName = "voice_it";
         NotificationChannel notificationChannel = new NotificationChannel(channelId,
                 channelName, NotificationManager.IMPORTANCE_DEFAULT);
+
+        NotificationManager notificationManager = (NotificationManager)
+                service.getSystemService(Context.NOTIFICATION_SERVICE);
         assert notificationManager != null;
         notificationManager.createNotificationChannel(notificationChannel);
     }

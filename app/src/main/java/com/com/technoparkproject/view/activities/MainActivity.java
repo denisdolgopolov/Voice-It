@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import voice.it.firebaseloadermodule.FirebaseFileLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
+import voice.it.firebaseloadermodule.model.FirebaseRecord;
 
 public class MainActivity extends AppCompatActivity {
     private String currentFragment;
@@ -59,8 +60,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             new FirebaseFileLoader(this).uploadFile(getAssets()
                     .open("12345.mp3"), FirebaseFileTypes.RECORDS,
-                    "dasd213-213",
-                    getAssets().openFd("12345.mp3").getLength());
+                    getAssets().openFd("12345.mp3").getLength(),
+                    new FirebaseRecord("dsadasd",
+                            "dasd",
+                            "asdasd", "dasdsa",
+                            "sdaas", 1000L));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -26,7 +26,7 @@ public class FirebaseLoader {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public void add(FirebaseModel item, final FirebaseListener listener) {
-        String collectionName = getCollectionNameByModel(item);
+        String collectionName = FirebaseHelper.getCollectionNameByModel(item);
         db.collection(collectionName)
                 .document(item.getUuid())
                 .set(item)
@@ -138,13 +138,6 @@ public class FirebaseLoader {
             default:
                 throw new IllegalStateException();
         }
-    }
-
-    private String getCollectionNameByModel(FirebaseModel item) {
-        if (item instanceof FirebaseTopic) return FirebaseCollections.Topics.toString();
-        if (item instanceof FirebaseRecord) return FirebaseCollections.Records.toString();
-        if (item instanceof FirebaseUser) return FirebaseCollections.Users.toString();
-        throw new IllegalArgumentException();
     }
 
     private String getKeyByParentType(FirebaseCollections parentType) {

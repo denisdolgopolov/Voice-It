@@ -14,6 +14,7 @@ import voice.it.firebaseloadermodule.model.FirebaseModel;
 
 public class ServiceLoadFileState extends Service {
     private NotificationBuilder builder;
+    private FirebaseModel firebaseModel;
 
     @Override
     public void onCreate() {
@@ -28,19 +29,31 @@ public class ServiceLoadFileState extends Service {
         if(intent.getAction() == null) return START_REDELIVER_INTENT;
 
         switch(intent.getAction()) {
+            case ServiceAction.GET_ITEM:
+                firebaseModel = (FirebaseModel)
+                        intent.getSerializableExtra(FileLoadState.COMPLETED);
+
+                assert firebaseModel != null;
+
+                builder.setTitle(firebaseModel.getName());
+                builder.setButton("stop");
+                break;
             case ServiceAction.PROGRESS:
                 int progress = intent.getIntExtra(FileLoadState.PROGRESS, 0);
-                builder.setProgress(progress, this);
+                builder.setProgress(progress);
                 break;
             case ServiceAction.FAILED:
-                builder.setProgress(0, this);
+                builder.setProgress(0);
+                builder.setTitle("load failed");
+                builder.setButton("ok");
                 break;
             case ServiceAction.SUCCESS:
-                builder.setProgress(100, this);
+                builder.setProgress(100);
+                builder.setTitle("load success");
+                builder.setButton("ok");
 
-                FirebaseModel item = (FirebaseModel)
-                        intent.getSerializableExtra(FileLoadState.COMPLETED);
-                new FirebaseLoader().add(item, new FirebaseListener() {
+                assert firebaseModel != null;
+                new FirebaseLoader().add(firebaseModel, new FirebaseListener() {
                     @Override
                     public void onSuccess() {
 
@@ -53,7 +66,9 @@ public class ServiceLoadFileState extends Service {
                 });
                 break;
             case ServiceAction.STOP:
-                new FirebaseFileLoader(this).stopUpload();
+                assert firebaseModel != null;
+                new FirebaseFileLoader(this).stopUpload(firebaseModel);
+                stopSelf();
                 break;
         }
 

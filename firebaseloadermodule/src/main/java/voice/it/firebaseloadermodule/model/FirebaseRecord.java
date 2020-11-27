@@ -1,7 +1,6 @@
 package voice.it.firebaseloadermodule.model;
 
 public class FirebaseRecord extends FirebaseModel {
-    private String name;
     private String topicUUID;
     private String dateOfCreation;
     private String userUUID;
@@ -9,8 +8,7 @@ public class FirebaseRecord extends FirebaseModel {
 
 
     public FirebaseRecord(String uuid, String name, String topicUUID, String dateOfCreation, String userUUID, Long duration) {
-        super(uuid);
-        this.name = name;
+        super(uuid, name);
         this.topicUUID = topicUUID;
         this.dateOfCreation = dateOfCreation;
         this.userUUID = userUUID;
@@ -19,10 +17,6 @@ public class FirebaseRecord extends FirebaseModel {
 
     public FirebaseRecord() {
         super();
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getTopicUUID() {
