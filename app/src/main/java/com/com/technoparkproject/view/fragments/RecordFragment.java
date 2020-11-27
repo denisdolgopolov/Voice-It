@@ -179,7 +179,7 @@ public class RecordFragment extends Fragment {
         @Override
         public void onChanged(RecordState recordState) {
             switch (recordState){
-                case READY:{
+                case INIT:{
                     mStopButton.setEnabled(false);
                     mRecPauseButton.setEnabled(true);
                     mDoneButton.setEnabled(false);

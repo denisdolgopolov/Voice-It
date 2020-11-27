@@ -2,6 +2,7 @@ package com.com.technoparkproject.service.coders;
 
 import android.util.Log;
 
+import com.com.technoparkproject.service.AudioRecorder;
 import com.com.technoparkproject.service.storage.RecordingProfile;
 
 import java.nio.BufferOverflowException;
@@ -79,11 +80,15 @@ public class ADTSStream implements PacketStream<ByteBuffer>{
 
         List<ByteBuffer> packets = new ArrayList<>();
         for (int i = 0; i < pcmLength; i+=bytesPerFrame) {
+            long startTime = System.nanoTime();
             pcmFrame.position(i);
             pcmFrame.limit(Math.min(i + bytesPerFrame, pcmLength));
             ByteBuffer packet = getPacket(pcmFrame);
             if (packet.capacity() != 0)
                 packets.add(packet);
+            long endTime = System.nanoTime();
+            Log.d("Timing encode packet","encoding 1 packet took "
+                    + AudioRecorder.getMillis(startTime,endTime));
         }
         return packets;
     }

@@ -40,7 +40,7 @@ public class RecorderViewModel extends AndroidViewModel {
     public void OnRecPauseClick(){
         Recorder recorder = InjectorUtils.provideRecorder(getApplication());
 
-        if (getRecState().getValue() == RecordState.READY)
+        if (getRecState().getValue() == RecordState.INIT)
             recorder.startRecording();
         else if (getRecState().getValue() == RecordState.PAUSE)
             recorder.resumeRecording();
@@ -102,14 +102,21 @@ public class RecorderViewModel extends AndroidViewModel {
     private void saveRec(){
         Recorder recorder = InjectorUtils.provideRecorder(getApplication());
 
-        RecordTopic rec = recorder.saveRecording();
-        if (rec == null) {
+        //RecordTopic rec = recorder.saveRecording();
+        if (getRecState().getValue() != RecordState.STOP){
             onStopClick(true);
             return;
         }
+        RecordTopic rec = new RecordTopic();
+        rec.setRecordFile(recorder.getRecordFile());
+        rec.setDuration(recorder.getRecordDuration());
         rec.setName(mRecName);
         rec.setTopic(mRecTopic);
         mRec = rec;
+
+        //configure recorder for next recording
+        recorder.configureRecording();
+
         mSaveEvent.call(); //recording is ready to be saved to repo/other storage
     }
 
@@ -119,9 +126,9 @@ public class RecorderViewModel extends AndroidViewModel {
         return mSaveEvent;
     }
     public void onSaveClick(String recName, String recTopic) {
-        if (recName != null & !recName.isEmpty())
+        if (recName != null && !recName.isEmpty())
             mRecName = recName;
-        if (recTopic != null & !recTopic.isEmpty())
+        if (recTopic != null && !recTopic.isEmpty())
             mRecTopic = recTopic;
         saveRec();
     }

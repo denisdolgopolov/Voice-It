@@ -39,6 +39,7 @@ public final class RecorderConnection {
 
         public RecordingLiveData(){
             mTimeData = new MediatorLiveData<>();
+            mTimeData.setValue(0);
             mRecState = new MediatorLiveData<>();
         }
 

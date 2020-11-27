@@ -3,6 +3,8 @@ package com.com.technoparkproject.service.tasks;
 import android.media.AudioRecord;
 import android.util.Log;
 
+import com.com.technoparkproject.service.AudioRecorder;
+import com.com.technoparkproject.service.RecordingService;
 import com.com.technoparkproject.service.coders.PacketStream;
 
 import java.nio.ByteBuffer;
@@ -36,8 +38,8 @@ public class RecorderTask implements Runnable {
 
     private void enqueuePacket(ByteBuffer packet){
         try {
-            //Log.d("QUEUE","size of q while recording = "
-              //      +mPacketsQ.size());
+            Log.d("QUEUE","size of q while recording = "
+                    +mPacketsQ.size());
             mPacketsQ.add(packet);
         }
         catch (IllegalStateException e){
@@ -50,7 +52,7 @@ public class RecorderTask implements Runnable {
 
     @Override
     public void run() {
-        //Log.d("RECORD TASK","START");
+        Log.d("RECORD TASK","START");
 
         int samplesCount = 0;
         mADTSStream.configure();
@@ -62,18 +64,29 @@ public class RecorderTask implements Runnable {
 
         mAudioRecord.startRecording();
         while (!mIsCancelled.get()) {
+            long startTime = System.nanoTime();
             int bytesRead = mAudioRecord.read(audioBuffer,
                     mBufferSize);
-
+            long endTime = System.nanoTime();
+            Log.d("Timing AudioRecord","reading buffer took "
+                    + AudioRecorder.getMillis(startTime,endTime));
             //bytesRead indicates number of bytes OR error status;
             if (bytesRead == AudioRecord.ERROR_INVALID_OPERATION
                     || bytesRead == AudioRecord.ERROR_BAD_VALUE) {
                 Log.e("AudioRecord", "Error reading audio data!");
                 return;
             }
+
+            Log.d("BytesRead", String.valueOf(bytesRead));
+
             audioBuffer.limit(bytesRead); //manually set limit as it's not clear if it's set correctly
 
+
+            startTime = System.nanoTime();
             List<ByteBuffer> packets = mADTSStream.getPackets(audioBuffer);
+            endTime = System.nanoTime();
+            Log.d("Timing getPackets","encoding took "
+                    + AudioRecorder.getMillis(startTime,endTime));
             for (ByteBuffer packet : packets){
                 enqueuePacket(packet);
             }
@@ -95,6 +108,7 @@ public class RecorderTask implements Runnable {
         }
 
         mRecRawSize.getAndAdd(samplesCount);
+        Log.d("record samplesCount","millis "+mRecRawSize.get());
 
         mAudioRecord.stop();
 

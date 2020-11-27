@@ -6,6 +6,7 @@ import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.util.Log;
 
+import com.com.technoparkproject.service.AudioRecorder;
 import com.com.technoparkproject.service.storage.RecordingProfile;
 
 import java.io.IOException;
@@ -138,7 +139,11 @@ public class AACEncoder implements Encoder<ByteBuffer> {
                     //Log.d("Encoding", "Data put to buffer #" + inputBufferId);
                     final ByteBuffer inputBuffer = mEncoder.getInputBuffer(inputBufferId);
                     putDataToEncode(inputFrame, inputBuffer);
+                    long startTime = System.nanoTime();
                     mEncoder.queueInputBuffer(inputBufferId, 0, inputFrame.remaining(), 0, 0);
+                    long endTime = System.nanoTime();
+                    Log.d("Timing ENCODER","1 enqueue took "
+                            + AudioRecorder.getMillis(startTime,endTime));
                 }
             }
             if (inputPollCount >= MAX_INPUT_POLL_COUNT){
@@ -215,8 +220,16 @@ public class AACEncoder implements Encoder<ByteBuffer> {
             Log.e(this.getClass().getSimpleName(), "Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
             //throw new IllegalArgumentException
              //       ("Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
+        long startTime = System.nanoTime();
         enqueueEncodeData(pcmFrame);
+        long endTime = System.nanoTime();
+        //Log.d("Timing ENCODER","1 enqueue took "
+        //        + AudioRecorder.getMillis(startTime,endTime));
+        startTime = System.nanoTime();
         final ByteBuffer outFrame = dequeueEncodedData();
+        endTime = System.nanoTime();
+        Log.d("Timing ENCODER","1 deque took "
+                + AudioRecorder.getMillis(startTime,endTime));
         return outFrame;
     }
 
