@@ -121,13 +121,11 @@ public final class RecorderConnection {
         mRecBinderObserver = new LifecycleObserver() {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             public void onUiStart() {
-                Log.d(getClass().getSimpleName(), "ON_START");
                 context.bindService(serviceIntent, serviceConnection,Context.BIND_AUTO_CREATE);
             }
 
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
             public void onUiStop() {
-                Log.d(getClass().getSimpleName(), "ON_STOP");
                 context.unbindService(serviceConnection);
                 if (mRecServiceBinder != null){
                     mRecLiveData.removeRecTimeSource(mRecServiceBinder.getRecorder().getRecTime());

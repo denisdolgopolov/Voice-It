@@ -136,14 +136,9 @@ public class AACEncoder implements Encoder<ByteBuffer> {
                     //failed to retrieve bufferId
                     inputPollCount++;
                 } else if (inputBufferId >= 0){
-                    //Log.d("Encoding", "Data put to buffer #" + inputBufferId);
                     final ByteBuffer inputBuffer = mEncoder.getInputBuffer(inputBufferId);
                     putDataToEncode(inputFrame, inputBuffer);
-                    long startTime = System.nanoTime();
                     mEncoder.queueInputBuffer(inputBufferId, 0, inputFrame.remaining(), 0, 0);
-                    long endTime = System.nanoTime();
-                    Log.d("Timing ENCODER","1 enqueue took "
-                            + AudioRecorder.getMillis(startTime,endTime));
                 }
             }
             if (inputPollCount >= MAX_INPUT_POLL_COUNT){
@@ -174,7 +169,6 @@ public class AACEncoder implements Encoder<ByteBuffer> {
                         "No available Encoder output buffers after " + TIMEOUT_US + "Us");
                 return emptyBuf;
             } else if (outputBufferId >= 0) {
-                //Log.d("Receiving", "Output data in buffer #" + outputBufferId);
                 ByteBuffer outputBuffer = mEncoder.getOutputBuffer(outputBufferId);
                 final ByteBuffer outFrame = getEncodedData(outputBuffer);
                 mEncoder.releaseOutputBuffer(outputBufferId, false);
@@ -220,16 +214,8 @@ public class AACEncoder implements Encoder<ByteBuffer> {
             Log.e(this.getClass().getSimpleName(), "Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
             //throw new IllegalArgumentException
              //       ("Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
-        long startTime = System.nanoTime();
         enqueueEncodeData(pcmFrame);
-        long endTime = System.nanoTime();
-        //Log.d("Timing ENCODER","1 enqueue took "
-        //        + AudioRecorder.getMillis(startTime,endTime));
-        startTime = System.nanoTime();
         final ByteBuffer outFrame = dequeueEncodedData();
-        endTime = System.nanoTime();
-        Log.d("Timing ENCODER","1 deque took "
-                + AudioRecorder.getMillis(startTime,endTime));
         return outFrame;
     }
 

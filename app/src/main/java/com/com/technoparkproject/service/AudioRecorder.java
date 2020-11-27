@@ -113,12 +113,7 @@ public class AudioRecorder {
 
     private void configureSelf(){
         //mRecordTimeInMills = 0;
-        long startTime = System.nanoTime();
         mADTSStream = new ADTSStream(mRecProfile);
-
-        long endTime = System.nanoTime();
-        Log.d("Timing ADTSStream","construction of stream and encoder took"
-                +getMillis(startTime,endTime));
 
         getBufferSize();
 
@@ -268,13 +263,12 @@ public class AudioRecorder {
         int bytesPerSecond = mRecProfile.getFrameSize()*mRecProfile.getSamplingRate();
         double recSeconds = (double)mRecRawSize.get() / bytesPerSecond;
         int recMillis = (int)(recSeconds*1000);
-        Log.d("record duration","millis "+recMillis);
         return recMillis;
     }
 
 
     //DEBUG: measuring call times
-    public static long getMillis(long startTime, long endTime){
+    private static long getMillis(long startTime, long endTime){
         return (endTime-startTime)/1000000;
     }
 }

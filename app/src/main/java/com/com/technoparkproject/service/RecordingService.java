@@ -2,48 +2,17 @@ package com.com.technoparkproject.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.repository.RecordRepo;
-import com.com.technoparkproject.repository.RecordTopic;
-import com.com.technoparkproject.service.storage.RecordingProfile;
-import com.com.technoparkproject.service.storage.RecordingProfileStorage;
-import com.com.technoparkproject.service.coders.ADTSStream;
-import com.com.technoparkproject.service.coders.PacketStream;
-import com.com.technoparkproject.service.tasks.DrainWriterTask;
-import com.com.technoparkproject.service.tasks.RecorderTask;
-import com.com.technoparkproject.service.tasks.StreamWriterTask;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.com.technoparkproject.service.storage.RecordingProfileStorage.AudioQuality;
 
 public class RecordingService extends Service implements Recorder{
 
