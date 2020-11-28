@@ -1,4 +1,4 @@
-package com.com.technoparkproject.repository;
+package com.com.technoparkproject.recorder.repository;
 
 import androidx.annotation.NonNull;
 

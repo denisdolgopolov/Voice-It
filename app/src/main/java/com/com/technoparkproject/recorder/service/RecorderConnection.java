@@ -1,4 +1,4 @@
-package com.com.technoparkproject.service;
+package com.com.technoparkproject.recorder.service;
 
 import android.content.ComponentName;
 import android.content.Context;

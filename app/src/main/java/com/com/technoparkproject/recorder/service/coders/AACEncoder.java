@@ -1,4 +1,4 @@
-package com.com.technoparkproject.service.coders;
+package com.com.technoparkproject.recorder.service.coders;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
@@ -6,7 +6,7 @@ import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.util.Log;
 
-import com.com.technoparkproject.service.storage.RecordingProfile;
+import com.com.technoparkproject.recorder.service.storage.RecordingProfile;
 
 import java.io.IOException;
 import java.nio.BufferOverflowException;

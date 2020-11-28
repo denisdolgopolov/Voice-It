@@ -1,8 +1,8 @@
-package com.com.technoparkproject.service.coders;
+package com.com.technoparkproject.recorder.service.coders;
 
 import android.util.Log;
 
-import com.com.technoparkproject.service.storage.RecordingProfile;
+import com.com.technoparkproject.recorder.service.storage.RecordingProfile;
 
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;

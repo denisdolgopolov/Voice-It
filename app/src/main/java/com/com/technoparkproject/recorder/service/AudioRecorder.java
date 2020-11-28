@@ -1,4 +1,4 @@
-package com.com.technoparkproject.service;
+package com.com.technoparkproject.recorder.service;
 
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -7,13 +7,13 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.com.technoparkproject.service.coders.ADTSStream;
-import com.com.technoparkproject.service.coders.PacketStream;
-import com.com.technoparkproject.service.storage.RecordingProfile;
-import com.com.technoparkproject.service.storage.RecordingProfileStorage;
-import com.com.technoparkproject.service.tasks.DrainWriterTask;
-import com.com.technoparkproject.service.tasks.RecorderTask;
-import com.com.technoparkproject.service.tasks.StreamWriterTask;
+import com.com.technoparkproject.recorder.service.coders.ADTSStream;
+import com.com.technoparkproject.recorder.service.coders.PacketStream;
+import com.com.technoparkproject.recorder.service.storage.RecordingProfile;
+import com.com.technoparkproject.recorder.service.storage.RecordingProfileStorage;
+import com.com.technoparkproject.recorder.service.tasks.DrainWriterTask;
+import com.com.technoparkproject.recorder.service.tasks.RecorderTask;
+import com.com.technoparkproject.recorder.service.tasks.StreamWriterTask;
 
 import java.io.File;
 import java.io.FileNotFoundException;

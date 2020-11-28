@@ -14,7 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.com.technoparkproject.R;
-import com.com.technoparkproject.service.RecordIntentConstants;
+import com.com.technoparkproject.recorder.service.RecordIntentConstants;
 import com.com.technoparkproject.view.fragments.LanguageFragment;
 import com.com.technoparkproject.view.fragments.MainListOfRecordsFragment;
 import com.com.technoparkproject.view.fragments.PasswordFragment;

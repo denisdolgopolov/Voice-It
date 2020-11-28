@@ -1,4 +1,4 @@
-package com.com.technoparkproject.service.coders;
+package com.com.technoparkproject.recorder.service.coders;
 
 interface CoderLifecycle {
     void configure();

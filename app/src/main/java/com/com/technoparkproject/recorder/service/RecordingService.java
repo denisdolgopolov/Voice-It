@@ -1,4 +1,4 @@
-package com.com.technoparkproject.service;
+package com.com.technoparkproject.recorder.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -10,8 +10,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 
-import com.com.technoparkproject.VoiceItApplication;
-import com.com.technoparkproject.repository.RecordRepo;
+import com.com.technoparkproject.recorder.VoiceItApplication;
+import com.com.technoparkproject.recorder.repository.RecordRepo;
 
 import java.io.File;
 

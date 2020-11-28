@@ -1,11 +1,9 @@
-package com.com.technoparkproject.service.tasks;
+package com.com.technoparkproject.recorder.service.tasks;
 
 import android.media.AudioRecord;
 import android.util.Log;
 
-import com.com.technoparkproject.service.AudioRecorder;
-import com.com.technoparkproject.service.RecordingService;
-import com.com.technoparkproject.service.coders.PacketStream;
+import com.com.technoparkproject.recorder.service.coders.PacketStream;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

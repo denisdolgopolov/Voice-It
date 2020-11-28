@@ -1,11 +1,11 @@
-package com.com.technoparkproject.utils;
+package com.com.technoparkproject.recorder.utils;
 
 import android.content.Context;
 
-import com.com.technoparkproject.VoiceItApplication;
-import com.com.technoparkproject.service.AudioRecorder;
-import com.com.technoparkproject.service.RecService;
-import com.com.technoparkproject.service.RecorderConnection;
+import com.com.technoparkproject.recorder.VoiceItApplication;
+import com.com.technoparkproject.recorder.service.AudioRecorder;
+import com.com.technoparkproject.recorder.service.RecService;
+import com.com.technoparkproject.recorder.service.RecorderConnection;
 
 public final class InjectorUtils {
 

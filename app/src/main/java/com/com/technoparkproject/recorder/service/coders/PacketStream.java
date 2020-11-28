@@ -1,6 +1,5 @@
-package com.com.technoparkproject.service.coders;
+package com.com.technoparkproject.recorder.service.coders;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 
 public interface PacketStream<E> extends CoderLifecycle{

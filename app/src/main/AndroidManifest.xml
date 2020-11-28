@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.RecordingService" />
+        <service android:name=".recorder.service.RecordingService" />
     </application>
 
 </manifest>

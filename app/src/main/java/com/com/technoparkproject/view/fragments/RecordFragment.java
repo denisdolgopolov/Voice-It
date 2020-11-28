@@ -24,8 +24,8 @@ import android.widget.TextView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
-import com.com.technoparkproject.service.RecordState;
-import com.com.technoparkproject.viewmodels.RecorderViewModel;
+import com.com.technoparkproject.recorder.service.RecordState;
+import com.com.technoparkproject.recorder.viewmodels.RecorderViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -84,9 +84,7 @@ public class RecordFragment extends Fragment {
         mRecPauseButton = view.findViewById(R.id.record_pause_button);
         mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_fiber_manual_record_24));
         mStopButton = view.findViewById(R.id.stop_button);
-        //mStopButton.setText("Стоп");
         mDoneButton = view.findViewById(R.id.done_button);
-        //mDoneButton.setText("Готово");
         mTimeTextView = view.findViewById(R.id.record_time_text);
 
         final RecorderViewModel recViewModel = new ViewModelProvider(requireActivity()).get(RecorderViewModel.class);

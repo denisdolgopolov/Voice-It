@@ -1,4 +1,4 @@
-package com.com.technoparkproject.viewmodels;
+package com.com.technoparkproject.recorder.viewmodels;
 
 import android.app.Application;
 import android.util.Log;
@@ -9,13 +9,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
-import com.com.technoparkproject.SingleLiveEvent;
-import com.com.technoparkproject.repository.RecordRepo;
-import com.com.technoparkproject.repository.RecordTopic;
-import com.com.technoparkproject.service.AudioRecorder;
-import com.com.technoparkproject.service.RecordState;
-import com.com.technoparkproject.service.RecService;
-import com.com.technoparkproject.utils.InjectorUtils;
+import com.com.technoparkproject.recorder.utils.SingleLiveEvent;
+import com.com.technoparkproject.recorder.repository.RecordRepo;
+import com.com.technoparkproject.recorder.repository.RecordTopic;
+import com.com.technoparkproject.recorder.service.AudioRecorder;
+import com.com.technoparkproject.recorder.service.RecordState;
+import com.com.technoparkproject.recorder.service.RecService;
+import com.com.technoparkproject.recorder.utils.InjectorUtils;
 
 import java.io.File;
 
