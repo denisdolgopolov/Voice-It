@@ -70,13 +70,15 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment == null) {
             bottomNavigation.setSelectedItemId(R.id.nav_home);
         }
-        checkRecordIntent(bottomNavigation);
+        checkRecordIntent(savedInstanceState, bottomNavigation);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
-    private void checkRecordIntent(BottomNavigationView btmNav){
+    private void checkRecordIntent(Bundle savedState, BottomNavigationView btmNav){
+        if (savedState != null)
+            return; //retrieve starting intent only once
         String nextFragment = getIntent().getStringExtra(RecordIntentConstants.NAME);
         if (nextFragment != null) {
             //if activity received intent from record notification go to record fragment
