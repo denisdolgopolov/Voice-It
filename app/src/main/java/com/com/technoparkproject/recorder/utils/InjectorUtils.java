@@ -3,7 +3,7 @@ package com.com.technoparkproject.recorder.utils;
 import android.content.Context;
 
 import com.com.technoparkproject.recorder.VoiceItApplication;
-import com.com.technoparkproject.recorder.service.AudioRecorder;
+import com.com.technoparkproject.recorder.AudioRecorder;
 import com.com.technoparkproject.recorder.service.RecService;
 import com.com.technoparkproject.recorder.service.RecorderConnection;
 

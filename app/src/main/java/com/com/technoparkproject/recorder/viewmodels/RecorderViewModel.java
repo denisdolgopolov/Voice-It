@@ -12,8 +12,8 @@ import androidx.lifecycle.Observer;
 import com.com.technoparkproject.recorder.utils.SingleLiveEvent;
 import com.com.technoparkproject.recorder.repository.RecordRepo;
 import com.com.technoparkproject.recorder.repository.RecordTopic;
-import com.com.technoparkproject.recorder.service.AudioRecorder;
-import com.com.technoparkproject.recorder.service.RecordState;
+import com.com.technoparkproject.recorder.AudioRecorder;
+import com.com.technoparkproject.recorder.RecordState;
 import com.com.technoparkproject.recorder.service.RecService;
 import com.com.technoparkproject.recorder.utils.InjectorUtils;
 

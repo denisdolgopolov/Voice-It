@@ -1,4 +1,4 @@
-package com.com.technoparkproject.recorder.service;
+package com.com.technoparkproject.recorder;
 
 public enum RecordState {
     INIT,
