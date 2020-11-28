@@ -4,24 +4,19 @@ import android.content.Context;
 
 import com.com.technoparkproject.VoiceItApplication;
 import com.com.technoparkproject.service.AudioRecorder;
-import com.com.technoparkproject.service.Recorder;
+import com.com.technoparkproject.service.RecService;
 import com.com.technoparkproject.service.RecorderConnection;
 
 public final class InjectorUtils {
 
     private InjectorUtils(){}
 
-    public static Recorder provideRecorder(Context context) {
-        RecorderConnection recServiceConnection = provideRecordingServiceConn(context);
+    public static RecService provideRecService(Context context) {
+        RecorderConnection recServiceConnection = VoiceItApplication.from(context).getRecordConnection();
         return recServiceConnection.getRecorder();
     }
 
-    //todo remove this method
-    public static RecorderConnection provideRecordingServiceConn(Context context) {
-        return VoiceItApplication.from(context).getRecordConnection();
-    }
-
-    public static AudioRecorder provideAudioRecorder(Context context){
+    public static AudioRecorder provideRecorder(Context context){
         return VoiceItApplication.from(context).getRecorder();
     }
 }

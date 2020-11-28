@@ -98,7 +98,6 @@ public class AudioRecorder {
     }
 
     private void getBufferSize() {
-        //minimum buffer size in bytes
         int minBufferSize = AudioRecord.getMinBufferSize(
                 mRecProfile.getSamplingRate(),
                 mRecProfile.getConfigChannels(),
@@ -109,15 +108,14 @@ public class AudioRecorder {
                 mADTSStream.getMaxFrameLength()* mRecProfile.getFrameSize());
     }
 
-    public void configure(){
+    public void configure() throws IllegalStateException{
         //may use some special client reconfig logic in future here
         if (mRecordState.getValue() != RecordState.STOP)
-            throw new IllegalStateException("configure call wrong state");
+            throw new IllegalStateException("configure() called when not in STOP state");
         mRecordState.setValue(RecordState.INIT);
     }
 
     private void configureSelf(){
-        //mRecordTimeInMills = 0;
         mADTSStream = new ADTSStream(mRecProfile);
 
         getBufferSize();
@@ -130,17 +128,16 @@ public class AudioRecorder {
     }
 
 
-    public void prepare(File outFile){
+    public void prepare(File outFile) throws IllegalStateException{
         if (mRecordState.getValue() != RecordState.INIT
                 && mRecordState.getValue() != RecordState.STOP)
-            throw new IllegalStateException("prepare call wrong state");
+            throw new IllegalStateException("prepare() called when not in STOP or INIT state");
         setOutputFile(outFile);
         reset();
         mRecordState.setValue(RecordState.READY);
     }
 
     private void reset(){
-        //mRecTime.setValue(0);
         mRecRawSize.set(0);
         mRecordTimeInMills = 0;
     }
@@ -158,12 +155,11 @@ public class AudioRecorder {
     }
 
 
-    public void resume(){
+    public void resume() throws IllegalStateException{
         if (mRecordState.getValue()!=RecordState.READY
                 && mRecordState.getValue()!=RecordState.PAUSE)
-            throw new IllegalStateException("resume call wrong state");
+            throw new IllegalStateException("resume() called when not in READY or PAUSE state");
 
-        //todo: move it to end of method???
         mRecordState.setValue(RecordState.RECORDING);
 
         FileChannel recordFileChannel = mRecordBOS.getChannel();
@@ -199,15 +195,10 @@ public class AudioRecorder {
 
     }
 
-    public void pause(){
+    public void pause() throws IllegalStateException{
         if (mRecordState.getValue()!=RecordState.RECORDING)
-            throw new IllegalStateException("pause call wrong state");
+            throw new IllegalStateException("pause() called when not in RECORDING state");
 
-        //todo: remove???????
-        if (mAudioRecord == null) {
-            Log.e("pauseRecording", "AudioRecord is null!");
-            return;
-        }
 
         mIsRecTasksCancel.set(true);
         mTimeFuture.cancel(false);
@@ -226,10 +217,10 @@ public class AudioRecorder {
     }
 
 
-    public void stop(){
+    public void stop() throws IllegalStateException{
         if (mRecordState.getValue()!=RecordState.RECORDING
             && mRecordState.getValue()!=RecordState.PAUSE)
-            throw new IllegalStateException("stop call wrong state");
+            throw new IllegalStateException("stop() called when not in RECORDING or PAUSE state");
 
         if (mRecordState.getValue() == RecordState.RECORDING)
             pause();
@@ -271,9 +262,4 @@ public class AudioRecorder {
         return recMillis;
     }
 
-
-    //DEBUG: measuring call times
-    private static long getMillis(long startTime, long endTime){
-        return (endTime-startTime)/1000000;
-    }
 }

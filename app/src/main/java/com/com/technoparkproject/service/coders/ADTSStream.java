@@ -2,7 +2,6 @@ package com.com.technoparkproject.service.coders;
 
 import android.util.Log;
 
-import com.com.technoparkproject.service.AudioRecorder;
 import com.com.technoparkproject.service.storage.RecordingProfile;
 
 import java.nio.BufferOverflowException;
@@ -11,7 +10,6 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-//todo move encoder from this class possibly
 public class ADTSStream implements PacketStream<ByteBuffer>{
     public final Encoder<ByteBuffer> mAACEncoder;
 
@@ -72,7 +70,6 @@ public class ADTSStream implements PacketStream<ByteBuffer>{
      * @param pcmFrame: ByteBuffer containing PCM data
      * @return list of ADTS packets
      */
-    //todo add this to interface also probably
     public List<ByteBuffer> getPackets(ByteBuffer pcmFrame){
         final int pcmLength = pcmFrame.remaining();
 
@@ -247,20 +244,6 @@ public class ADTSStream implements PacketStream<ByteBuffer>{
 
         ByteBuffer headerBuffer = ByteBuffer.wrap(headerADTS);
         return headerBuffer;
-
-        /*//concatenate header and load into packet
-        ByteBuffer packet = ByteBuffer.allocateDirect(frameLength).order(ByteOrder.nativeOrder());
-        ByteBuffer headerBuffer = ByteBuffer.wrap(headerADTS);
-        try {
-            packet.put(headerBuffer);
-            packet.put(aacLoad);
-        }
-        catch (BufferOverflowException e){
-            Log.e(this.getClass().getSimpleName(),
-                    "Buffer overflow when constructing packet", e);
-            return null;
-        }
-        return packet;*/
     }
 
 

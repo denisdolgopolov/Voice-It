@@ -6,7 +6,6 @@ import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.util.Log;
 
-import com.com.technoparkproject.service.AudioRecorder;
 import com.com.technoparkproject.service.storage.RecordingProfile;
 
 import java.io.IOException;
@@ -19,8 +18,6 @@ import java.util.List;
 public class AACEncoder implements Encoder<ByteBuffer> {
 
     private static final int MAX_INPUT_POLL_COUNT = 10;
-    //private final int mBytesPerSample;
-   // private final int mChannelCount;
     private final RecordingProfile mRecProfile;
     // The encoder instance
     private MediaCodec mEncoder;
@@ -205,9 +202,7 @@ public class AACEncoder implements Encoder<ByteBuffer> {
     }
 
 
-    //todo make new null contract - return empty buffer instead of null
     //AAC encoding for one pcmFrame
-    //bufferInfo will store flags and other data describing output buffer
     //NOTE: pcmFrame should have valid position and limit before invoking this method
     public ByteBuffer encode(final ByteBuffer pcmFrame) {
         if (pcmFrame.remaining() > getMaxFrameLength() * mRecProfile.getFrameSize())

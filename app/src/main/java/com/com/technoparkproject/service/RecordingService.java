@@ -15,7 +15,7 @@ import com.com.technoparkproject.repository.RecordRepo;
 
 import java.io.File;
 
-public class RecordingService extends Service implements Recorder{
+public class RecordingService extends Service implements RecService {
 
     private File mRecordFile;
 
@@ -29,7 +29,7 @@ public class RecordingService extends Service implements Recorder{
 
 
     public class RecordBinder extends Binder {
-        public Recorder getRecorder() {
+        public RecService getRecorder() {
             return RecordingService.this;
         }
     }
@@ -110,9 +110,7 @@ public class RecordingService extends Service implements Recorder{
     public void onDestroy() {
         super.onDestroy();
         Log.d("SERVICE","destroy()");
-        //mAudioRecorder.getRecordState().removeObserver(mRecStateObserver);
         mAudioRecorder.getRecTime().removeObserver(mRecTimeObserver);
-        //mAudioRecorder.release();
         mAudioRecorder = null;
         mRecordFile = null;
     }

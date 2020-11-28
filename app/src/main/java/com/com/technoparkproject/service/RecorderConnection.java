@@ -9,15 +9,12 @@ import android.util.Log;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.OnLifecycleEvent;
 
 public final class RecorderConnection {
     private RecordingService.RecordBinder mRecServiceBinder;
 
-    public Recorder getRecorder(){
+    public RecService getRecorder(){
         if (mRecServiceBinder == null) {
             Log.e(this.getClass().getSimpleName(),
                     "Can't getRecorder, binder is not initialised!");
