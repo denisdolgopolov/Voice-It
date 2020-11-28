@@ -5,12 +5,14 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.SingleLiveEvent;
 import com.com.technoparkproject.repository.RecordRepo;
 import com.com.technoparkproject.repository.RecordTopic;
+import com.com.technoparkproject.service.AudioRecorder;
 import com.com.technoparkproject.service.RecordState;
 import com.com.technoparkproject.service.Recorder;
 import com.com.technoparkproject.service.RecorderConnection;
@@ -20,26 +22,42 @@ import java.io.File;
 
 public class RecorderViewModel extends AndroidViewModel {
 
-    public MediatorLiveData<RecordState> getRecState(){
-        return mRecLiveData.getRecState();
+    public LiveData<RecordState> getRecState(){
+        return mRecState;
     }
 
-    private final RecorderConnection.RecordingLiveData mRecLiveData;
-
-
-    public MediatorLiveData<Integer> getRecTime() {
-       return mRecLiveData.getTimeData();
+    public LiveData<Integer> getRecTime() {
+       return mRecTime;
     }
+
+    private final MediatorLiveData<RecordState> mRecState;
+
+    private final MediatorLiveData<Integer> mRecTime;
 
     public RecorderViewModel(@NonNull Application application) {
         super(application);
-        mRecLiveData = InjectorUtils.provideRecordingLiveData(getApplication());
+        mRecState = new MediatorLiveData<>();
+        mRecTime = new MediatorLiveData<>();
+        mRecTime.setValue(0);
+        AudioRecorder recorder = InjectorUtils.provideAudioRecorder(application);
+        mRecState.addSource(recorder.getRecordState(), new Observer<RecordState>() {
+            @Override
+            public void onChanged(RecordState recordState) {
+                mRecState.setValue(recordState);
+            }
+        });
+        mRecTime.addSource(recorder.getRecTime(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer seconds) {
+                mRecTime.setValue(seconds);
+            }
+        });
+
     }
 
 
     public void OnRecPauseClick(){
         Recorder recorder = InjectorUtils.provideRecorder(getApplication());
-
         if (getRecState().getValue() == RecordState.INIT)
             recorder.startRecording();
         else if (getRecState().getValue() == RecordState.PAUSE)
@@ -49,6 +67,13 @@ public class RecorderViewModel extends AndroidViewModel {
 
     }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        AudioRecorder recorder = InjectorUtils.provideAudioRecorder(getApplication());
+        mRecState.removeSource(recorder.getRecordState());
+        mRecTime.removeSource(recorder.getRecTime());
+    }
 
     public MediatorLiveData<RecStopState> mRecStopState = new MediatorLiveData<>();
 
@@ -116,6 +141,7 @@ public class RecorderViewModel extends AndroidViewModel {
 
         //configure recorder for next recording
         recorder.configureRecording();
+        mRecTime.setValue(0);
 
         mSaveEvent.call(); //recording is ready to be saved to repo/other storage
     }

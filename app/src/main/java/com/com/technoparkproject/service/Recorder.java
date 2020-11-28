@@ -15,6 +15,6 @@ public interface Recorder {
     RecordTopic saveRecording();*/
     File getRecordFile();
     int getRecordDuration();
-    LiveData<RecordState> getRecordState();
-    LiveData<Integer> getRecTime();
+    //LiveData<RecordState> getRecordState();
+    //LiveData<Integer> getRecTime();
 }

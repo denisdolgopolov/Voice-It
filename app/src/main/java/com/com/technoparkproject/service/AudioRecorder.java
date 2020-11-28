@@ -4,6 +4,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.com.technoparkproject.service.coders.ADTSStream;
@@ -53,7 +54,7 @@ public class AudioRecorder {
 
     private int mRecordTimeInMills; //internal record time in millis
 
-    public MutableLiveData<RecordState> getRecordState(){
+    public LiveData<RecordState> getRecordState(){
         return mRecordState;
     }
 
@@ -61,7 +62,7 @@ public class AudioRecorder {
 
     private final MutableLiveData<Integer> mRecTime;
 
-    public MutableLiveData<Integer> getRecTime() {
+    public LiveData<Integer> getRecTime() {
         return mRecTime;
     }
 
@@ -86,6 +87,10 @@ public class AudioRecorder {
                 configureSelf();
             }
         });
+    }
+
+    public RecordingProfile getRecordingProfile(){
+        return mRecProfile;
     }
 
     private static int roundUp(int value, int multiplier) {

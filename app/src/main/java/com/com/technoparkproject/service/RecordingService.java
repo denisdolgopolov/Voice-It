@@ -5,11 +5,12 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import com.com.technoparkproject.VoiceItApplication;
 import com.com.technoparkproject.repository.RecordRepo;
 
 import java.io.File;
@@ -22,14 +23,6 @@ public class RecordingService extends Service implements Recorder{
 
     private AudioRecorder mAudioRecorder;
     private RecTimeObserver mRecTimeObserver;
-
-    public MutableLiveData<RecordState> getRecordState(){
-        return mAudioRecorder.getRecordState();
-    }
-
-    public MutableLiveData<Integer> getRecTime() {
-        return mAudioRecorder.getRecTime();
-    }
 
 
     private final IBinder mBinder = new RecordBinder();
@@ -49,7 +42,7 @@ public class RecordingService extends Service implements Recorder{
 
     @Override
     public void onCreate() {
-        mAudioRecorder = new AudioRecorder();
+        mAudioRecorder = VoiceItApplication.from(this).getRecorder();
         mRecTimeObserver = new RecTimeObserver();
         mAudioRecorder.getRecTime().observeForever(mRecTimeObserver);
 
@@ -78,8 +71,8 @@ public class RecordingService extends Service implements Recorder{
     }
 
     public void startRecording() {
-        //todo: remove const string somehow
-        mRecordFile = RecordRepo.createTempFile(".aac",this);
+        String fileFormat = mAudioRecorder.getRecordingProfile().getFileFormat();
+        mRecordFile = RecordRepo.createTempFile(fileFormat,this);
 
         mAudioRecorder.prepare(mRecordFile);
 
@@ -101,6 +94,7 @@ public class RecordingService extends Service implements Recorder{
     public void stopRecording(){
         mAudioRecorder.stop();
         runForeground(false);
+        stopSelf();
     }
 
     public File getRecordFile(){
@@ -115,9 +109,10 @@ public class RecordingService extends Service implements Recorder{
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d("SERVICE","destroy()");
         //mAudioRecorder.getRecordState().removeObserver(mRecStateObserver);
         mAudioRecorder.getRecTime().removeObserver(mRecTimeObserver);
-        mAudioRecorder.release();
+        //mAudioRecorder.release();
         mAudioRecorder = null;
         mRecordFile = null;
     }
