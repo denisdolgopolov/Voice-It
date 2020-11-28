@@ -53,6 +53,7 @@ public class AudioRecorder {
     private final AtomicInteger mRecRawSize = new AtomicInteger();
 
     private int mRecordTimeInMills; //internal record time in millis
+    private boolean mIsAudioRecordInit;
 
     public LiveData<RecordState> getRecordState(){
         return mRecordState;
@@ -109,10 +110,28 @@ public class AudioRecorder {
     }
 
     public void configure() throws IllegalStateException{
-        //may use some special client reconfig logic in future here
-        if (mRecordState.getValue() != RecordState.STOP)
-            throw new IllegalStateException("configure() called when not in STOP state");
+        if (mRecordState.getValue() == RecordState.RECORDING
+        || mRecordState.getValue() == RecordState.PAUSE) {
+            throw new IllegalStateException("configure() called when in PAUSE or RECORDING state");
+        }
+        if (!mIsAudioRecordInit){
+            initAudioRecord();
+        }
         mRecordState.setValue(RecordState.INIT);
+    }
+
+    private void initAudioRecord(){
+        mAudioRecord = new AudioRecord(AUDIO_SOURCE,
+                mRecProfile.getSamplingRate(), mRecProfile.getConfigChannels(),
+                mRecProfile.getAudioFormat(), mBufferSizeInBytes);
+        if (mAudioRecord.getState() ==
+                AudioRecord.STATE_UNINITIALIZED) {
+            Log.e("AudioRecord init error", "AudioRecord state is uninitialized after constructor called");
+            mIsAudioRecordInit = false;
+        }
+        else {
+            mIsAudioRecordInit = true;
+        }
     }
 
     private void configureSelf(){
@@ -120,11 +139,10 @@ public class AudioRecorder {
 
         getBufferSize();
 
-        mAudioRecord = new AudioRecord(AUDIO_SOURCE,
-                mRecProfile.getSamplingRate(), mRecProfile.getConfigChannels(),
-                mRecProfile.getAudioFormat(), mBufferSizeInBytes);
+        initAudioRecord();
 
-        mRecordState.postValue(RecordState.INIT);
+        if (mIsAudioRecordInit)
+            mRecordState.postValue(RecordState.INIT);
     }
 
 

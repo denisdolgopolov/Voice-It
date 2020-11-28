@@ -1,6 +1,7 @@
 package com.com.technoparkproject.view.fragments;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.recorder.RecordState;
+import com.com.technoparkproject.recorder.utils.InjectorUtils;
 import com.com.technoparkproject.recorder.viewmodels.RecorderViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -59,6 +62,9 @@ public class RecordFragment extends Fragment {
         if (requestCode == PERMISSIONS_REQUEST_RECORD_AUDIO) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //configure recorder manually, because it's not possible to fully init it
+                //before permissions are granted by the user
+                InjectorUtils.provideRecorder(getContext()).configure();
                 LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
                 LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
                 recLayout.setVisibility(View.VISIBLE);
