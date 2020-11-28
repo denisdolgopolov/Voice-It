@@ -33,6 +33,12 @@ public class RecorderViewModel extends AndroidViewModel {
 
     private final MediatorLiveData<Integer> mRecTime;
 
+    private static final int MAX_RECORD_LENGTH = 60*15; //max allowed recording in seconds
+
+    public int getMaxRecordLength() {
+        return MAX_RECORD_LENGTH;
+    }
+
     public RecorderViewModel(@NonNull Application application) {
         super(application);
         mRecState = new MediatorLiveData<>();
@@ -49,6 +55,10 @@ public class RecorderViewModel extends AndroidViewModel {
             @Override
             public void onChanged(Integer seconds) {
                 mRecTime.setValue(seconds);
+                //imitate stop click if recording limit is reached
+                //todo: this record limit stop will work ONLY if record ui is active, make it work properly
+                if (seconds == getMaxRecordLength())
+                    onStopClick();
             }
         });
 

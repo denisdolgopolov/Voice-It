@@ -48,15 +48,19 @@ public class RecordingService extends Service implements RecService {
 
     }
 
+    private boolean mIsForeground = false;
+
     //start/stops the service in foreground mode
     private void runForeground(boolean isForeground){
         if (isForeground){
             RecorderNotification.createNotificationChannel(this);
             startForeground(FOREGROUND_ID,
                     RecorderNotification.buildForegroundNotification("",this));
+            mIsForeground = true;
         }
         else{
             stopForeground(true);
+            mIsForeground = false;
         }
     }
 
@@ -118,6 +122,8 @@ public class RecordingService extends Service implements RecService {
     private class RecTimeObserver implements Observer<Integer> {
         @Override
         public void onChanged(Integer seconds) {
+            if (!mIsForeground)
+                return;
             String notifyText = DateUtils.formatElapsedTime(seconds);
             RecorderNotification.updateNotification(notifyText, RecordingService.this,FOREGROUND_ID);
         }

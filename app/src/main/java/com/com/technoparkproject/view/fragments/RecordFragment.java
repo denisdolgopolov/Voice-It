@@ -165,6 +165,14 @@ public class RecordFragment extends Fragment {
         });
 
 
+        final ProgressBar recLimitProgress = view.findViewById(R.id.record_limit_progress);
+        recLimitProgress.setMax(recViewModel.getMaxRecordLength());
+        recViewModel.getRecTime().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer seconds) {
+                recLimitProgress.setProgress(seconds);
+            }
+        });
     }
 
     @Override

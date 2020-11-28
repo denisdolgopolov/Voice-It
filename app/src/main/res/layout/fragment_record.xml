@@ -57,15 +57,14 @@
                 android:layout_height="200dp"
                 android:layout_marginTop="24dp">
 
-
-            <ImageView
+            <ProgressBar
+                    android:id="@+id/record_limit_progress"
+                    style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/record_timer_background" />
-
+                    android:layout_height="match_parent"
+                    android:background="@drawable/record_progress_circle_shape"
+                    android:indeterminate="false"
+                    android:progressDrawable="@drawable/record_circular_progress" />
 
             <TextView
                     android:id="@+id/record_time_text"
