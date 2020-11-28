@@ -124,8 +124,7 @@ public class AudioRecorder {
         mAudioRecord = new AudioRecord(AUDIO_SOURCE,
                 mRecProfile.getSamplingRate(), mRecProfile.getConfigChannels(),
                 mRecProfile.getAudioFormat(), mBufferSizeInBytes);
-        if (mAudioRecord.getState() ==
-                AudioRecord.STATE_UNINITIALIZED) {
+        if (mAudioRecord.getState() ==  AudioRecord.STATE_UNINITIALIZED) {
             Log.e("AudioRecord init error", "AudioRecord state is uninitialized after constructor called");
             mIsAudioRecordInit = false;
         }
