@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.models.Record;
+import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view_models.PlaylistViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
@@ -32,6 +33,7 @@ public class PlaylistFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ((MainActivity) getActivity()).setToolbar(getString(R.string.fragment_playlist_name));
         View view = inflater.inflate(R.layout.fragment_playlist, container, false);
 
         playlistViewModel = new ViewModelProvider(getActivity()).get(PlaylistViewModel.class);
