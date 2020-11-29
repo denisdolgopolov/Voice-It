@@ -24,9 +24,9 @@ import android.widget.TextView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
-import com.com.technoparkproject.recorder.RecordState;
-import com.com.technoparkproject.recorder.utils.InjectorUtils;
-import com.com.technoparkproject.recorder.viewmodels.RecorderViewModel;
+import com.technopark.recorder.RecordState;
+import com.technopark.recorder.utils.InjectorUtils;
+import com.com.technoparkproject.viewmodels.RecorderViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;

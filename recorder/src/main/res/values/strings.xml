@@ -1,0 +1,5 @@
+<resources>
+    <string name="channel_audio_app">Voice-it channel</string>
+    <string name="channel_description">Notifications of Voice-it</string>
+    <string name="audio_record">Идет запись</string>
+</resources>
