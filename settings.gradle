@@ -1,4 +1,3 @@
-include ':repo'
 include ':firebaseloadermodule'
 include ':player'
 rootProject.name='TechnoparkProject'

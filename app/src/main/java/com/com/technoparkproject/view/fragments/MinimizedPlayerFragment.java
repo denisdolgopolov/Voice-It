@@ -3,7 +3,6 @@ package com.com.technoparkproject.view.fragments;
 import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import com.com.technoparkproject.view_models.PlayerViewModel;
 
 public class MinimizedPlayerFragment extends Fragment {
     private PlayerViewModel viewModel;
-    String TAG = "PlayerFragment";
     ImageButton nextButton;
     ImageButton pauseButton;
     ImageButton playButton;

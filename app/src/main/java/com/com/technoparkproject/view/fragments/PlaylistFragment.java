@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +18,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
-import com.com.technoparkproject.view_models.PlayerViewModel;
 import com.com.technoparkproject.view_models.PlaylistViewModel;
-import com.example.repo.Record;
+import com.example.player.Record;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
@@ -35,13 +33,18 @@ public class PlaylistFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_playlist, container, false);
+
         playlistViewModel = new ViewModelProvider(getActivity()).get(PlaylistViewModel.class);
+
         RecyclerView PlaylistRecyclerView = view.findViewById(R.id.playlist_recycler_view);
         PlaylistRecyclerView.setAdapter(playlistAdapter);
+
         getChildFragmentManager().beginTransaction().replace(R.id.minimized_player, new MinimizedPlayerFragment()).commit();
+
         View playerView = view.findViewById(R.id.minimized_player);
         BottomSheetBehavior behavior = BottomSheetBehavior.from(playerView);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
         playlistViewModel.currentPlaylist.observe(getViewLifecycleOwner(), new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> strings) {
@@ -95,7 +98,7 @@ public class PlaylistFragment extends Fragment {
                 public void onChanged(MediaMetadataCompat mediaMetadataCompat) {
                     if (playlistViewModel.currentMetadata.getValue() != null) {
                         if (record.uuid.equals(playlistViewModel.currentMetadata.getValue().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
-                            holder.itemView.setBackgroundColor(Color.parseColor("#FFC4C4"));
+                            holder.itemView.setBackgroundColor(Color.parseColor(getString(R.string.selected_record_color)));
                         } else {
                             holder.itemView.setBackgroundColor(Color.WHITE);
                         }
@@ -106,7 +109,6 @@ public class PlaylistFragment extends Fragment {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Надо ли выносить адаптер в отдельный файл, а вью модель убирать за интерфейс?
                     playlistViewModel.itemClicked(position);
                 }
             });

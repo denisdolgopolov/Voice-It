@@ -9,9 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
-import com.example.repo.Record;
-import com.example.repo.TestRecordsRepository;
-import com.example.repo.Topic;
+import com.example.player.Record;
 
 import java.util.ArrayList;
 import java.util.List;

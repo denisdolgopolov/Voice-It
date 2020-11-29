@@ -1,8 +1,6 @@
 package com.com.technoparkproject.view_models;
 
 import android.app.Application;
-import android.content.Context;
-import android.support.v4.media.MediaMetadataCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.AutoCompleteTextView;
@@ -11,14 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.com.technoparkproject.VoiceItApplication;
 import com.example.player.PlayerServiceConnection;
-import com.example.repo.Record;
-import com.example.repo.TestRecordsRepository;
-import com.example.repo.Topic;
+import com.example.player.Record;
 
 import java.util.List;
 
@@ -36,7 +30,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     }
 
     private void queryTopics() {
-        List<Topic> topics = TestRecordsRepository.getListTopics();
+       // List<Topic> topics = TestRecordsRepository.getListTopics();
         this.topics.postValue(topics);
     }
 
@@ -64,6 +58,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     }
 
     public void addToPlaylistClicked(Record record) {
+        //TODO
         playerServiceConnection.addToPlaylist(record.uuid);
     }
 

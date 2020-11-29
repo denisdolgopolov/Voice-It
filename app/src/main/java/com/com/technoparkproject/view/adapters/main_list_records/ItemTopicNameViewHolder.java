@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
-import com.example.repo.Topic;
 import com.example.repo.TopicTypes;
 
 class ItemTopicNameViewHolder extends RecyclerView.ViewHolder {

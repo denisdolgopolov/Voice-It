@@ -1,4 +1,4 @@
-package com.example.repo;
+package com.example.player;
 
 public final class Record {
     public final String uuid;

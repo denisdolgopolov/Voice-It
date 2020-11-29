@@ -4,15 +4,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.lifecycle.MutableLiveData;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +29,6 @@ public class PlayerServiceConnection {
     public MutableLiveData<PlaybackStateCompat> playbackState = new MutableLiveData<>();
     public MutableLiveData<Long> mediaPosition = new MutableLiveData<>();
     ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-    ScheduledFuture timeFuture;
 
 
     ServiceConnection serviceConnection = new ServiceConnection() {
@@ -59,6 +55,7 @@ public class PlayerServiceConnection {
     };
 
     private final MediaControllerCompat.Callback mediaControllerCallback = new MediaControllerCompat.Callback() {
+        private ScheduledFuture timeFuture;
 
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
@@ -66,10 +63,11 @@ public class PlayerServiceConnection {
             playbackState.postValue(state);
             if (state != null) {
                 if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-                    timeFuture = scheduledExecutorService.scheduleAtFixedRate(checkPlaybackPosition, 0, POSITION_UPDATE_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
+                    timeFuture = scheduledExecutorService.scheduleAtFixedRate(checkPlaybackPosition,
+                            0, POSITION_UPDATE_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
 
                 } else {
-                        timeFuture.cancel(false);
+                    timeFuture.cancel(false);
                 }
             }
         }
@@ -80,6 +78,18 @@ public class PlayerServiceConnection {
             nowPlayingMediaMetadata.postValue(metadata);
             mediaPosition.postValue(0L);
         }
+
+        final Runnable checkPlaybackPosition = new Runnable() {
+            @Override
+            public void run() {
+                if (playerService.exoPlayer != null) {
+                    Long currPosition = playerService.exoPlayer.getCurrentPosition();
+                    if (!currPosition.equals(mediaPosition.getValue())) {
+                        mediaPosition.postValue(currPosition);
+                    }
+                }
+            }
+        };
     };
 
 
@@ -112,17 +122,5 @@ public class PlayerServiceConnection {
     public void setPlaylist(String topicUUID) {
         // TODO
     }
-
-    Runnable checkPlaybackPosition = new Runnable() {
-        @Override
-        public void run() {
-            if (playerService.exoPlayer != null) {
-                Long currPosition = playerService.exoPlayer.getCurrentPosition();
-                if (!currPosition.equals(mediaPosition.getValue())) {
-                    mediaPosition.postValue(currPosition);
-                }
-            }
-        }
-    };
 }
 
