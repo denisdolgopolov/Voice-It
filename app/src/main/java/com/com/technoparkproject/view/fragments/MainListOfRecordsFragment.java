@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.TestErrorShower;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
+import com.com.technoparkproject.models.Record;
+import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -76,10 +78,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
     private void setAutoCompleteValues(List<Topic> topics) {
         ArrayList<String> names = new ArrayList<>();
-        for (Topic topic : topics)
+        for (Topic topic: topics)
             names.add(topic.name);
 
-        if (getContext() == null) return;
+        if(getContext() == null) return;
         ArrayAdapter adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, names);
         searchingField.setAdapter(adapter);
@@ -92,7 +94,8 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
     @Override
     public void showRecordMoreFun(Record record) {
-        if (getContext() == null) return;
+        if(getContext() == null) return;
+
         Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
         @SuppressLint("InflateParams")
         View bottomSheetView = getLayoutInflater()

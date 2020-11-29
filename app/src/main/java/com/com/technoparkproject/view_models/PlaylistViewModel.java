@@ -9,8 +9,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.com.technoparkproject.VoiceItApplication;
+import com.com.technoparkproject.models.Record;
 import com.example.player.PlayerServiceConnection;
-import com.example.player.Record;
 
 import java.util.ArrayList;
 import java.util.List;

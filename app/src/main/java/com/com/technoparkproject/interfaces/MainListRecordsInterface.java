@@ -1,6 +1,6 @@
 package com.com.technoparkproject.interfaces;
 
-import com.example.player.Record;
+import com.com.technoparkproject.models.Record;
 
 public interface MainListRecordsInterface {
     void showAllRecords(String topicUUID);

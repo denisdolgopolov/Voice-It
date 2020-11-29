@@ -11,8 +11,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.com.technoparkproject.VoiceItApplication;
+import com.com.technoparkproject.models.Record;
+import com.com.technoparkproject.models.Topic;
 import com.example.player.PlayerServiceConnection;
-import com.example.player.Record;
 
 import java.util.List;
 
@@ -30,8 +31,8 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     }
 
     private void queryTopics() {
-       // List<Topic> topics = TestRecordsRepository.getListTopics();
-        this.topics.postValue(topics);
+        //List<Topic> topics = TestRecordsRepository.getListTopics();
+        //this.topics.postValue(topics);
     }
 
     public LiveData<String> getSearchingValue() {

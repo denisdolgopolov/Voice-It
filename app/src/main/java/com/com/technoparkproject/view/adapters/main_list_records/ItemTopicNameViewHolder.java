@@ -7,10 +7,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
-import com.example.repo.TopicTypes;
+import com.com.technoparkproject.models.Topic;
+import com.com.technoparkproject.models.TopicTypes;
 
 class ItemTopicNameViewHolder extends RecyclerView.ViewHolder {
-    private TextView textViewTitle;
+    private final TextView textViewTitle;
 
     ItemTopicNameViewHolder(@NonNull View itemView) {
         super(itemView);

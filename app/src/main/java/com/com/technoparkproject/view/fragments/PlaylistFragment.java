@@ -18,8 +18,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
+import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.view_models.PlaylistViewModel;
-import com.example.player.Record;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;

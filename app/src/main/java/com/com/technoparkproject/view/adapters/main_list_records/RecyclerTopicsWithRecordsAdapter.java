@@ -9,16 +9,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
-import com.example.player.Record;
+import com.com.technoparkproject.models.Record;
+import com.com.technoparkproject.models.Topic;
+import com.com.technoparkproject.repositories.TestRecordsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
-    private ArrayList<Object> items = new ArrayList<>();
-    private ArrayList<Topic> allTopics = new ArrayList<>();
-    private static final int COUNT_RECORDS_SHOW = 4;
-    private MainListRecordsInterface listener;
+    private final ArrayList<Object> items = new ArrayList<>();
+    private final ArrayList<Topic> allTopics = new ArrayList<>();
+    private static final int COUNT_RECORDS_SHOW = 3;
+    private final MainListRecordsInterface listener;
 
     public RecyclerTopicsWithRecordsAdapter(MainListRecordsInterface listener) {
         this.listener = listener;

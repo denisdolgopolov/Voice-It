@@ -103,7 +103,6 @@ public class PlayerServiceConnection {
     }
 
     public void addToPlaylist(String UUID) {
-        // не уверен, что это хорошее решение
         List<String> temp = playerService.playlist.getValue();
         if (temp == null) {
             temp = new ArrayList<>();

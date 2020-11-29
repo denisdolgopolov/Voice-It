@@ -10,7 +10,7 @@ import com.com.technoparkproject.R;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 
 class ItemShowAllRecordsInTopic extends RecyclerView.ViewHolder {
-    private ImageButton bShowAllRecords;
+    private final ImageButton bShowAllRecords;
 
     ItemShowAllRecordsInTopic(@NonNull View itemView) {
         super(itemView);
