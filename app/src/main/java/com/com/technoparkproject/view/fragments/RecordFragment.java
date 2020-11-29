@@ -63,7 +63,7 @@ public class RecordFragment extends Fragment {
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //configure recorder manually, because it's not possible to fully init it
                 //before permissions are granted by the user
-                InjectorUtils.provideRecorder(getContext()).configure();
+                InjectorUtils.provideRecService(getContext()).configureRecording();
                 LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
                 LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
                 recLayout.setVisibility(View.VISIBLE);
@@ -187,7 +187,8 @@ public class RecordFragment extends Fragment {
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {
                 super.onDismissed(transientBottomBar, event);
-                recViewModel.saveRecording();
+                if (event != DISMISS_EVENT_ACTION)
+                    recViewModel.saveRecording();
             }
         });
 

@@ -13,14 +13,17 @@ import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.recorder.AudioRecorder;
 import com.com.technoparkproject.recorder.VoiceItApplication;
-import com.com.technoparkproject.recorder.repository.RecordRepo;
+import com.com.technoparkproject.recorder.repository.RecordTopic;
+import com.com.technoparkproject.recorder.repository.RecordTopicRepo;
+import com.com.technoparkproject.recorder.utils.InjectorUtils;
 import com.com.technoparkproject.recorder.utils.SingleLiveEvent;
 
 import java.io.File;
+import java.util.UUID;
 
 public class RecordingService extends Service implements RecService {
 
-    private File mRecordFile;
+    //private File mRecordFile;
 
     private static final int FOREGROUND_ID = 1111;
 
@@ -78,9 +81,10 @@ public class RecordingService extends Service implements RecService {
 
     public void startRecording() {
         String fileFormat = mAudioRecorder.getRecordingProfile().getFileFormat();
-        mRecordFile = RecordRepo.createTempFile(fileFormat,this);
-
-        mAudioRecorder.prepare(mRecordFile);
+        RecordTopicRepo recTopicRepo = InjectorUtils.provideRecordTopicRepo(this);
+        UUID recTopicID = recTopicRepo.createRecord(fileFormat);
+        File recordFile = recTopicRepo.getRecord(recTopicID).getRecordFile();
+        mAudioRecorder.prepare(recordFile);
 
         mAudioRecorder.start();
         final Intent serviceIntent = new Intent(getApplicationContext(), RecordingService.class);
@@ -103,10 +107,6 @@ public class RecordingService extends Service implements RecService {
         stopSelf();
     }
 
-    public File getRecordFile(){
-        return mRecordFile;
-    }
-
     public int getRecordDuration(){
         return mAudioRecorder.getDuration();
     }
@@ -118,10 +118,9 @@ public class RecordingService extends Service implements RecService {
         Log.d("SERVICE","destroy()");
         mAudioRecorder.getRecTime().removeObserver(mRecTimeObserver);
         mAudioRecorder = null;
-        mRecordFile = null;
     }
 
-    private static final int MAX_RECORD_LENGTH = 5*60; //max allowed recording in seconds
+    private static final int MAX_RECORD_LENGTH = 10*60; //max allowed recording in seconds
 
     @Override
     public int getMaxRecDuration() {

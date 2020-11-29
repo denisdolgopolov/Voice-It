@@ -4,12 +4,17 @@ import android.content.Context;
 
 import com.com.technoparkproject.recorder.VoiceItApplication;
 import com.com.technoparkproject.recorder.AudioRecorder;
+import com.com.technoparkproject.recorder.repository.RecordTopicRepo;
 import com.com.technoparkproject.recorder.service.RecService;
 import com.com.technoparkproject.recorder.service.RecorderConnection;
 
 public final class InjectorUtils {
 
     private InjectorUtils(){}
+
+    public static RecordTopicRepo provideRecordTopicRepo(Context context){
+        return VoiceItApplication.from(context).getRecordTopicRepo();
+    }
 
     public static RecService provideRecService(Context context) {
         RecorderConnection recServiceConnection = provideRecServiceConn(context);

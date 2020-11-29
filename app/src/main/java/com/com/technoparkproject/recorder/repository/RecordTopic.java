@@ -18,6 +18,13 @@ public final class RecordTopic {
 
     }
 
+    public RecordTopic(RecordTopic recTopic){
+        this.mDuration = recTopic.mDuration;
+        this.mName = recTopic.mName;
+        this.mTopic = recTopic.mTopic;
+        this.mRecFile = new File(recTopic.mRecFile.getPath());
+    }
+
     public RecordTopic(){}
 
     public String getName() {

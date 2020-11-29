@@ -2,7 +2,7 @@ package com.com.technoparkproject.recorder.service;
 
 import androidx.lifecycle.LiveData;
 
-import java.io.File;
+import java.util.UUID;
 
 public interface RecService {
     void configureRecording();
@@ -10,7 +10,6 @@ public interface RecService {
     void resumeRecording();
     void pauseRecording();
     void stopRecording();
-    File getRecordFile();
     int getRecordDuration();
     int getMaxRecDuration();
     LiveData<Void> getRecLimitEvent();

@@ -5,12 +5,17 @@ import android.content.Context;
 
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.com.technoparkproject.recorder.repository.RecordTopicRepo;
+import com.com.technoparkproject.recorder.repository.RecordTopicRepoImpl;
 import com.com.technoparkproject.recorder.service.RecorderConnection;
 import com.example.player.PlayerServiceConnection;
 
 public class VoiceItApplication extends Application {
 
     private AudioRecorder mAudioRecorder;
+    private RecordTopicRepo mRecordTopicRepo;
+
+
 
     public AudioRecorder getRecorder(){
         return mAudioRecorder;
@@ -41,5 +46,10 @@ public class VoiceItApplication extends Application {
         this.playerServiceConnection = new PlayerServiceConnection(getApplicationContext());
         RecordingServiceConnection recServiceConn = RecordingServiceConnection.getInstance(getApplicationContext());
         ProcessLifecycleOwner.get().getLifecycle().addObserver(mRecConn.getBinderObserver());
+        mRecordTopicRepo = new RecordTopicRepoImpl(getApplicationContext());
+    }
+
+    public RecordTopicRepo getRecordTopicRepo() {
+        return mRecordTopicRepo;
     }
 }

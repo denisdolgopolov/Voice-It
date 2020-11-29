@@ -11,15 +11,17 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import com.com.technoparkproject.recorder.repository.RecordTopicRepo;
 import com.com.technoparkproject.recorder.service.RecorderConnection;
 import com.com.technoparkproject.recorder.utils.SingleLiveEvent;
-import com.com.technoparkproject.recorder.repository.RecordRepo;
+import com.com.technoparkproject.recorder.repository.RecordTopicRepoImpl;
 import com.com.technoparkproject.recorder.repository.RecordTopic;
 import com.com.technoparkproject.recorder.RecordState;
 import com.com.technoparkproject.recorder.service.RecService;
 import com.com.technoparkproject.recorder.utils.InjectorUtils;
 
 import java.io.File;
+import java.util.UUID;
 
 public class RecorderViewModel extends AndroidViewModel {
 
@@ -109,20 +111,15 @@ public class RecorderViewModel extends AndroidViewModel {
         });
     }
 
-    private String mRecName = "Новая запись";
-    private String mRecTopic = "Топик записи";
-
 
     public void dismissRecording(){
-        File recFile = mRec.getRecordFile();
-        RecordRepo.deleteTempFile(recFile);
-        mRec = null;
+        RecordTopicRepo repo = InjectorUtils.provideRecordTopicRepo(getApplication());
+        repo.deleteLastRecord();
     }
 
-    public void saveRecording(){
-        if (mRec!=null) {
-            loadFile(mRec);
-        }
+    public void saveRecording() {
+        RecordTopicRepo repo = InjectorUtils.provideRecordTopicRepo(getApplication());
+        loadFile(repo.getLastRecord());
     }
 
     //todo upload recording
@@ -130,16 +127,12 @@ public class RecorderViewModel extends AndroidViewModel {
         Log.d("save file","saving record: "+recTopic.toString());
     }
 
-    private RecordTopic mRec;
+    //private RecordTopic mRec;
 
     private void saveRec(){
         RecService recService = InjectorUtils.provideRecService(getApplication());
-        RecordTopic rec = new RecordTopic();
-        rec.setRecordFile(recService.getRecordFile());
-        rec.setDuration(recService.getRecordDuration());
-        rec.setName(mRecName);
-        rec.setTopic(mRecTopic);
-        mRec = rec;
+        RecordTopicRepo repo = InjectorUtils.provideRecordTopicRepo(getApplication());
+        repo.updateLastDuration(recService.getRecordDuration());
 
         //configure recorder for next recording
         recService.configureRecording();
@@ -159,8 +152,11 @@ public class RecorderViewModel extends AndroidViewModel {
             }
             return;
         }
-        mRecName = recName;
-        mRecTopic = recTopic;
+
+        RecordTopicRepo repo = InjectorUtils.provideRecordTopicRepo(getApplication());
+        repo.updateLastName(recName);
+        repo.updateLastTopic(recTopic);
+
         if (getRecState().getValue() != RecordState.STOP){
             onStopClick(true);
         }
