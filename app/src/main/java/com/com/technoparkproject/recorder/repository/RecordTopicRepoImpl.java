@@ -3,7 +3,6 @@ package com.com.technoparkproject.recorder.repository;
 import android.content.Context;
 import android.util.Log;
 
-import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.recorder.VoiceItApplication;
 
 import java.io.File;

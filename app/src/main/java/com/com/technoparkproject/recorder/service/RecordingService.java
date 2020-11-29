@@ -13,7 +13,6 @@ import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.recorder.AudioRecorder;
 import com.com.technoparkproject.recorder.VoiceItApplication;
-import com.com.technoparkproject.recorder.repository.RecordTopic;
 import com.com.technoparkproject.recorder.repository.RecordTopicRepo;
 import com.com.technoparkproject.recorder.utils.InjectorUtils;
 import com.com.technoparkproject.recorder.utils.SingleLiveEvent;
@@ -23,7 +22,6 @@ import java.util.UUID;
 
 public class RecordingService extends Service implements RecService {
 
-    //private File mRecordFile;
 
     private static final int FOREGROUND_ID = 1111;
 

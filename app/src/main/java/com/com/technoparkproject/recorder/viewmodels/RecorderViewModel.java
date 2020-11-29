@@ -14,14 +14,10 @@ import androidx.lifecycle.Observer;
 import com.com.technoparkproject.recorder.repository.RecordTopicRepo;
 import com.com.technoparkproject.recorder.service.RecorderConnection;
 import com.com.technoparkproject.recorder.utils.SingleLiveEvent;
-import com.com.technoparkproject.recorder.repository.RecordTopicRepoImpl;
 import com.com.technoparkproject.recorder.repository.RecordTopic;
 import com.com.technoparkproject.recorder.RecordState;
 import com.com.technoparkproject.recorder.service.RecService;
 import com.com.technoparkproject.recorder.utils.InjectorUtils;
-
-import java.io.File;
-import java.util.UUID;
 
 public class RecorderViewModel extends AndroidViewModel {
 
