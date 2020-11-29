@@ -22,6 +22,7 @@ import com.com.technoparkproject.TestErrorShower;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
+import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -39,6 +40,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        ((MainActivity) getActivity()).setToolbar(getString(R.string.fragment_home_name));
         ViewGroup view = (ViewGroup) LayoutInflater.from(getContext())
                 .inflate(R.layout.fragment_main_list_records, container,
                         false);
@@ -93,10 +95,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     @Override
-    public void showRecordMoreFun(Record record) {
+    public void showRecordMoreFun(final Record record) {
         if(getContext() == null) return;
 
-        Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
+        final Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
         @SuppressLint("InflateParams")
         View bottomSheetView = getLayoutInflater()
                 .inflate(R.layout.mlr_bottom_sheet_record_functions, null);

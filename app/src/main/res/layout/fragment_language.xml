@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_language"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56sp"
+        android:layout_marginBottom="56sp"
+        android:orientation="vertical"
+        android:tag="@string/frag_change_language">
+
+    <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_settings_russian"
+            style="@style/button_settings_change"
+            android:gravity="start" />
+
+    <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_settings_english"
+            style="@style/button_settings_change"
+            android:gravity="start" />
+
+    <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_settings_itd"
+            style="@style/button_settings_change"
+            android:gravity="start" />
+
+</LinearLayout>
