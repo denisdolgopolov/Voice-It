@@ -11,7 +11,7 @@ import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.models.TopicTypes;
 
 class ItemTopicNameViewHolder extends RecyclerView.ViewHolder {
-    private TextView textViewTitle;
+    private final TextView textViewTitle;
 
     ItemTopicNameViewHolder(@NonNull View itemView) {
         super(itemView);

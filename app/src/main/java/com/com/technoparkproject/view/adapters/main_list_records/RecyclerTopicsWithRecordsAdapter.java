@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
-    private ArrayList<Object> items = new ArrayList<>();
-    private ArrayList<Topic> allTopics = new ArrayList<>();
+    private final ArrayList<Object> items = new ArrayList<>();
+    private final ArrayList<Topic> allTopics = new ArrayList<>();
     private static final int COUNT_RECORDS_SHOW = 3;
-    private MainListRecordsInterface listener;
+    private final MainListRecordsInterface listener;
 
     public RecyclerTopicsWithRecordsAdapter(MainListRecordsInterface listener) {
         this.listener = listener;
