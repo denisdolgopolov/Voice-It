@@ -26,6 +26,7 @@
             tools:context=".view.fragments.RecordFragment">
 
         <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/record_name_input_text"
                 android:hint="@string/record_hint_text"
                 app:boxBackgroundColor="@android:color/white"
                 app:endIconDrawable="@drawable/ic_round_create_24"
@@ -39,6 +40,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/topic_input_text"
                 app:endIconMode="custom"
                 android:hint="@string/topic_hint_text"
                 app:boxBackgroundColor="@android:color/white"

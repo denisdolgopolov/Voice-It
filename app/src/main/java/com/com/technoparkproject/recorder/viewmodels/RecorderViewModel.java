@@ -1,12 +1,14 @@
 package com.com.technoparkproject.recorder.viewmodels;
 
 import android.app.Application;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.recorder.service.RecorderConnection;
@@ -132,11 +134,6 @@ public class RecorderViewModel extends AndroidViewModel {
 
     private void saveRec(){
         RecService recService = InjectorUtils.provideRecService(getApplication());
-
-        if (getRecState().getValue() != RecordState.STOP){
-            onStopClick(true);
-            return;
-        }
         RecordTopic rec = new RecordTopic();
         rec.setRecordFile(recService.getRecordFile());
         rec.setDuration(recService.getRecordDuration());
@@ -156,11 +153,52 @@ public class RecorderViewModel extends AndroidViewModel {
         return mSaveEvent;
     }
     public void onSaveClick(String recName, String recTopic) {
-        if (recName != null && !recName.isEmpty())
-            mRecName = recName;
-        if (recTopic != null && !recTopic.isEmpty())
-            mRecTopic = recTopic;
-        saveRec();
+        if (!isRecTextValid(recName,recTopic)) {
+            if (getRecState().getValue() != RecordState.STOP){
+                onStopClick(false);
+            }
+            return;
+        }
+        mRecName = recName;
+        mRecTopic = recTopic;
+        if (getRecState().getValue() != RecordState.STOP){
+            onStopClick(true);
+        }
+        else{
+            saveRec();
+        }
+    }
+
+    private final MutableLiveData<RecTextState> mNameState = new MutableLiveData<>(RecTextState.VALID);
+
+    public LiveData<RecTextState> getNameState() {
+        return mNameState;
+    }
+
+    private final MutableLiveData<RecTextState> mTopicState = new MutableLiveData<>(RecTextState.VALID);
+
+    public LiveData<RecTextState> getTopicState() {
+        return mTopicState;
+    }
+
+    public enum RecTextState{
+        INVALID,
+        VALID
+    }
+
+    private boolean isRecTextValid(String recName, String recTopic){
+        boolean isNameValid = isInputTextValid(recName,mNameState);
+        boolean isTopicValid = isInputTextValid(recTopic,mTopicState);
+        return isNameValid && isTopicValid;
+    }
+
+    private boolean isInputTextValid(String text, MutableLiveData<RecTextState> textState){
+        if (TextUtils.isEmpty(text)) {
+            textState.setValue(RecTextState.INVALID);
+            return false;
+        }
+        textState.setValue(RecTextState.VALID);
+        return true;
     }
 
     public enum RecStopState{

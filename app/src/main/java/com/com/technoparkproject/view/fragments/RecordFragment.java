@@ -30,6 +30,7 @@ import com.com.technoparkproject.recorder.viewmodels.RecorderViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -109,13 +110,44 @@ public class RecordFragment extends Fragment {
 
         final EditText recNameEdit = view.findViewById(R.id.record_name_edit_text);
         final EditText recTopicEdit = view.findViewById(R.id.topic_edit_text);
-
+        final TextInputLayout recNameInput = view.findViewById(R.id.record_name_input_text);
+        final TextInputLayout recTopicInput = view.findViewById(R.id.topic_input_text);
         mDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String recName = recNameEdit.getText().toString();
                 String topicName = recTopicEdit.getText().toString();
                 recViewModel.onSaveClick(recName, topicName);
+            }
+        });
+        recViewModel.getNameState().observe(getViewLifecycleOwner(), new Observer<RecorderViewModel.RecTextState>() {
+            @Override
+            public void onChanged(RecorderViewModel.RecTextState recTextState) {
+                switch (recTextState){
+                    case INVALID:
+                        recNameInput.setErrorEnabled(true);
+                        recNameInput.setError("Введите название");
+                        break;
+                    case VALID:
+                        recNameInput.setError(null);
+                        recNameInput.setErrorEnabled(false);
+                        break;
+                }
+            }
+        });
+        recViewModel.getTopicState().observe(getViewLifecycleOwner(), new Observer<RecorderViewModel.RecTextState>() {
+            @Override
+            public void onChanged(RecorderViewModel.RecTextState recTextState) {
+                switch (recTextState){
+                    case INVALID:
+                        recTopicInput.setErrorEnabled(true);
+                        recTopicInput.setError("Введите топик");
+                        break;
+                    case VALID:
+                        recTopicInput.setError(null);
+                        recTopicInput.setErrorEnabled(false);
+                        break;
+                }
             }
         });
 
