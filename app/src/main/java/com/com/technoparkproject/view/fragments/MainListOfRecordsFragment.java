@@ -22,7 +22,6 @@ import com.com.technoparkproject.TestErrorShower;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
-import com.example.player.Record;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
