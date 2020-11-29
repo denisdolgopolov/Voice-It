@@ -61,17 +61,20 @@ final public class PlayerService extends Service {
         //TODO
         @Override
         public Record getRecordByUUID(String UUID) {
-
+            return new Record("", "", "",
+                    "", "", "");
         }
 
         @Override
         public String getAudioSourceURLByRecordUUID(String UUID) {
             // return TestRecordsRepository.getUriFromRecordUUID(UUID);
+            return "";
         }
 
         @Override
         public String getImageSourceURLByUUID(String UUID) {
             //return TestRecordsRepository.getImageSourceURLByUUID(UUID);
+            return "";
         }
     };
 
