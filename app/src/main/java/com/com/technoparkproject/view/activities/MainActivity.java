@@ -1,6 +1,7 @@
 package com.com.technoparkproject.view.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,19 +71,27 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment == null) {
             bottomNavigation.setSelectedItemId(R.id.nav_home);
         }
-        checkRecordIntent(savedInstanceState, bottomNavigation);
+        bottomNavigation.setSelectedItemId(R.id.nav_home);
+        if (savedInstanceState == null) {
+            checkRecordIntent(getIntent());
+        }
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
-    private void checkRecordIntent(Bundle savedState, BottomNavigationView btmNav){
-        if (savedState != null)
-            return; //retrieve starting intent only once
-        String nextFragment = getIntent().getStringExtra(RecordIntentConstants.NAME);
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        checkRecordIntent(intent);
+    }
+
+    private void checkRecordIntent(Intent intent){
+        String nextFragment = intent.getStringExtra(RecordIntentConstants.NAME);
         if (nextFragment != null) {
             //if activity received intent from record notification go to record fragment
             if (nextFragment.equals(RecordIntentConstants.VALUE)) {
+                BottomNavigationView btmNav = findViewById(R.id.bottom_navigation);
                 btmNav.setSelectedItemId(R.id.nav_record);
             }
         }

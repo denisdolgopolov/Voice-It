@@ -64,6 +64,7 @@ public final class RecorderNotification {
         if (intent == null)
             Log.e(RecorderNotification.class.getSimpleName(),"failed to create intent for main activity");
         intent.putExtra(RecordIntentConstants.NAME, RecordIntentConstants.VALUE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent=PendingIntent.getActivity(serviceCtx,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
 
