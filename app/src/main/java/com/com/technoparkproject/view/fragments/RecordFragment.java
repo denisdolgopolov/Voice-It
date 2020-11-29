@@ -1,15 +1,10 @@
 package com.com.technoparkproject.view.fragments;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -25,55 +20,41 @@ import android.widget.TextView;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
 import com.technopark.recorder.RecordState;
-import com.technopark.recorder.utils.InjectorUtils;
 import com.com.technoparkproject.viewmodels.RecorderViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.technopark.recorder.views.RecorderFragment;
 
-import org.jetbrains.annotations.NotNull;
 
-
-public class RecordFragment extends Fragment {
-    private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1000;
+public class RecordFragment extends RecorderFragment {
     private MaterialButton mRecPauseButton;
     private MaterialButton mStopButton;
     private TextView mTimeTextView;
     private MaterialButton mDoneButton;
 
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void checkRecordPermissions() {
-        if (requireActivity().checkSelfPermission(Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
-            LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
-            recLayout.setVisibility(View.GONE);
-            recButtonsLayout.setVisibility(View.GONE);
-            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},
-                    PERMISSIONS_REQUEST_RECORD_AUDIO);
-        }
+    @Override
+    public void setPermissionRequestLayout() {
+        LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
+        LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
+        recLayout.setVisibility(View.GONE);
+        recButtonsLayout.setVisibility(View.GONE);
     }
 
-    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions,
-                                           @NotNull int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_RECORD_AUDIO) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //configure recorder manually, because it's not possible to fully init it
-                //before permissions are granted by the user
-                InjectorUtils.provideRecService(getContext()).configureRecording();
-                LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
-                LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
-                recLayout.setVisibility(View.VISIBLE);
-                recButtonsLayout.setVisibility(View.VISIBLE);
-            } else {
-                TextView recDenyTextView = requireActivity().findViewById(R.id.record_deny_text);
-                recDenyTextView.setText(R.string.text_record_permission_denied);
-                recDenyTextView.setVisibility(View.VISIBLE);
-            }
-        }
+    @Override
+    protected void setPermissionDeniedLayout() {
+        TextView recDenyTextView = requireActivity().findViewById(R.id.record_deny_text);
+        recDenyTextView.setText(R.string.text_record_permission_denied);
+        recDenyTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void setPermissionGrantedLayout() {
+        LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
+        LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
+        recLayout.setVisibility(View.VISIBLE);
+        recButtonsLayout.setVisibility(View.VISIBLE);
     }
 
 
@@ -81,10 +62,6 @@ public class RecordFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkRecordPermissions();
-        }
 
         mRecPauseButton = view.findViewById(R.id.record_pause_button);
         mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_fiber_manual_record_24));
