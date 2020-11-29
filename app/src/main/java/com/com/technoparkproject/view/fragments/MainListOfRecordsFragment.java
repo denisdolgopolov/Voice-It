@@ -33,15 +33,14 @@ import java.util.List;
 public class MainListOfRecordsFragment extends Fragment implements MainListRecordsInterface {
     private RecyclerTopicsWithRecordsAdapter adapter;
     private AutoCompleteTextView searchingField;
-
-    private static final int FRAGMENT_PLAYLIST_NAME = R.string.fragment_playlist_name;
+    MainListOfRecordsViewModel viewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        ((MainActivity) getActivity()).setToolbar(getString(FRAGMENT_PLAYLIST_NAME));
+        ((MainActivity) getActivity()).setToolbar(getString(R.string.fragment_home_name));
         ViewGroup view = (ViewGroup) LayoutInflater.from(getContext())
                 .inflate(R.layout.fragment_main_list_records, container,
                         false);
@@ -60,15 +59,12 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        MainListOfRecordsViewModel viewModel = new ViewModelProvider(this,
-                new ViewModelProvider.NewInstanceFactory())
-                .get(MainListOfRecordsViewModel.class);
+        viewModel = new ViewModelProvider(getActivity()).get(MainListOfRecordsViewModel.class);
         observeToData(viewModel);
     }
 
     private void observeToData(MainListOfRecordsViewModel viewModel) {
-        viewModel.getTopics().observe(this, new Observer<List<Topic>>() {
+        viewModel.getTopics().observe(getViewLifecycleOwner(), new Observer<List<Topic>>() {
             @Override
             public void onChanged(List<Topic> topics) {
                 adapter.setItems(topics);
@@ -77,7 +73,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         });
 
         viewModel.setSearchingInput(searchingField);
-        viewModel.getSearchingValue().observe(this, new Observer<String>() {
+        viewModel.getSearchingValue().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 adapter.filterItemsByTopicName(s);
@@ -102,10 +98,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     @Override
-    public void showRecordMoreFun(Record record) {
+    public void showRecordMoreFun(final Record record) {
         if(getContext() == null) return;
 
-        Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
+        final Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
         @SuppressLint("InflateParams")
         View bottomSheetView = getLayoutInflater()
                 .inflate(R.layout.mlr_bottom_sheet_record_functions, null);
@@ -114,7 +110,8 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TestErrorShower.showErrorDevelopment(getContext());
+                        viewModel.addToPlaylistClicked(record);
+                        dialog.dismiss();
                     }
                 });
         bottomSheetView.findViewById(R.id.mlr_download)

@@ -7,7 +7,7 @@
         <item name="searchViewStyle">@style/AppSearchViewStyle</item>
     </style>
 
-    <style name="AppSearchViewStyle" parent="Widget.AppCompat.SearchView">
+   <style name="AppSearchViewStyle" parent="Widget.AppCompat.SearchView">
         <item name="queryBackground">@android:color/transparent</item>
         <item name="android:imeActionId">6</item>
     </style>

@@ -16,11 +16,11 @@ import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.repositories.TestRecordsRepository;
 
 class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
-    private TextView textViewTitle;
-    private TextView textViewDesc;
-    private TextView textViewRecordTime;
-    private ImageView recordImage;
-    private ImageButton bMoreInfo;
+    private final TextView textViewTitle;
+    private final TextView textViewDesc;
+    private final TextView textViewRecordTime;
+    private final ImageView recordImage;
+    private final ImageButton bMoreInfo;
 
     ItemListRecordsViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -37,10 +37,10 @@ class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
 
         textViewTitle.setText(record.name);
         textViewDesc.setText(record.dateOfCreation);
-        textViewRecordTime.setText(record.length);
+        textViewRecordTime.setText(record.duration);
 
         Drawable image = TestRecordsRepository.getRecordImageByUserUUID(record.userUUID, context);
-        recordImage.setImageDrawable(image);
+        //recordImage.setImageDrawable(image);
 
         bMoreInfo.setOnClickListener(new View.OnClickListener() {
             @Override
