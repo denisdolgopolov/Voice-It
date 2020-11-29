@@ -14,12 +14,11 @@ import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
+import android.media.MediaSession2Service;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -28,7 +27,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.media.MediaBrowserServiceCompat;
@@ -41,19 +39,16 @@ import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-final public class PlayerService extends MediaBrowserServiceCompat {
-    private static MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
-    private final int NOTIFICATION_ID = 404;
-    private final String NOTIFICATION_DEFAULT_CHANNEL_ID = "default_channel";
+final public class PlayerService extends Service {
+    public static final String NOTIFICATION_CHANNEL_NAME = "PlayerControl";
+    private static final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
+    private static final int NOTIFICATION_ID = 404;
+    private static final String NOTIFICATION_DEFAULT_CHANNEL_ID = "default_channel";
+    public static final String MEDIA_SESSOIN_COMPAT_TAG = "PlayerService";
+
     private final PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder().setActions(
             PlaybackStateCompat.ACTION_PLAY
                     | PlaybackStateCompat.ACTION_STOP
@@ -130,7 +125,7 @@ final public class PlayerService extends MediaBrowserServiceCompat {
 
             notificationManager.createNotificationChannel(new NotificationChannel(
                     NOTIFICATION_DEFAULT_CHANNEL_ID,
-                    "Player controls",
+                    NOTIFICATION_CHANNEL_NAME,
                     NotificationManagerCompat.IMPORTANCE_NONE
             ));
             audioFocusRequest = new AudioFocusRequest
@@ -159,7 +154,6 @@ final public class PlayerService extends MediaBrowserServiceCompat {
         super.onDestroy();
         unregisterReceiver(becomingNoisyReceiver);
         stopForeground(true);
-        Log.d(TAG, "Clean: ");
         mediaSession.release();
         exoPlayer.release();
         mediaSession = null;
@@ -171,17 +165,6 @@ final public class PlayerService extends MediaBrowserServiceCompat {
     @Override
     public IBinder onBind(Intent intent) {
         return new PlayerServiceBinder();
-    }
-
-    @Nullable
-    @Override
-    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
-        return null;
-    }
-
-    @Override
-    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-
     }
 
     public class PlayerServiceBinder extends Binder {
@@ -356,16 +339,6 @@ final public class PlayerService extends MediaBrowserServiceCompat {
         }
     };
 
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        stopForeground(true);
-        mediaSession.release();
-        exoPlayer.release();
-        unregisterReceiver(becomingNoisyReceiver);
-        stopSelf();
-        super.onTaskRemoved(rootIntent);
-    }
-
     private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange -> {
         if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
             mediaSessionCallback.onPlay();
@@ -441,7 +414,7 @@ final public class PlayerService extends MediaBrowserServiceCompat {
     }
 
     private void initMediaSession() {
-        mediaSession = new MediaSessionCompat(this, "PlayerService");
+        mediaSession = new MediaSessionCompat(this, MEDIA_SESSOIN_COMPAT_TAG);
         mediaSession.setFlags(
                 MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                         MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS

@@ -37,7 +37,7 @@ class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
 
         textViewTitle.setText(record.name);
         textViewDesc.setText(record.dateOfCreation);
-        textViewRecordTime.setText(record.duration);
+        textViewRecordTime.setText(durationFormat(Long.parseLong(record.duration)));
 
         Drawable image = TestRecordsRepository.getRecordImageByUserUUID(record.userUUID, context);
         recordImage.setImageDrawable(image);
@@ -51,8 +51,21 @@ class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* listener.getViewModel().itemClicked(record.uuid);*/
+                // TODO
             }
         });
+    }
+
+    public static String durationFormat(long duration) {
+        String durationString;
+        int seconds = (int) duration / 1000;
+        int minutes = (int) seconds / 60;
+        seconds = seconds - minutes * 60;
+        if (seconds >= 10) {
+            durationString = minutes + ":" + seconds;
+        } else {
+            durationString = minutes + ":0" + seconds;
+        }
+        return durationString;
     }
 }

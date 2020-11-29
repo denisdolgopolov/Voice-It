@@ -24,7 +24,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/minimized_player_background"
-            android:gravity="center"
             android:orientation="vertical"
             android:paddingTop="8dp"
             app:behavior_hideable="true"

@@ -64,7 +64,7 @@ public class TestRecordsRepository {
     static public List<Topic> getListTopics() {
         return Arrays.asList(
                 new Topic(UUID.randomUUID().toString(), "Friends", UUID.randomUUID().toString(),
-                        Arrays.asList(SOURCE1_URL, SOURCE2_URL, SOURCE3_URL), TopicTypes.TOPIC_FRIEND)
+                        Arrays.asList(SOURCE1_URL, SOURCE2_URL, SOURCE3_URL, SOURCE4_URL), TopicTypes.TOPIC_FRIEND)
         );
     }
 

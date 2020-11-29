@@ -27,7 +27,7 @@ public class MinimizedPlayerFragment extends Fragment {
     ImageButton prevButton;
     TextView titleAudio;
     TextView authorAudio;
-    SeekBar seekBar;
+    SeekBar mediaPositionSeekBar;
     TextView duration;
     TextView currentTime;
 
@@ -47,7 +47,7 @@ public class MinimizedPlayerFragment extends Fragment {
         playButton = view.findViewById(R.id.play_button);
         titleAudio = view.findViewById(R.id.audio_title_tv);
         authorAudio = view.findViewById(R.id.audio_author_tv);
-        seekBar = view.findViewById(R.id.seekBar);
+        mediaPositionSeekBar = view.findViewById(R.id.seekBar);
         currentTime = view.findViewById(R.id.current_time_tv);
         duration = view.findViewById(R.id.duration_tv);
 
@@ -82,10 +82,10 @@ public class MinimizedPlayerFragment extends Fragment {
         viewModel.currentPosition.observe(getViewLifecycleOwner(), new Observer<Long>() {
             @Override
             public void onChanged(Long aLong) {
-                setProgress(aLong.intValue());
+                mediaPositionSeekBar.setProgress(aLong.intValue());
             }
         });
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mediaPositionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 currentTime.setText(durationFormat(i));
@@ -102,12 +102,11 @@ public class MinimizedPlayerFragment extends Fragment {
                 viewModel.currentPosition.observe(getViewLifecycleOwner(), new Observer<Long>() {
                     @Override
                     public void onChanged(Long aLong) {
-                        setProgress(aLong.intValue());
+                        seekBar.setProgress(aLong.intValue());
                     }
                 });
             }
         });
-
         viewModel.currentMetadata.observe(getViewLifecycleOwner(), new Observer<MediaMetadataCompat>() {
             @Override
             public void onChanged(MediaMetadataCompat mediaMetadataCompat) {
@@ -140,12 +139,8 @@ public class MinimizedPlayerFragment extends Fragment {
             titleAudio.setText(metadata.getDescription().getTitle());
             authorAudio.setText(metadata.getDescription().getDescription());
             duration.setText(durationFormat(metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
-            seekBar.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
+            mediaPositionSeekBar.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         }
-    }
-    private void setProgress(int progress){
-            seekBar.setProgress(progress);
-
     }
 
     // TODO вынести это в какой-нибудь утильный класс
@@ -155,9 +150,9 @@ public class MinimizedPlayerFragment extends Fragment {
         int minutes = (int) seconds / 60;
         seconds = seconds - minutes * 60;
         if (seconds >= 10) {
-            durationString = String.valueOf(minutes) + ":" + String.valueOf(seconds);
+            durationString = minutes + ":" + seconds;
         } else {
-            durationString = String.valueOf(minutes) + ":0" + String.valueOf(seconds);
+            durationString = minutes + ":0" + seconds;
         }
         return durationString;
     }

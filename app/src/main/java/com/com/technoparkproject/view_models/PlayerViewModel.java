@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.com.technoparkproject.VoiceItApplication;
 import com.example.player.PlayerServiceConnection;
 
 public class PlayerViewModel extends AndroidViewModel {
@@ -46,7 +47,7 @@ public class PlayerViewModel extends AndroidViewModel {
 
     public PlayerViewModel(@NonNull Application application) {
         super(application);
-        this.playerServiceConnection = PlayerServiceConnection.getInstance(application.getApplicationContext());
+        this.playerServiceConnection = ((VoiceItApplication) application).playerServiceConnection;
         this.currentMetadata = playerServiceConnection.nowPlayingMediaMetadata;
         this.currentState = playerServiceConnection.playbackState;
         this.currentPosition = playerServiceConnection.mediaPosition;
@@ -55,5 +56,6 @@ public class PlayerViewModel extends AndroidViewModel {
 
     public void seekBarSeekTo(int progress) {
         playerServiceConnection.mediaController.getTransportControls().seekTo((long) progress);
+        playerServiceConnection.mediaPosition.setValue((long) progress);
     }
 }

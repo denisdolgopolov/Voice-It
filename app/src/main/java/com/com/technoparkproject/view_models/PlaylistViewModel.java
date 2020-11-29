@@ -2,6 +2,7 @@ package com.com.technoparkproject.view_models;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
@@ -12,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.com.technoparkproject.VoiceItApplication;
 import com.example.player.PlayerServiceConnection;
 import com.example.repo.Record;
 import com.example.repo.TestRecordsRepository;
@@ -23,12 +25,14 @@ public class PlaylistViewModel extends AndroidViewModel {
     PlayerServiceConnection playerServiceConnection;
     public LiveData<PlaybackStateCompat> currentState;
     public LiveData<List<String>> currentPlaylist;
+    public LiveData<MediaMetadataCompat> currentMetadata;
 
     public PlaylistViewModel(@NonNull Application application) {
         super(application);
-        this.playerServiceConnection = PlayerServiceConnection.getInstance(application.getApplicationContext());
+        this.playerServiceConnection = ((VoiceItApplication) application).playerServiceConnection;
         this.currentPlaylist = playerServiceConnection.playerService.playlist;
         this.currentState = playerServiceConnection.playbackState;
+        this.currentMetadata = playerServiceConnection.nowPlayingMediaMetadata;
     }
 
     public void itemClicked(int position) {

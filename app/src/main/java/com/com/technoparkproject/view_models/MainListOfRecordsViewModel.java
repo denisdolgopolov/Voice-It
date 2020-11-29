@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.com.technoparkproject.VoiceItApplication;
 import com.example.player.PlayerServiceConnection;
 import com.example.repo.Record;
 import com.example.repo.TestRecordsRepository;
@@ -25,7 +26,6 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     PlayerServiceConnection playerServiceConnection;
     private MutableLiveData<List<Topic>> topics;
     private MutableLiveData<String> searchingValue = new MutableLiveData<>();
-    static final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
 
     public LiveData<List<Topic>> getTopics() {
         if(topics == null) {
@@ -69,7 +69,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
 
     public MainListOfRecordsViewModel(@NonNull Application application) {
         super(application);
-        this.playerServiceConnection = PlayerServiceConnection.getInstance(application.getApplicationContext());
+        this.playerServiceConnection = ((VoiceItApplication) application).playerServiceConnection;
     }
 
 }

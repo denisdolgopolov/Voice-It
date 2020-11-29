@@ -45,12 +45,9 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
         RecyclerView rvMainList = view.findViewById(R.id.mlr_rv_main_list);
         rvMainList.setLayoutManager(new LinearLayoutManager(getContext()));
-
         adapter = new RecyclerTopicsWithRecordsAdapter(this);
         rvMainList.setAdapter(adapter);
-
         searchingField = view.findViewById(R.id.mlr_et_searching);
-
         return view;
     }
 

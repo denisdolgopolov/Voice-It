@@ -15,12 +15,13 @@ import androidx.media.session.MediaButtonReceiver;
 
 
 public class NotificationHelper {
+    public static final String CHANNEL_ID = "default_channel";
 
     static NotificationCompat.Builder from(Context context, MediaSessionCompat mediaSession) {
         MediaControllerCompat controller = mediaSession.getController();
         MediaMetadataCompat mediaMetadata = controller.getMetadata();
         MediaDescriptionCompat description = mediaMetadata.getDescription();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default_channel");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID);
         builder
                 .setContentTitle(description.getTitle())
                 .setContentText(description.getSubtitle())
@@ -78,7 +79,7 @@ public class NotificationHelper {
         builder.setShowWhen(false);
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
         builder.setOnlyAlertOnce(true);
-        builder.setChannelId("default_channel");
+        builder.setChannelId(CHANNEL_ID);
         return builder.build();
     }
 }

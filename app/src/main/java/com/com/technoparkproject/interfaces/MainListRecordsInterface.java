@@ -6,5 +6,4 @@ import com.example.repo.Record;
 public interface MainListRecordsInterface {
     void showAllRecords(String topicUUID);
     void showRecordMoreFun(Record record);
-    /*MainListOfRecordsViewModel getViewModel();*/
 }

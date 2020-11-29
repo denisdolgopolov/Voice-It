@@ -1,7 +1,10 @@
 package com.com.technoparkproject.view.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistFragment extends Fragment {
-    public static final String MINIMIZED_PLAYER_FRAGMENT_TAG = "MINIMIZED_PLAYER_FRAGMENT_TAG";
-    boolean addedMinimizedPlayerFragment = false;
     PlaylistAdapter playlistAdapter = new PlaylistAdapter();
     PlaylistViewModel playlistViewModel;
 
@@ -41,7 +42,6 @@ public class PlaylistFragment extends Fragment {
         View playerView = view.findViewById(R.id.minimized_player);
         BottomSheetBehavior behavior = BottomSheetBehavior.from(playerView);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
         playlistViewModel.currentPlaylist.observe(getViewLifecycleOwner(), new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> strings) {
@@ -54,19 +54,20 @@ public class PlaylistFragment extends Fragment {
             public void onChanged(PlaybackStateCompat playbackStateCompat) {
                 if (playbackStateCompat != null) {
                     if (playbackStateCompat.getState() != PlaybackStateCompat.STATE_STOPPED) {
-                        if (!addedMinimizedPlayerFragment) {
+                        if (behavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
                             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                             PlaylistRecyclerView.setPaddingRelative(PlaylistRecyclerView.getPaddingStart(), PlaylistRecyclerView.getPaddingTop(), PlaylistRecyclerView.getPaddingEnd(), playerView.getHeight() + 10);
-                            addedMinimizedPlayerFragment = true;
+                            behavior.setHideable(false);
                         }
                     } else {
-                        if (addedMinimizedPlayerFragment) {
+                        if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                            behavior.setHideable(true);
                             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                            PlaylistRecyclerView.setPaddingRelative(PlaylistRecyclerView.getPaddingStart(), PlaylistRecyclerView.getPaddingTop(), PlaylistRecyclerView.getPaddingEnd(), 0);
-                            addedMinimizedPlayerFragment = false;
+                            PlaylistRecyclerView.setPaddingRelative(PlaylistRecyclerView.getPaddingStart(), PlaylistRecyclerView.getPaddingTop(), PlaylistRecyclerView.getPaddingEnd(), 10);
                         }
                     }
                 }
+
             }
         });
         return view;
@@ -89,6 +90,19 @@ public class PlaylistFragment extends Fragment {
             holder.textViewTitle.setText(record.name);
             holder.textViewRecordTime.setText(durationFormat(Long.parseLong(record.duration)));
             holder.textViewDesc.setText(record.userUUID);
+            playlistViewModel.currentMetadata.observe(getViewLifecycleOwner(), new Observer<MediaMetadataCompat>() {
+                @Override
+                public void onChanged(MediaMetadataCompat mediaMetadataCompat) {
+                    if (playlistViewModel.currentMetadata.getValue() != null) {
+                        if (record.uuid.equals(playlistViewModel.currentMetadata.getValue().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
+                            holder.itemView.setBackgroundColor(Color.parseColor("#FFC4C4"));
+                        } else {
+                            holder.itemView.setBackgroundColor(Color.WHITE);
+                        }
+                    }
+                }
+            });
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -96,6 +110,7 @@ public class PlaylistFragment extends Fragment {
                     playlistViewModel.itemClicked(position);
                 }
             });
+
             holder.recordImage.setImageResource(R.drawable.mlr_test_record_image);
         }
 
@@ -125,6 +140,7 @@ public class PlaylistFragment extends Fragment {
         }
 
     }
+
     // TODO вынести это в какой-нибудь утильный класс
     public static String durationFormat(long duration) {
         String durationString;
@@ -132,9 +148,9 @@ public class PlaylistFragment extends Fragment {
         int minutes = (int) seconds / 60;
         seconds = seconds - minutes * 60;
         if (seconds >= 10) {
-            durationString = String.valueOf(minutes) + ":" + String.valueOf(seconds);
+            durationString = minutes + ":" + seconds;
         } else {
-            durationString = String.valueOf(minutes) + ":0" + String.valueOf(seconds);
+            durationString = minutes + ":0" + seconds;
         }
         return durationString;
     }

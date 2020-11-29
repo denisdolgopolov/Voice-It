@@ -16,6 +16,10 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -26,8 +30,10 @@ public class PlayerServiceConnection {
     public MediaControllerCompat mediaController;
     public MutableLiveData<MediaMetadataCompat> nowPlayingMediaMetadata = new MutableLiveData<>();
     public MutableLiveData<PlaybackStateCompat> playbackState = new MutableLiveData<>();
-    Handler handler = new Handler(Looper.getMainLooper());
     public MutableLiveData<Long> mediaPosition = new MutableLiveData<>();
+    ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    ScheduledFuture timeFuture;
+
 
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -60,11 +66,11 @@ public class PlayerServiceConnection {
             playbackState.postValue(state);
             if (state != null) {
                 if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-                    updatePosition = true;
+                    timeFuture = scheduledExecutorService.scheduleAtFixedRate(checkPlaybackPosition, 0, POSITION_UPDATE_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
+
                 } else {
-                    updatePosition = false;
+                        timeFuture.cancel(false);
                 }
-                checkPlaybackPosition();
             }
         }
 
@@ -76,9 +82,8 @@ public class PlayerServiceConnection {
         }
     };
 
-    private boolean updatePosition = false;
 
-    private PlayerServiceConnection(Context context) {
+    public PlayerServiceConnection(Context context) {
         Intent serviceIntent = new Intent(context, PlayerService.class);
         context.bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
     }
@@ -104,37 +109,20 @@ public class PlayerServiceConnection {
         }
     }
 
-
     public void setPlaylist(String topicUUID) {
         // TODO
     }
 
-    // Анти-паттерн)
-    private volatile static PlayerServiceConnection INSTANCE;
-
-    public static PlayerServiceConnection getInstance(Context context) {
-        if (INSTANCE == null) {
-            synchronized (PlayerServiceConnection.class) {
-                if (INSTANCE == null)
-                    INSTANCE = new PlayerServiceConnection(context);
-            }
-        }
-        return INSTANCE;
-    }
-
-    private void checkPlaybackPosition() {
-        handler.postDelayed(() -> {
+    Runnable checkPlaybackPosition = new Runnable() {
+        @Override
+        public void run() {
             if (playerService.exoPlayer != null) {
                 Long currPosition = playerService.exoPlayer.getCurrentPosition();
-                if (currPosition != mediaPosition.getValue()) {
+                if (!currPosition.equals(mediaPosition.getValue())) {
                     mediaPosition.postValue(currPosition);
-                    if (updatePosition) {
-                        checkPlaybackPosition();
-                    }
                 }
             }
-        }, POSITION_UPDATE_INTERVAL_MILLIS);
-    }
-
+        }
+    };
 }
 
