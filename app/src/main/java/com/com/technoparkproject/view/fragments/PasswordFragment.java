@@ -10,12 +10,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.com.technoparkproject.R;
+import com.com.technoparkproject.view.activities.MainActivity;
 
 public class PasswordFragment extends Fragment {
+
+    private static final int FRAGMENT_PASSWORD_NAME = R.string.fragment_password_name;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ((MainActivity) getActivity()).setToolbar(getString(FRAGMENT_PASSWORD_NAME));
         return inflater.inflate(R.layout.fragment_password, container, false);
     }
 }

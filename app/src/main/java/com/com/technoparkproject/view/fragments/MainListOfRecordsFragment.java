@@ -22,6 +22,7 @@ import com.com.technoparkproject.TestErrorShower;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
+import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -33,11 +34,14 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     private RecyclerTopicsWithRecordsAdapter adapter;
     private AutoCompleteTextView searchingField;
 
+    private static final int FRAGMENT_PLAYLIST_NAME = R.string.fragment_playlist_name;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        ((MainActivity) getActivity()).setToolbar(getString(FRAGMENT_PLAYLIST_NAME));
         ViewGroup view = (ViewGroup) LayoutInflater.from(getContext())
                 .inflate(R.layout.fragment_main_list_records, container,
                         false);

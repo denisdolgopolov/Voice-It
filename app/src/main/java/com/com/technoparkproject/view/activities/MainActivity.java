@@ -1,6 +1,7 @@
 package com.com.technoparkproject.view.activities;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -49,11 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int FRAGMENT_PASSWORD_NAME = R.string.fragment_password_name;
     private static final int FRAGMENT_LANGUAGE_NAME = R.string.fragment_language_name;
 
-    private SettingsFragment settingsFragment;
     private PasswordFragment changePasswordFragment;
     private LanguageFragment changeLanguageFragment;
-
-    private FragmentManager manager;
+    BottomNavigationView bottomNavigation;
 
     private static final String CURRENT_FRAGMENT = "Current fragment";
 
@@ -62,10 +62,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(navigationListener);
-
-        manager = getSupportFragmentManager();
 
         if (savedInstanceState != null) {
             currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
@@ -73,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (currentFragment == null) {
             bottomNavigation.setSelectedItemId(R.id.nav_home);
-        } else {
-            setToolbar(currentFragment);
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -82,43 +78,30 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
-    public void onClickChangePasswordFragment(View view) {
-        if (view.getId() == R.id.btn_change_password) {
-            changePasswordFragment = new PasswordFragment();
-            currentFragment = getString(FRAGMENT_PASSWORD_NAME);
-            manager.beginTransaction().replace(R.id.fragment_container, changePasswordFragment).addToBackStack(currentFragment).commit();
-            setToolbar(currentFragment);
+    @SuppressLint("NonConstantResourceId")
+    public void onClickChangePasswordOrLanguageButton(View view) {
+        switch (view.getId()) {
+            case R.id.btn_change_password:
+                changePasswordFragment = new PasswordFragment();
+                currentFragment = getString(FRAGMENT_PASSWORD_NAME);
+                loadFragment(changePasswordFragment, currentFragment);
+                break;
+            case R.id.btn_change_language:
+                changeLanguageFragment = new LanguageFragment();
+                currentFragment = getString(FRAGMENT_LANGUAGE_NAME);
+                loadFragment(changeLanguageFragment, currentFragment);
+                break;
         }
     }
 
-    public void onClickChangeLanguageFragment(View view) {
-        if (view.getId() == R.id.btn_change_language) {
-            changeLanguageFragment = new LanguageFragment();
-            currentFragment = getString(FRAGMENT_LANGUAGE_NAME);
-            manager.beginTransaction().replace(R.id.fragment_container, changeLanguageFragment).addToBackStack(currentFragment).commit();
-            setToolbar(currentFragment);
-        }
-    }
-
-    public void onClickCancelButton(View view) {
+    public void onClickTickOrCancelButton(View view) {
         if (currentFragment.equals(getString(FRAGMENT_PASSWORD_NAME)) || currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
-            settingsFragment = new SettingsFragment();
             currentFragment = getString(FRAGMENT_SETTINGS_NAME);
-            manager.beginTransaction().replace(R.id.fragment_container, settingsFragment).commit();
-            setToolbar(currentFragment);
+            undoFragment();
         }
     }
 
-    public void onClickTickButton(View view) {
-        if (currentFragment.equals(getString(FRAGMENT_PASSWORD_NAME)) || currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
-            settingsFragment = new SettingsFragment();
-            currentFragment = getString(FRAGMENT_SETTINGS_NAME);
-            manager.beginTransaction().replace(R.id.fragment_container, settingsFragment).commit();
-            setToolbar(currentFragment);
-        }
-    }
-
-    private void setToolbar(String nameSelectedFragment) {
+    public void setToolbar(String nameSelectedFragment) {
         toolbarTitleView = findViewById(R.id.toolbar_title);
         toolbarBackButton = findViewById(R.id.toolbar_back_button);
         toolbarLogoutButton = findViewById(R.id.toolbar_logout_button);
@@ -195,10 +178,8 @@ public class MainActivity extends AppCompatActivity {
 
                     if (currentFragment == null || !currentFragment.equals(nameSelectedFragment)) {
                         assert selectedFragment != null;
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                selectedFragment).addToBackStack(currentFragment).commit();
+                        loadFragment(selectedFragment, currentFragment);
                         currentFragment = nameSelectedFragment;
-                        setToolbar(nameSelectedFragment);
                     }
                     return true;
                 }
@@ -206,33 +187,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (currentFragment.equals(getString(FRAGMENT_PASSWORD_NAME)) || currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
-            setToolbar(getString(FRAGMENT_SETTINGS_NAME));
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            undoFragment();
         }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        OnBackPressedListener backPressedListener = null;
-        for (Fragment fragment : fragmentManager.getFragments()) {
-            if (fragment instanceof OnBackPressedListener) {
-                backPressedListener = (OnBackPressedListener) fragment;
-                break;
-            }
-        }
-
-        if (backPressedListener != null) {
-            backPressedListener.onBackPressed();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    public interface OnBackPressedListener {
-        void onBackPressed();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(CURRENT_FRAGMENT, currentFragment);
+    }
+
+    public void loadFragment(Fragment fragment, String currentFragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(currentFragment)
+                .commit();
+    }
+
+    public void undoFragment() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 }

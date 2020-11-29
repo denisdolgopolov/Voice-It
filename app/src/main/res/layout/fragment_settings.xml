@@ -46,14 +46,14 @@
                     style="@style/button_settings_change"
                     android:drawableEnd="@drawable/ic_lock"
                     android:text="@string/tv_change_password"
-                    android:onClick="onClickChangePasswordFragment"/>
+                    android:onClick="onClickChangePasswordOrLanguageButton"/>
 
             <Button
                     android:id="@+id/btn_change_language"
                     style="@style/button_settings_change"
                     android:drawableEnd="@drawable/ic_globe"
                     android:text="@string/tv_change_language"
-                    android:onClick="onClickChangeLanguageFragment"/>
+                    android:onClick="onClickChangePasswordOrLanguageButton"/>
 
         </LinearLayout>
     </ScrollView>

@@ -10,12 +10,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.com.technoparkproject.R;
+import com.com.technoparkproject.view.activities.MainActivity;
 
 public class LanguageFragment extends Fragment {
+
+    private static final int FRAGMENT_LANGUAGE_NAME = R.string.fragment_language_name;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ((MainActivity) getActivity()).setToolbar(getString(FRAGMENT_LANGUAGE_NAME));
         return inflater.inflate(R.layout.fragment_language, container, false);
     }
 }
