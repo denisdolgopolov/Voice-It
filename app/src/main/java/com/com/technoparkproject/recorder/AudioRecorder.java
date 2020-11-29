@@ -117,6 +117,7 @@ public class AudioRecorder {
         if (!mIsAudioRecordInit){
             initAudioRecord();
         }
+        mRecTime.setValue(0);
         mRecordState.setValue(RecordState.INIT);
     }
 
@@ -139,6 +140,8 @@ public class AudioRecorder {
         getBufferSize();
 
         initAudioRecord();
+
+        mRecTime.postValue(0);
 
         if (mIsAudioRecordInit)
             mRecordState.postValue(RecordState.INIT);
@@ -196,10 +199,6 @@ public class AudioRecorder {
         Runnable timer = new Runnable() {
             @Override
             public void run() {
-                //send first LiveData with 0 seconds
-                if (mRecordTimeInMills == 0){
-                    mRecTime.postValue(0);
-                }
                 mRecordTimeInMills+=100;
                 //LiveData updates every second
                 if (mRecordTimeInMills % 1000 == 0) {

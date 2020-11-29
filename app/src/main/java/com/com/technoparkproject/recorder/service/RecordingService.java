@@ -8,11 +8,13 @@ import android.text.format.DateUtils;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.recorder.AudioRecorder;
 import com.com.technoparkproject.recorder.VoiceItApplication;
 import com.com.technoparkproject.recorder.repository.RecordRepo;
+import com.com.technoparkproject.recorder.utils.SingleLiveEvent;
 
 import java.io.File;
 
@@ -46,7 +48,6 @@ public class RecordingService extends Service implements RecService {
         mAudioRecorder = VoiceItApplication.from(this).getRecorder();
         mRecTimeObserver = new RecTimeObserver();
         mAudioRecorder.getRecTime().observeForever(mRecTimeObserver);
-
     }
 
     private boolean mIsForeground = false;
@@ -120,11 +121,29 @@ public class RecordingService extends Service implements RecService {
         mRecordFile = null;
     }
 
+    private static final int MAX_RECORD_LENGTH = 5*60; //max allowed recording in seconds
+
+    @Override
+    public int getMaxRecDuration() {
+        return MAX_RECORD_LENGTH;
+    }
+
+    private final SingleLiveEvent<Void> mRecLimitEvent = new SingleLiveEvent<>();
+
+    public LiveData<Void> getRecLimitEvent(){
+        return mRecLimitEvent;
+    }
+
     private class RecTimeObserver implements Observer<Integer> {
         @Override
         public void onChanged(Integer seconds) {
             if (!mIsForeground)
                 return;
+            if (seconds == getMaxRecDuration()){
+                mRecLimitEvent.call();
+                stopRecording();
+                return;
+            }
             String notifyText = DateUtils.formatElapsedTime(seconds);
             RecorderNotification.updateNotification(notifyText, RecordingService.this,FOREGROUND_ID);
         }

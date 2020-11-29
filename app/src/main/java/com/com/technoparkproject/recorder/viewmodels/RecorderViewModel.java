@@ -9,10 +9,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
+import com.com.technoparkproject.recorder.service.RecorderConnection;
 import com.com.technoparkproject.recorder.utils.SingleLiveEvent;
 import com.com.technoparkproject.recorder.repository.RecordRepo;
 import com.com.technoparkproject.recorder.repository.RecordTopic;
-import com.com.technoparkproject.recorder.AudioRecorder;
 import com.com.technoparkproject.recorder.RecordState;
 import com.com.technoparkproject.recorder.service.RecService;
 import com.com.technoparkproject.recorder.utils.InjectorUtils;
@@ -21,47 +21,51 @@ import java.io.File;
 
 public class RecorderViewModel extends AndroidViewModel {
 
+    private final RecTimeLimitObserver mRecLimObserver;
+
+    private class RecTimeLimitObserver implements Observer<Void> {
+        @Override
+        public void onChanged(Void aVoid) {
+            //make stop progress LiveData, record time limit reached
+            mRecStopState.setValue(RecStopState.STOP_IN_PROGRESS);
+            mRecStopState.addSource(getRecState(), new Observer<RecordState>() {
+                @Override
+                public void onChanged(RecordState recordState) {
+                    if (recordState == RecordState.STOP){
+                        mRecStopState.setValue(RecStopState.STOP_COMPLETED);
+                        mRecStopState.removeSource(getRecState());
+                    }
+
+                }
+            });
+        }
+    }
+
     public LiveData<RecordState> getRecState(){
-        return mRecState;
+        return mRecServiceData.getRecState();
     }
 
     public LiveData<Integer> getRecTime() {
-       return mRecTime;
+        return mRecServiceData.getRecTime();
     }
 
-    private final MediatorLiveData<RecordState> mRecState;
+    private final RecorderConnection.RecServiceLiveData mRecServiceData;
 
-    private final MediatorLiveData<Integer> mRecTime;
-
-    private static final int MAX_RECORD_LENGTH = 60*15; //max allowed recording in seconds
-
-    public int getMaxRecordLength() {
-        return MAX_RECORD_LENGTH;
+    public int getMaxRecordLength(){
+        return InjectorUtils.provideRecService(getApplication()).getMaxRecDuration();
     }
 
     public RecorderViewModel(@NonNull Application application) {
         super(application);
-        mRecState = new MediatorLiveData<>();
-        mRecTime = new MediatorLiveData<>();
-        mRecTime.setValue(0);
-        AudioRecorder recorder = InjectorUtils.provideRecorder(application);
-        mRecState.addSource(recorder.getRecordState(), new Observer<RecordState>() {
-            @Override
-            public void onChanged(RecordState recordState) {
-                mRecState.setValue(recordState);
-            }
-        });
-        mRecTime.addSource(recorder.getRecTime(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer seconds) {
-                mRecTime.setValue(seconds);
-                //imitate stop click if recording limit is reached
-                //todo: this record limit stop will work ONLY if record ui is active, make it work properly
-                if (seconds == getMaxRecordLength())
-                    onStopClick();
-            }
-        });
+        mRecServiceData = InjectorUtils.provideRecServiceData(getApplication());
+        mRecLimObserver = new RecTimeLimitObserver();
+        mRecServiceData.getRecLimit().observeForever(mRecLimObserver);
+    }
 
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        mRecServiceData.getRecLimit().removeObserver(mRecLimObserver);
     }
 
 
@@ -76,13 +80,6 @@ public class RecorderViewModel extends AndroidViewModel {
 
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        AudioRecorder recorder = InjectorUtils.provideRecorder(getApplication());
-        mRecState.removeSource(recorder.getRecordState());
-        mRecTime.removeSource(recorder.getRecTime());
-    }
 
     public MediatorLiveData<RecStopState> mRecStopState = new MediatorLiveData<>();
 
@@ -149,7 +146,6 @@ public class RecorderViewModel extends AndroidViewModel {
 
         //configure recorder for next recording
         recService.configureRecording();
-        mRecTime.setValue(0);
 
         mSaveEvent.call(); //recording is ready to be saved to repo/other storage
     }
