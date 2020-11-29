@@ -2,8 +2,6 @@ package com.com.technoparkproject.recorder.service;
 
 import androidx.lifecycle.LiveData;
 
-import java.util.UUID;
-
 public interface RecService {
     void configureRecording();
     void startRecording();
