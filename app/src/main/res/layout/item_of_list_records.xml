@@ -13,6 +13,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:background="@drawable/mlr_image_shape_round"
+            android:src="@drawable/mlr_test_record_image"
             android:id="@+id/mlr_record_logo"
             android:contentDescription="@string/record_image"/>
 

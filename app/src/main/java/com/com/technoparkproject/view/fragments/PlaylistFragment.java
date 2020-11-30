@@ -7,8 +7,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.view.activities.MainActivity;
+import com.com.technoparkproject.view.adapters.main_list_records.ItemListRecordsViewHolder;
 import com.com.technoparkproject.view_models.PlaylistViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
@@ -78,23 +77,22 @@ public class PlaylistFragment extends Fragment {
         return view;
     }
 
-    public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder> {
+    public class PlaylistAdapter extends RecyclerView.Adapter<ItemListRecordsViewHolder> {
 
         List<Record> recordList = new ArrayList<>();
 
         @NonNull
         @Override
-        public PlaylistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public ItemListRecordsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_of_list_records, parent, false);
-            return new PlaylistViewHolder(view);
+            return new ItemListRecordsViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull PlaylistViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ItemListRecordsViewHolder holder, int position) {
             Record record = recordList.get(position);
-            holder.textViewTitle.setText(record.name);
-            holder.textViewRecordTime.setText(durationFormat(Long.parseLong(record.duration)));
-            holder.textViewDesc.setText(record.userUUID);
+            holder.bindViewHolder(null, record);
+
             playlistViewModel.currentMetadata.observe(getViewLifecycleOwner(), new Observer<MediaMetadataCompat>() {
                 @Override
                 public void onChanged(MediaMetadataCompat mediaMetadataCompat) {
@@ -114,8 +112,6 @@ public class PlaylistFragment extends Fragment {
                     playlistViewModel.itemClicked(position);
                 }
             });
-
-            holder.recordImage.setImageResource(R.drawable.mlr_test_record_image);
         }
 
         @Override
@@ -127,35 +123,6 @@ public class PlaylistFragment extends Fragment {
             this.recordList = recordArrayList;
             notifyDataSetChanged();
         }
-
-        public class PlaylistViewHolder extends RecyclerView.ViewHolder {
-            public TextView textViewTitle;
-            public TextView textViewDesc;
-            public TextView textViewRecordTime;
-            public ImageView recordImage;
-
-            PlaylistViewHolder(@NonNull View itemView) {
-                super(itemView);
-                this.textViewTitle = itemView.findViewById(R.id.mlr_text_view_title);
-                this.textViewDesc = itemView.findViewById(R.id.mlr_text_view_desc);
-                this.textViewRecordTime = itemView.findViewById(R.id.mlr_text_view_record_time);
-                this.recordImage = itemView.findViewById(R.id.mlr_record_logo);
-            }
-        }
-
     }
 
-    // TODO вынести это в какой-нибудь утильный класс
-    public static String durationFormat(long duration) {
-        String durationString;
-        int seconds = (int) duration / 1000;
-        int minutes = (int) seconds / 60;
-        seconds = seconds - minutes * 60;
-        if (seconds >= 10) {
-            durationString = minutes + ":" + seconds;
-        } else {
-            durationString = minutes + ":0" + seconds;
-        }
-        return durationString;
-    }
 }
