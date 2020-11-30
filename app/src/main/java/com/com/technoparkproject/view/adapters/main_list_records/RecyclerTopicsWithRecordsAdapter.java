@@ -1,5 +1,6 @@
 package com.com.technoparkproject.view.adapters.main_list_records;
 
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +12,14 @@ import com.com.technoparkproject.R;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
-import com.com.technoparkproject.repositories.TestRecordsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     private final ArrayList<Object> items = new ArrayList<>();
-    private final ArrayList<Topic> allTopics = new ArrayList<>();
+    private final ArrayMap<Topic, List<Record>> allTopics = new ArrayMap<>();
     private static final int COUNT_RECORDS_SHOW = 3;
     private final MainListRecordsInterface listener;
 
@@ -74,41 +75,49 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
         return items.size();
     }
 
-    private void showItems(List<Topic> topics) {
-        for(Topic topic: topics) {
+    private void showItems(ArrayMap<Topic, List<Record>> list) {
+        int startIndex = items.size() - 1;
+        for (int i = 0; i < list.size(); i++) {
+            Topic topic = list.keyAt(i);
             items.add(topic);
-
-            int countRecordShow = Math.min(topic.records.size(), COUNT_RECORDS_SHOW);
-            for (int i = 0; i < countRecordShow; i++) {
-                String recordUUID = topic.records.get(i);
-                Record record = TestRecordsRepository.getRecordByUUID(recordUUID);
-                items.add(record);
+            int countRecordShow = Math.min(list.valueAt(i).size(), COUNT_RECORDS_SHOW);
+            for (int g = 0; g < countRecordShow; g++) {
+                items.add(list.valueAt(i).get(g));
             }
-            if(countRecordShow == COUNT_RECORDS_SHOW)
+            if (countRecordShow == COUNT_RECORDS_SHOW)
                 items.add(topic.uuid);
+            notifyItemRangeChanged(startIndex, items.size() - startIndex);
         }
-        notifyDataSetChanged();
     }
 
-    public void setItems(List<Topic> topics) {
-        this.allTopics.clear();
-        this.allTopics.addAll(topics);
+
+    public void addItems(Topic topic, List<Record> list) {
+        allTopics.put(topic, list);
+        ArrayMap<Topic, List<Record>> map = new ArrayMap<>();
+        map.put(topic, list);
+        showItems(map);
+    }
+
+    public void setItems(ArrayMap<Topic, List<Record>> map) {
+        allTopics.clear();
+        items.clear();
+        allTopics.putAll(map);
         showItems(allTopics);
     }
 
     public void filterItemsByTopicName(String str) {
         items.clear();
-        ArrayList<Topic> filtered = new ArrayList<>();
-        for(Topic topic: allTopics)
-            if(topic.name.contains(str)) filtered.add(topic);
+        ArrayMap<Topic, List<Record>> filtered = new ArrayMap<>();
+        for (Topic topic : (Set<Topic>) allTopics.keySet())
+            if (topic.name.contains(str)) filtered.put(topic, allTopics.get(topic));
         showItems(filtered);
     }
 
     @Override
     public int getItemViewType(int position) {
         Object item = items.get(position);
-        if(item instanceof Topic) return ViewTypes.TYPE_TOPIC_NAME;
-        if(item instanceof Record) return ViewTypes.TYPE_RECORD;
+        if (item instanceof Topic) return ViewTypes.TYPE_TOPIC_NAME;
+        if (item instanceof Record) return ViewTypes.TYPE_RECORD;
         return ViewTypes.TYPE_BUTTON_SHOW_ALL_RECORDS;
     }
 

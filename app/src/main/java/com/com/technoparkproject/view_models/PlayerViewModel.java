@@ -1,16 +1,12 @@
 package com.com.technoparkproject.view_models;
 
 import android.app.Application;
-import android.content.Context;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.com.technoparkproject.VoiceItApplication;
 import com.example.player.PlayerServiceConnection;
