@@ -11,7 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.technopark.recorder.AudioRecorder;
-import com.technopark.recorder.VoiceItApplication;
+import com.technopark.recorder.RecorderApplication;
 import com.technopark.recorder.repository.RecordTopicRepo;
 import com.technopark.recorder.utils.InjectorUtils;
 import com.technopark.recorder.utils.SingleLiveEvent;
@@ -45,7 +45,7 @@ public class RecordingService extends Service implements RecService {
 
     @Override
     public void onCreate() {
-        mAudioRecorder = VoiceItApplication.from(this).getRecorder();
+        mAudioRecorder = RecorderApplication.from(this).getRecorder();
         mRecTimeObserver = new RecTimeObserver();
         mAudioRecorder.getRecTime().observeForever(mRecTimeObserver);
     }

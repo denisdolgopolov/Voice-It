@@ -2,7 +2,7 @@ package com.technopark.recorder.utils;
 
 import android.content.Context;
 
-import com.technopark.recorder.VoiceItApplication;
+import com.technopark.recorder.RecorderApplication;
 import com.technopark.recorder.AudioRecorder;
 import com.technopark.recorder.repository.RecordTopicRepo;
 import com.technopark.recorder.service.RecService;
@@ -13,7 +13,7 @@ public final class InjectorUtils {
     private InjectorUtils(){}
 
     public static RecordTopicRepo provideRecordTopicRepo(Context context){
-        return VoiceItApplication.from(context).getRecordTopicRepo();
+        return RecorderApplication.from(context).getRecordTopicRepo();
     }
 
     public static RecService provideRecService(Context context) {
@@ -22,7 +22,7 @@ public final class InjectorUtils {
     }
 
     private static RecorderConnection provideRecServiceConn(Context context) {
-        return VoiceItApplication.from(context).getRecordConnection();
+        return RecorderApplication.from(context).getRecordConnection();
     }
 
     public static RecorderConnection.RecServiceLiveData provideRecServiceData(Context context) {
@@ -31,6 +31,6 @@ public final class InjectorUtils {
     }
 
     public static AudioRecorder provideRecorder(Context context){
-        return VoiceItApplication.from(context).getRecorder();
+        return RecorderApplication.from(context).getRecorder();
     }
 }

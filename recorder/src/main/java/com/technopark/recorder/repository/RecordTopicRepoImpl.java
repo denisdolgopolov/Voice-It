@@ -3,7 +3,7 @@ package com.technopark.recorder.repository;
 import android.content.Context;
 import android.util.Log;
 
-import com.technopark.recorder.VoiceItApplication;
+import com.technopark.recorder.RecorderApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ public final class RecordTopicRepoImpl implements RecordTopicRepo{
     }
 
     public static RecordTopicRepo getInstance(Context context) {
-        return VoiceItApplication.from(context).getRecordTopicRepo();
+        return RecorderApplication.from(context).getRecordTopicRepo();
     }
 
     final Map<UUID,RecordTopic> mRecTopics = new HashMap<>();

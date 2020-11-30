@@ -8,9 +8,8 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import com.technopark.recorder.repository.RecordTopicRepo;
 import com.technopark.recorder.repository.RecordTopicRepoImpl;
 import com.technopark.recorder.service.RecorderConnection;
-import com.example.player.PlayerServiceConnection;
 
-public class VoiceItApplication extends Application {
+public class RecorderApplication extends Application {
 
     private AudioRecorder mAudioRecorder;
     private RecordTopicRepo mRecordTopicRepo;
@@ -27,14 +26,8 @@ public class VoiceItApplication extends Application {
         return mRecConn;
     }
 
-    public static VoiceItApplication from(Context context) {
-        return (VoiceItApplication) context.getApplicationContext();
-    }
-
-    public PlayerServiceConnection playerServiceConnection;
-
-    public PlayerServiceConnection getPlayerServiceConnection() {
-        return this.playerServiceConnection;
+    public static RecorderApplication from(Context context) {
+        return (RecorderApplication) context.getApplicationContext();
     }
 
     @Override
@@ -42,9 +35,6 @@ public class VoiceItApplication extends Application {
         super.onCreate();
         mAudioRecorder = new AudioRecorder();
         mRecConn = new RecorderConnection(getApplicationContext());
-        //TODO спросить - убирать или нет?
-        this.playerServiceConnection = new PlayerServiceConnection(getApplicationContext());
-        RecordingServiceConnection recServiceConn = RecordingServiceConnection.getInstance(getApplicationContext());
         ProcessLifecycleOwner.get().getLifecycle().addObserver(mRecConn.getBinderObserver());
         mRecordTopicRepo = new RecordTopicRepoImpl(getApplicationContext());
     }
