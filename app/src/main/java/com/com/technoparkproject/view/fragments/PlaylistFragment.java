@@ -47,10 +47,10 @@ public class PlaylistFragment extends Fragment {
         BottomSheetBehavior behavior = BottomSheetBehavior.from(playerView);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-        playlistViewModel.currentPlaylist.observe(getViewLifecycleOwner(), new Observer<List<String>>() {
+        playlistViewModel.currentPlaylist.observe(getViewLifecycleOwner(), new Observer<List<Record>>() {
             @Override
-            public void onChanged(List<String> strings) {
-                playlistAdapter.setRecordList(playlistViewModel.getListOfRecordsFromUUIDs(strings));
+            public void onChanged(List<Record> records) {
+                playlistAdapter.setRecordList(records);
             }
         });
 

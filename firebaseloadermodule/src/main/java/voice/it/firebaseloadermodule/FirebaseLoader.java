@@ -134,7 +134,7 @@ public class FirebaseLoader {
             case Users:
                 return document.toObject(FirebaseUser.class);
             case Records:
-                return document.toObject(FirebaseRecord.class);
+                    return document.toObject(FirebaseRecord.class);
             default:
                 throw new IllegalStateException();
         }

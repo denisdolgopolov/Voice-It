@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -32,7 +33,10 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import java.util.List;
-import java.util.Objects;
+
+import voice.it.firebaseloadermodule.FirebaseFileLoader;
+import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
+import voice.it.firebaseloadermodule.listeners.FirebaseGetUriListener;
 
 final public class PlayerService extends Service {
     public static final String NOTIFICATION_CHANNEL_NAME = "PlayerControl";
@@ -61,14 +65,16 @@ final public class PlayerService extends Service {
         //TODO
         @Override
         public Record getRecordByUUID(String UUID) {
-            return new Record("", "", "",
-                    "", "", "");
+            for (Record record : playlist.getValue())
+                if (record.uuid.equals(UUID))
+                    return record;
+            return null;
         }
 
         @Override
-        public String getAudioSourceURLByRecordUUID(String UUID) {
-            // return TestRecordsRepository.getUriFromRecordUUID(UUID);
-            return "";
+        public void getAudioSourceURLByRecordUUID(String UUID, FirebaseGetUriListener listener) {
+            new FirebaseFileLoader(getApplicationContext())
+                    .getDownloadUri(FirebaseFileTypes.RECORDS, UUID, listener);
         }
 
         @Override
@@ -79,7 +85,7 @@ final public class PlayerService extends Service {
     };
 
     public int currentItemIndex = 0;
-    public MutableLiveData<List<String>> playlist = new MutableLiveData<>();
+    public MutableLiveData<List<Record>> playlist = new MutableLiveData<>();
 
     public String getNextRecordUUID() {
         if (currentItemIndex == playlist.getValue().size() - 1)
@@ -98,7 +104,7 @@ final public class PlayerService extends Service {
     }
 
     public String getCurrentRecordUUID() {
-        return Objects.requireNonNull(playlist.getValue()).get(currentItemIndex);
+        return playlist.getValue().get(currentItemIndex).uuid;
     }
 
     private AudioAttributes getAudioAttributes() {
@@ -232,7 +238,6 @@ final public class PlayerService extends Service {
                     );
                 }
                 currentState = PlaybackStateCompat.STATE_PLAYING;
-                refreshNotificationAndForegroundStatus(currentState);
             }
 
         }
@@ -301,16 +306,30 @@ final public class PlayerService extends Service {
         private void prepareToPlay(String preparingRecordUUID) {
             if (!currentRecordUUID.equals(preparingRecordUUID)) {
                 currentRecordUUID = preparingRecordUUID;
-                mediaSession.setMetadata(getMediaMetadataFromUUID(currentRecordUUID));
-                exoPlayer.setMediaItem(MediaItem.fromUri(recordLoader.getAudioSourceURLByRecordUUID(currentRecordUUID)));
-                exoPlayer.prepare();
+                recordLoader.getAudioSourceURLByRecordUUID(currentRecordUUID, new FirebaseGetUriListener() {
+                    @Override
+                    public void onGet(Uri uri) {
+                        mediaSession.setMetadata(getMediaMetadataFromUUID(currentRecordUUID, uri));
+                        exoPlayer.setMediaItem(MediaItem.fromUri(uri));
+                        exoPlayer.prepare();
+                        mediaSession.setActive(true);
+                        exoPlayer.setPlayWhenReady(true);
+
+                        refreshNotificationAndForegroundStatus(currentState);
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+
+                    }
+                });
             } else {
                 if (currentState != PlaybackStateCompat.STATE_PAUSED) {
                     exoPlayer.seekTo(0L);
                 }
+                mediaSession.setActive(true);
+                exoPlayer.setPlayWhenReady(true);
             }
-            mediaSession.setActive(true);
-            exoPlayer.setPlayWhenReady(true);
         }
 
         private void skipTo(String currentRecordUUID) {
@@ -373,13 +392,13 @@ final public class PlayerService extends Service {
     }
 
 
-    MediaMetadataCompat getMediaMetadataFromUUID(String UUID) {
+    MediaMetadataCompat getMediaMetadataFromUUID(String UUID, Uri uri) {
         Record record = recordLoader.getRecordByUUID(UUID);
-        return recordToMediaMetadataCompat(record);
+        return recordToMediaMetadataCompat(record, uri);
     }
 
 
-    public MediaMetadataCompat recordToMediaMetadataCompat(Record record) {
+    public MediaMetadataCompat recordToMediaMetadataCompat(Record record, Uri uri) {
         // TODO убрать хардкод
         Bitmap art = BitmapFactory.decodeResource(getResources(), R.drawable.mlr_test_record_image);
         metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, art);
@@ -388,7 +407,7 @@ final public class PlayerService extends Service {
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, record.userUUID);
         metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, Long.parseLong(record.duration));
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, record.uuid);
-        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, recordLoader.getAudioSourceURLByRecordUUID(record.uuid));
+        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, uri.toString());
         MediaMetadataCompat mediaMetadataCompat = metadataBuilder.build();
 
         return mediaMetadataCompat;
@@ -429,7 +448,7 @@ final public class PlayerService extends Service {
     interface RecordLoader {
         Record getRecordByUUID(String UUID);
 
-        String getAudioSourceURLByRecordUUID(String UUID);
+        void getAudioSourceURLByRecordUUID(String UUID, FirebaseGetUriListener listener);
 
         String getImageSourceURLByUUID(String UUID);
     }

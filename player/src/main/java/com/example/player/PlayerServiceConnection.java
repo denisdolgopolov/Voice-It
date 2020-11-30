@@ -102,21 +102,24 @@ public class PlayerServiceConnection {
         playerService.currentItemIndex = index;
     }
 
-    public void addToPlaylist(String UUID) {
-        List<String> temp = playerService.playlist.getValue();
+    public void addToPlaylist(Record record) {
+        List<Record> temp = playerService.playlist.getValue();
         if (temp == null) {
             temp = new ArrayList<>();
         }
-        temp.add(UUID);
+        temp.add(record);
         playerService.playlist.setValue(temp);
     }
 
+    /*
     public void setPlaylist(List<String> currentPlaylist) {
         // currentPlaylist - лист, состоящий из UUID
         if (playerService != null) {
             playerService.playlist.setValue(currentPlaylist);
         }
     }
+
+     */
 
     public void setPlaylist(String topicUUID) {
         // TODO

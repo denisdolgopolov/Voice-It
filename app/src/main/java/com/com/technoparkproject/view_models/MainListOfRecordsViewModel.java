@@ -13,6 +13,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.com.technoparkproject.VoiceItApplication;
 import com.com.technoparkproject.model_converters.FirebaseConverter;
+import com.com.technoparkproject.model_converters.PlayerConverter;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
 import com.example.player.PlayerServiceConnection;
@@ -100,7 +101,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
 
     public void addToPlaylistClicked(Record record) {
         //TODO
-        playerServiceConnection.addToPlaylist(record.uuid);
+        playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(record));
     }
 
     public MainListOfRecordsViewModel(@NonNull Application application) {
