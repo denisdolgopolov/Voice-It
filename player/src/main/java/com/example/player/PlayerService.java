@@ -31,6 +31,8 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 
 import java.util.List;
 
@@ -415,7 +417,11 @@ final public class PlayerService extends Service {
     }
 
     private void initExoPLayer() {
-        exoPlayer = new SimpleExoPlayer.Builder(this).build();
+        DefaultExtractorsFactory extractorsFactory =
+                new DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true);
+        exoPlayer = new SimpleExoPlayer.Builder(this)
+                .setMediaSourceFactory(new DefaultMediaSourceFactory(this, extractorsFactory))
+                .build();
         exoPlayer.addListener(exoPlayerListener);
     }
 
