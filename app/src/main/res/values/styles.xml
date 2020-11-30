@@ -49,5 +49,61 @@
         <item name="android:textColor">@color/colorBlack</item>
         <item name="android:textSize">14sp</item>
     </style>
+
+    <style name="ShapeAppearanceOverlay.App.Rounded" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Widget.App.Button.IconOnly" parent="Widget.MaterialComponents.Button">
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+
+    <style name="RecordButton" parent="Widget.App.Button.IconOnly">
+        <item name="iconTint">@drawable/states_recorderbutton</item>
+        <item name="backgroundTint">@android:color/white</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.App.Rounded</item>
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="iconSize">52dp</item>
+    </style>
+
+    <style name="RecordButton.NoElevation" parent="RecordButton">
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="RecordButton.Elevation" parent="RecordButton">
+        <item name="iconTint">@drawable/states_recorderbutton</item>
+    </style>
+
+
+    <style name="Theme.RedButtons" parent="MyTheme">
+        <item name="colorOnSurface">@color/red_default</item>
+    </style>
+
+    <style name="Theme.BlackButtons" parent="MyTheme">
+        <item name="colorOnSurface">@android:color/black</item>
+    </style>
+
+    <style name="RecordEditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:inputType">text</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="RecordTextInput">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">40dp</item>
+        <item name="android:layout_marginRight">40dp</item>
+    </style>
+
 </resources>
 

@@ -1,10 +1,9 @@
 package com.com.technoparkproject;
 
-import android.app.Application;
-
 import com.example.player.PlayerServiceConnection;
+import com.technopark.recorder.RecorderApplication;
 
-public class VoiceItApplication extends Application {
+public class VoiceItApplication extends RecorderApplication {
 
     public PlayerServiceConnection playerServiceConnection;
 

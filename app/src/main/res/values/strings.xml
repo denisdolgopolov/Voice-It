@@ -9,7 +9,7 @@
     <string name="toolbar_language_text">Изменить язык</string>
     <string name="fragment_home_name">home</string>
     <string name="fragment_playlist_name">playlist</string>
-    <string name="fragment_record_name">record</string>
+    <string name="fragment_record_name">recordTopic</string>
     <string name="fragment_settings_name">settings</string>
     <string name="fragment_personal_page_name">personal_page</string>
     <string name="fragment_password_name">password</string>
@@ -28,7 +28,7 @@
     <string name="frag_change_language">CHANGE LANGUAGE</string>
     <string name="frag_change_password">CHANGE PASSWORD</string>
     <string name="current_fragment">Current fragment</string>
-    <string name="record_image">record image</string>
+    <string name="record_image">recordTopic image</string>
     <string name="why_you_search">что хотите найти?</string>
     <string name="add_to_queue">Добавить в очередь</string>
     <string name="download">Загрузить</string>
@@ -36,4 +36,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="selected_record_color">#FFC4C4</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_record_fragment">Record fragment</string>
+    <string name="text_record_permission_denied">Вы отказались предоставить разрешение на запись. Вы можете предоставить его в настройках.</string>
+    <string name="channel_audio_app">Voice-it channel</string>
+    <string name="channel_description">Notifications of Voice-it</string>
+    <string name="audio_record">Идет запись</string>
+    <string name="default_record_name">Моя запись</string>
+    <string name="default_topic_name">Мой Топик</string>
+    <string name="record_hint_text">Запись</string>
+    <string name="topic_hint_text">Топик</string>
 </resources>

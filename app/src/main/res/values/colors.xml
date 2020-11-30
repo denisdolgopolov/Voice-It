@@ -3,7 +3,7 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
-  
+
     <color name="colorRed">#C42014</color>
     <color name="colorGrey">#BCB8B8</color>
     <color name="colorWhite">#FFFFFF</color>
@@ -16,4 +16,6 @@
 
     <color name="blue_info">#039BE5</color>
     <color name="mainBackgroundColor">#f9feff</color>
+    <color name="red_default">#C42014</color>
+    <color name="service_notification_color">@color/red</color>
 </resources>

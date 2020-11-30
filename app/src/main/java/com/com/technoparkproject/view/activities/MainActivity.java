@@ -1,6 +1,7 @@
 package com.com.technoparkproject.view.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.com.technoparkproject.view.fragments.PlaylistFragment;
 import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.technopark.recorder.service.RecordIntentConstants;
 
 public class MainActivity extends AppCompatActivity {
     private String currentFragment = null;
@@ -69,12 +71,30 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment == null) {
             bottomNavigation.setSelectedItemId(R.id.nav_home);
         }
-
+        if (savedInstanceState == null) {
+            checkRecordIntent(getIntent());
+        }
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        checkRecordIntent(intent);
+    }
+
+    private void checkRecordIntent(Intent intent){
+        String nextFragment = intent.getStringExtra(RecordIntentConstants.NAME);
+        if (nextFragment != null) {
+            //if activity received intent from record notification go to record fragment
+            if (nextFragment.equals(RecordIntentConstants.VALUE)) {
+                BottomNavigationView btmNav = findViewById(R.id.bottom_navigation);
+                btmNav.setSelectedItemId(R.id.nav_record);
+            }
+        }
+    }
     @SuppressLint("NonConstantResourceId")
     public void onClickChangePasswordOrLanguageButton(View view) {
         switch (view.getId()) {
