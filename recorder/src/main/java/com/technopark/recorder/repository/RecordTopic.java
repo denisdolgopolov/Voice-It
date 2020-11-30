@@ -15,7 +15,6 @@ public final class RecordTopic {
         mName = name;
         mTopic = topic;
         mDuration = duration;
-
     }
 
     public RecordTopic(RecordTopic recTopic){

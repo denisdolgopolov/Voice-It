@@ -25,7 +25,7 @@ public class ServiceLoadFileState extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, int flags, int startId) {
         if(intent.getAction() == null) return START_REDELIVER_INTENT;
 
         switch(intent.getAction()) {
@@ -56,7 +56,8 @@ public class ServiceLoadFileState extends Service {
                 new FirebaseLoader().add(firebaseModel, new FirebaseListener() {
                     @Override
                     public void onSuccess() {
-
+                        Intent newIntent = new Intent("update_list_records");
+                        sendBroadcast(newIntent);
                     }
 
                     @Override

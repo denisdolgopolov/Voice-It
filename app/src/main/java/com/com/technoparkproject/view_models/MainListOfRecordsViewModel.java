@@ -30,7 +30,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     PlayerServiceConnection playerServiceConnection;
     private MutableLiveData<List<Topic>> topics;
     private MutableLiveData<ArrayMap<Topic, List<Record>>> records;
-    private MutableLiveData<String> searchingValue = new MutableLiveData<>();
+    private final MutableLiveData<String> searchingValue = new MutableLiveData<>();
 
     public LiveData<List<Topic>> getTopics() {
         if (topics == null) {
@@ -43,12 +43,12 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     public LiveData<ArrayMap<Topic, List<Record>>> getRecords() {
         if (records == null) {
             records = new MutableLiveData<>();
-            records.setValue(new ArrayMap<Topic, List<Record>>());
+            records.setValue(new ArrayMap<>());
         }
         return records;
     }
 
-    private void queryTopics() {
+    public void queryTopics() {
         new FirebaseLoader().getAll(FirebaseCollections.Topics, new FirebaseGetListListener<FirebaseTopic>() {
             @Override
             public void onFailure(String error) {
@@ -57,9 +57,13 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
             @Override
             public void onGet(List<FirebaseTopic> item) {
                 List<Topic> topics = new FirebaseConverter().toTopicList(item);
-                MainListOfRecordsViewModel.this.topics.postValue(topics);
+                MainListOfRecordsViewModel.this.topics.setValue(topics);
             }
         });
+    }
+
+    public void clearRecordsList() {
+        MainListOfRecordsViewModel.this.records.setValue(new ArrayMap<>());
     }
 
     public void queryRecord(final Topic topic) {
@@ -73,7 +77,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
             public void onGet(List<FirebaseRecord> item) {
                 List<Record> records = new FirebaseConverter().toRecordList(item);
                 MainListOfRecordsViewModel.this.records.getValue().put(topic, records);
-                MainListOfRecordsViewModel.this.records.postValue(MainListOfRecordsViewModel.this.records.getValue());
+                MainListOfRecordsViewModel.this.records.setValue(MainListOfRecordsViewModel.this.records.getValue());
             }
         });
     }

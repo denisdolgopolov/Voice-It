@@ -11,13 +11,25 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
-import com.technopark.recorder.repository.RecordTopicRepo;
-import com.technopark.recorder.service.RecorderConnection;
-import com.technopark.recorder.utils.SingleLiveEvent;
-import com.technopark.recorder.repository.RecordTopic;
+import com.com.technoparkproject.model_converters.RecordConverter;
+import com.com.technoparkproject.models.TopicTypes;
 import com.technopark.recorder.RecordState;
+import com.technopark.recorder.repository.RecordTopic;
+import com.technopark.recorder.repository.RecordTopicRepo;
 import com.technopark.recorder.service.RecService;
+import com.technopark.recorder.service.RecorderConnection;
 import com.technopark.recorder.utils.InjectorUtils;
+import com.technopark.recorder.utils.SingleLiveEvent;
+
+import java.io.FileInputStream;
+import java.util.Collections;
+import java.util.UUID;
+
+import voice.it.firebaseloadermodule.FirebaseFileLoader;
+import voice.it.firebaseloadermodule.FirebaseLoader;
+import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
+import voice.it.firebaseloadermodule.listeners.FirebaseListener;
+import voice.it.firebaseloadermodule.model.FirebaseTopic;
 
 public class RecorderViewModel extends AndroidViewModel {
 
@@ -119,8 +131,38 @@ public class RecorderViewModel extends AndroidViewModel {
     }
 
     //todo upload recording
-    private void loadFile(RecordTopic recTopic){
-        Log.d("save file","saving record: "+recTopic.toString());
+    private void loadFile(RecordTopic recTopic) {
+        try {
+            FileInputStream inputStream = new FileInputStream(recTopic.getRecordFile());
+            final String recordUUID = UUID.randomUUID().toString();
+            final String topicUUID = UUID.randomUUID().toString();
+
+            FirebaseTopic topic = new FirebaseTopic(recTopic.getName(),
+                    "randomUUID",
+                    Collections.singletonList(recordUUID),
+                    TopicTypes.TOPIC_THEMATIC.toString(),
+                    topicUUID);
+
+            new FirebaseLoader().add(topic, new FirebaseListener() {
+                @Override
+                public void onSuccess() {
+                    new FirebaseFileLoader(getApplication()).uploadFile(
+                            inputStream,
+                            FirebaseFileTypes.RECORDS,
+                            recTopic.getRecordFile().length(),
+                            RecordConverter.toFirebaseModel(recTopic, recordUUID, topicUUID)
+                    );
+                    Log.d("save file", "saving record: " + recTopic.toString());
+                }
+
+                @Override
+                public void onFailure(String error) {
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //private RecordTopic mRec;

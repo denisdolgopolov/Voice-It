@@ -46,4 +46,8 @@
     <string name="default_topic_name">Мой Топик</string>
     <string name="record_hint_text">Запись</string>
     <string name="topic_hint_text">Топик</string>
+    <string name="cancel_save_record">Отменить сохранение аудио</string>
+    <string name="cancel">ОТМЕНА</string>
+    <string name="enter_topic">Введите топик</string>
+    <string name="enter_record_name">Введите название</string>
 </resources>

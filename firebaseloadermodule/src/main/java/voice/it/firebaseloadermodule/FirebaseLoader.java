@@ -76,6 +76,22 @@ public class FirebaseLoader {
                 });
     }
 
+    /*
+    public void getByName(final FirebaseCollections collection,
+                          String topicName,
+                          final FirebaseGetListener listener) throws IllegalStateException {
+        db.collection(collection.toString())
+                .whereEqualTo("name", topicName)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.getResult() == null)
+
+                    }
+                });
+    }
+     */
     public <T extends FirebaseModel> void getAll(final FirebaseCollections collection,
                                                  final FirebaseGetListListener<T> listener) {
         db.collection(collection.toString())

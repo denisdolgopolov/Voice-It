@@ -30,6 +30,7 @@
         </activity>
 
         <service android:name="com.technopark.recorder.service.RecordingService" />
+        <receiver android:name=".broadcasts.BroadcastUpdateListRecords" />
     </application>
 
 </manifest>

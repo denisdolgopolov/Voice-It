@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.TestErrorShower;
+import com.com.technoparkproject.broadcasts.BroadcastUpdateListRecordListener;
+import com.com.technoparkproject.broadcasts.BroadcastUpdateListRecords;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
@@ -35,6 +37,8 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     private RecyclerTopicsWithRecordsAdapter adapter;
     private AutoCompleteTextView searchingField;
     MainListOfRecordsViewModel viewModel;
+
+    private final BroadcastUpdateListRecords receiverUpdateList = new BroadcastUpdateListRecords();
 
     @Nullable
     @Override
@@ -65,6 +69,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         viewModel.getTopics().observe(getViewLifecycleOwner(), new Observer<List<Topic>>() {
             @Override
             public void onChanged(List<Topic> topics) {
+                viewModel.clearRecordsList();
                 for(Topic topic: topics)
                     viewModel.queryRecord(topic);
                 setAutoCompleteValues(topics);
@@ -128,5 +133,24 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                     }
                 });
         dialog.show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(receiverUpdateList, receiverUpdateList.getIntentFilter());
+        receiverUpdateList.setListener(new BroadcastUpdateListRecordListener() {
+            @Override
+            public void onUpdate() {
+                viewModel.queryTopics();
+            }
+        });
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(receiverUpdateList);
     }
 }

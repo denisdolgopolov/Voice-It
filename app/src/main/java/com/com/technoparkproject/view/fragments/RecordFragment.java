@@ -1,13 +1,6 @@
 package com.com.technoparkproject.view.fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,14 +10,20 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
-import com.technopark.recorder.RecordState;
 import com.com.technoparkproject.viewmodels.RecorderViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.technopark.recorder.RecordState;
 import com.technopark.recorder.views.RecorderFragment;
 
 
@@ -103,7 +102,7 @@ public class RecordFragment extends RecorderFragment {
                 switch (recTextState){
                     case INVALID:
                         recNameInput.setErrorEnabled(true);
-                        recNameInput.setError("Введите название");
+                        recNameInput.setError(getString(R.string.enter_record_name));
                         break;
                     case VALID:
                         recNameInput.setError(null);
@@ -118,7 +117,7 @@ public class RecordFragment extends RecorderFragment {
                 switch (recTextState){
                     case INVALID:
                         recTopicInput.setErrorEnabled(true);
-                        recTopicInput.setError("Введите топик");
+                        recTopicInput.setError(getString(R.string.enter_topic));
                         break;
                     case VALID:
                         recTopicInput.setError(null);
@@ -153,8 +152,8 @@ public class RecordFragment extends RecorderFragment {
 
 
         final Snackbar saveSnack = Snackbar
-                .make(view, "Отменить сохранение аудио", BaseTransientBottomBar.LENGTH_LONG)
-                .setAction("ОТМЕНА", new View.OnClickListener() {
+                .make(view, R.string.cancel_save_record, BaseTransientBottomBar.LENGTH_LONG)
+                .setAction(R.string.cancel, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         recViewModel.dismissRecording();
