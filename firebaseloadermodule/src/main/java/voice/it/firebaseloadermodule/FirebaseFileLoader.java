@@ -27,7 +27,7 @@ import voice.it.firebaseloadermodule.service.ServiceLoadFileState;
 
 public class FirebaseFileLoader {
     private final FirebaseStorage db = FirebaseStorage.getInstance();
-    private Context context;
+    private final Context context;
 
     public FirebaseFileLoader(Context context) {
         this.context = context;
