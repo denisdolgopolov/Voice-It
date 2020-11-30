@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Set;
 
 public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
-    private ArrayList<Object> items = new ArrayList<>();
-    private ArrayMap allTopics = new ArrayMap<Topic, List<Record>>();
+    private final ArrayList<Object> items = new ArrayList<>();
+    private final ArrayMap<Topic, List<Record>> allTopics = new ArrayMap<>();
     private static final int COUNT_RECORDS_SHOW = 3;
-    private MainListRecordsInterface listener;
+    private final MainListRecordsInterface listener;
 
     public RecyclerTopicsWithRecordsAdapter(MainListRecordsInterface listener) {
         this.listener = listener;
@@ -31,7 +31,7 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        switch (viewType) {
+        switch(viewType) {
             case ViewTypes.TYPE_TOPIC_NAME:
                 View viewTopicName = inflater.inflate(R.layout.mlr_item_topic_name,
                         parent, false);
@@ -51,7 +51,7 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int type = getItemViewType(position);
         Object item = items.get(position);
-        switch (type) {
+        switch(type) {
             case ViewTypes.TYPE_TOPIC_NAME:
                 Topic topic = (Topic) item;
                 ItemTopicNameViewHolder topicViewHolder = (ItemTopicNameViewHolder) holder;
@@ -90,14 +90,6 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
         }
     }
 
-    /*
-    public void setItems(List<Topic> topics) {
-        this.allTopics.clear();
-        this.allTopics.addAll(topics);
-        showItems(allTopics);
-    }
-
-     */
 
     public void addItems(Topic topic, List<Record> list) {
         allTopics.put(topic, list);
@@ -115,7 +107,7 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
 
     public void filterItemsByTopicName(String str) {
         items.clear();
-        ArrayMap filtered = new ArrayMap();
+        ArrayMap<Topic, List<Record>> filtered = new ArrayMap<>();
         for (Topic topic : (Set<Topic>) allTopics.keySet())
             if (topic.name.contains(str)) filtered.put(topic, allTopics.get(topic));
         showItems(filtered);

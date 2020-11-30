@@ -14,121 +14,198 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.com.technoparkproject.R;
-import com.com.technoparkproject.view.fragments.HomeFragment;
+import com.com.technoparkproject.view.fragments.LanguageFragment;
 import com.com.technoparkproject.view.fragments.MainListOfRecordsFragment;
+import com.com.technoparkproject.view.fragments.PasswordFragment;
 import com.com.technoparkproject.view.fragments.PersonalPageFragment;
+import com.com.technoparkproject.view.fragments.PlaylistFragment;
 import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.IOException;
-
-import voice.it.firebaseloadermodule.FirebaseFileLoader;
-import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
-import voice.it.firebaseloadermodule.model.FirebaseRecord;
-
 public class MainActivity extends AppCompatActivity {
-    private String currentFragment;
+    private String currentFragment = null;
+
+    private TextView toolbarTitleView;
+    private ImageButton toolbarBackButton;
+    private ImageButton toolbarLogoutButton;
+    private ImageButton toolbarCancelButton;
+    private ImageButton toolbarTickButton;
 
     private static final int TOOLBAR_HOME_TEXT = R.string.toolbar_home_text;
     private static final int TOOLBAR_PLAYLIST_TEXT = R.string.toolbar_playlist_text;
     private static final int TOOLBAR_RECORD_TEXT = R.string.toolbar_record_text;
     private static final int TOOLBAR_SETTINGS_TEXT = R.string.toolbar_settings_text;
     private static final int TOOLBAR_PERSONAL_PAGE_TEXT = R.string.toolbar_personal_page_text;
+    private static final int TOOLBAR_PASSWORD_TEXT = R.string.toolbar_password_text;
+    private static final int TOOLBAR_LANGUAGE_TEXT = R.string.toolbar_language_text;
 
-    private static final int TOOLBAR_HOME_NAME = R.string.toolbar_home_name;
-    private static final int TOOLBAR_PLAYLIST_NAME = R.string.toolbar_playlist_name;
-    private static final int TOOLBAR_RECORD_NAME = R.string.toolbar_record_name;
-    private static final int TOOLBAR_SETTINGS_NAME = R.string.toolbar_settings_name;
-    private static final int TOOLBAR_PERSONAL_PAGE_NAME = R.string.toolbar_personal_page_name;
+    private static final int FRAGMENT_HOME_NAME = R.string.fragment_home_name;
+    private static final int FRAGMENT_PLAYLIST_NAME = R.string.fragment_playlist_name;
+    private static final int FRAGMENT_RECORD_NAME = R.string.fragment_record_name;
+    private static final int FRAGMENT_SETTINGS_NAME = R.string.fragment_settings_name;
+    private static final int FRAGMENT_PERSONAL_PAGE_NAME = R.string.fragment_personal_page_name;
+    private static final int FRAGMENT_PASSWORD_NAME = R.string.fragment_password_name;
+    private static final int FRAGMENT_LANGUAGE_NAME = R.string.fragment_language_name;
 
+    private PasswordFragment changePasswordFragment;
+    private LanguageFragment changeLanguageFragment;
+    BottomNavigationView bottomNavigation;
+
+    private static final String CURRENT_FRAGMENT = "Current fragment";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.currentFragment = null;
-        BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(navigationListener);
-        bottomNavigation.setSelectedItemId(R.id.nav_home);
+
+        if (savedInstanceState != null) {
+            currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
+        }
+
+        if (currentFragment == null) {
+            bottomNavigation.setSelectedItemId(R.id.nav_home);
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
 
-        try {
-            new FirebaseFileLoader(this).uploadFile(getAssets()
-                    .open("12345.mp3"), FirebaseFileTypes.RECORDS,
-                    getAssets().openFd("12345.mp3").getLength(),
-                    new FirebaseRecord("dsadasd",
-                            "dasd",
-                            "asdasd", "dasdsa",
-                            "sdaas", 1000L));
-        } catch (IOException e) {
-            e.printStackTrace();
+    @SuppressLint("NonConstantResourceId")
+    public void onClickChangePasswordOrLanguageButton(View view) {
+        switch (view.getId()) {
+            case R.id.btn_change_password:
+                changePasswordFragment = new PasswordFragment();
+                currentFragment = getString(FRAGMENT_PASSWORD_NAME);
+                loadFragment(changePasswordFragment, currentFragment);
+                break;
+            case R.id.btn_change_language:
+                changeLanguageFragment = new LanguageFragment();
+                currentFragment = getString(FRAGMENT_LANGUAGE_NAME);
+                loadFragment(changeLanguageFragment, currentFragment);
+                break;
         }
     }
 
+    public void onClickTickOrCancelButton(View view) {
+        if (currentFragment.equals(getString(FRAGMENT_PASSWORD_NAME)) || currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
+            currentFragment = getString(FRAGMENT_SETTINGS_NAME);
+            undoFragment();
+        }
+    }
+
+    public void setToolbar(String nameSelectedFragment) {
+        toolbarTitleView = findViewById(R.id.toolbar_title);
+        toolbarBackButton = findViewById(R.id.toolbar_back_button);
+        toolbarLogoutButton = findViewById(R.id.toolbar_logout_button);
+        toolbarCancelButton = findViewById(R.id.toolbar_cancel_button);
+        toolbarTickButton = findViewById(R.id.toolbar_tick_button);
+
+        toolbarBackButton.setVisibility(View.GONE);
+        toolbarLogoutButton.setVisibility(View.GONE);
+        toolbarCancelButton.setVisibility(View.GONE);
+        toolbarTickButton.setVisibility(View.GONE);
+
+        switch (nameSelectedFragment) {
+            case "home":
+                toolbarTitleView.setText(TOOLBAR_HOME_TEXT);
+                break;
+            case "playlist":
+                toolbarTitleView.setText(TOOLBAR_PLAYLIST_TEXT);
+                break;
+            case "record":
+                toolbarTitleView.setText(TOOLBAR_RECORD_TEXT);
+                toolbarBackButton.setVisibility(View.VISIBLE);
+                break;
+            case "settings":
+                toolbarTitleView.setText(TOOLBAR_SETTINGS_TEXT);
+                toolbarTickButton.setVisibility(View.VISIBLE);
+                break;
+            case "personal_page":
+                toolbarTitleView.setText(TOOLBAR_PERSONAL_PAGE_TEXT);
+                toolbarLogoutButton.setVisibility(View.VISIBLE);
+                break;
+            case "language":
+                toolbarTitleView.setText(TOOLBAR_LANGUAGE_TEXT);
+                toolbarCancelButton.setVisibility(View.VISIBLE);
+                toolbarTickButton.setVisibility(View.VISIBLE);
+                break;
+            case "password":
+                toolbarTitleView.setText(TOOLBAR_PASSWORD_TEXT);
+                toolbarCancelButton.setVisibility(View.VISIBLE);
+                toolbarTickButton.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
 
     private final BottomNavigationView.OnNavigationItemSelectedListener navigationListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @SuppressLint("NonConstantResourceId")
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment selectedFragment = null;
-            String nameSelectedFragment = null;
+                @SuppressLint("NonConstantResourceId")
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    Fragment selectedFragment = null;
+                    String nameSelectedFragment = null;
 
-            TextView toolbarTitleView = findViewById(R.id.toolbar_title);
-            ImageButton toolbarBackButton = findViewById(R.id.toolbar_back_button);
-            ImageButton toolbarLogoutButton = findViewById(R.id.toolbar_logout_button);
-            ImageButton toolbarCancelButton = findViewById(R.id.toolbar_cancel_button);
-            ImageButton toolbarTickButton = findViewById(R.id.toolbar_tick_button);
+                    switch (item.getItemId()) {
+                        case R.id.nav_home:
+                            selectedFragment = new MainListOfRecordsFragment();
+                            nameSelectedFragment = getResources().getString(FRAGMENT_HOME_NAME);
+                            break;
+                        case R.id.nav_playlist:
+                            selectedFragment = new PlaylistFragment();
+                            nameSelectedFragment = getResources().getString(FRAGMENT_PLAYLIST_NAME);
+                            break;
+                        case R.id.nav_record:
+                            selectedFragment = new RecordFragment();
+                            nameSelectedFragment = getResources().getString(FRAGMENT_RECORD_NAME);
+                            break;
+                        case R.id.nav_settings:
+                            selectedFragment = new SettingsFragment();
+                            nameSelectedFragment = getResources().getString(FRAGMENT_SETTINGS_NAME);
+                            break;
+                        case R.id.nav_personal_page:
+                            selectedFragment = new PersonalPageFragment();
+                            nameSelectedFragment = getResources().getString(FRAGMENT_PERSONAL_PAGE_NAME);
+                            break;
+                    }
 
-            toolbarBackButton.setVisibility(View.GONE);
-            toolbarLogoutButton.setVisibility(View.GONE);
-            toolbarCancelButton.setVisibility(View.GONE);
-            toolbarTickButton.setVisibility(View.GONE);
+                    if (currentFragment == null || !currentFragment.equals(nameSelectedFragment)) {
+                        assert selectedFragment != null;
+                        loadFragment(selectedFragment, currentFragment);
+                        currentFragment = nameSelectedFragment;
+                    }
+                    return true;
+                }
+            };
 
-            switch (item.getItemId()) {
-                case R.id.nav_home:
-                    selectedFragment = new HomeFragment();
-                    nameSelectedFragment = getResources().getString(TOOLBAR_HOME_NAME);
-                    toolbarTitleView.setText(TOOLBAR_HOME_TEXT);
-                    break;
-                case R.id.nav_playlist:
-                    selectedFragment = new MainListOfRecordsFragment();
-                    nameSelectedFragment = getResources().getString(TOOLBAR_PLAYLIST_NAME);
-                    toolbarTitleView.setText(TOOLBAR_PLAYLIST_TEXT);
-                    break;
-                case R.id.nav_record:
-                    selectedFragment = new RecordFragment();
-                    nameSelectedFragment = getResources().getString(TOOLBAR_RECORD_NAME);
-                    toolbarTitleView.setText(TOOLBAR_RECORD_TEXT);
-                    toolbarBackButton.setVisibility(View.VISIBLE);
-                    break;
-                case R.id.nav_settings:
-                    selectedFragment = new SettingsFragment();
-                    nameSelectedFragment = getResources().getString(TOOLBAR_SETTINGS_NAME);
-                    toolbarTitleView.setText(TOOLBAR_SETTINGS_TEXT);
-                    toolbarCancelButton.setVisibility(View.VISIBLE);
-                    toolbarTickButton.setVisibility(View.VISIBLE);
-                    break;
-                case R.id.nav_personal_page:
-                    selectedFragment = new PersonalPageFragment();
-                    nameSelectedFragment = getResources().getString(TOOLBAR_PERSONAL_PAGE_NAME);
-                    toolbarTitleView.setText(TOOLBAR_PERSONAL_PAGE_TEXT);
-                    toolbarLogoutButton.setVisibility(View.VISIBLE);
-                    break;
-            }
-
-            if (currentFragment == null || !currentFragment.equals(nameSelectedFragment)) {
-                assert selectedFragment != null;
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        selectedFragment).commit();
-                currentFragment = nameSelectedFragment;
-            }
-            return true;
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            undoFragment();
         }
-    };
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(CURRENT_FRAGMENT, currentFragment);
+    }
+
+    public void loadFragment(Fragment fragment, String currentFragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(currentFragment)
+                .commit();
+    }
+
+    public void undoFragment() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        }
+    }
 }

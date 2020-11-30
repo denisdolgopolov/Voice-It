@@ -23,6 +23,7 @@ import com.com.technoparkproject.TestErrorShower;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
+import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -33,39 +34,35 @@ import java.util.List;
 public class MainListOfRecordsFragment extends Fragment implements MainListRecordsInterface {
     private RecyclerTopicsWithRecordsAdapter adapter;
     private AutoCompleteTextView searchingField;
+    MainListOfRecordsViewModel viewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        ((MainActivity) getActivity()).setToolbar(getString(R.string.fragment_home_name));
         ViewGroup view = (ViewGroup) LayoutInflater.from(getContext())
                 .inflate(R.layout.fragment_main_list_records, container,
                         false);
 
         RecyclerView rvMainList = view.findViewById(R.id.mlr_rv_main_list);
         rvMainList.setLayoutManager(new LinearLayoutManager(getContext()));
-
         adapter = new RecyclerTopicsWithRecordsAdapter(this);
         rvMainList.setAdapter(adapter);
-
         searchingField = view.findViewById(R.id.mlr_et_searching);
-
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        MainListOfRecordsViewModel viewModel = new ViewModelProvider(this,
-                new ViewModelProvider.NewInstanceFactory())
-                .get(MainListOfRecordsViewModel.class);
+        viewModel = new ViewModelProvider(getActivity()).get(MainListOfRecordsViewModel.class);
         observeToData(viewModel);
     }
 
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
-        viewModel.getTopics().observe(this, new Observer<List<Topic>>() {
+        viewModel.getTopics().observe(getViewLifecycleOwner(), new Observer<List<Topic>>() {
             @Override
             public void onChanged(List<Topic> topics) {
                 for(Topic topic: topics)
@@ -74,7 +71,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
             }
         });
 
-        viewModel.getRecords().observe(this, new Observer<ArrayMap<Topic, List<Record>>>() {
+        viewModel.getRecords().observe(getViewLifecycleOwner(), new Observer<ArrayMap<Topic, List<Record>>>() {
             @Override
             public void onChanged(ArrayMap<Topic, List<Record>> map) {
                 adapter.setItems(map);
@@ -82,7 +79,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         });
 
         viewModel.setSearchingInput(searchingField);
-        viewModel.getSearchingValue().observe(this, new Observer<String>() {
+        viewModel.getSearchingValue().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 adapter.filterItemsByTopicName(s);
@@ -107,10 +104,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     @Override
-    public void showRecordMoreFun(Record record) {
+    public void showRecordMoreFun(final Record record) {
         if(getContext() == null) return;
 
-        Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
+        final Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
         @SuppressLint("InflateParams")
         View bottomSheetView = getLayoutInflater()
                 .inflate(R.layout.mlr_bottom_sheet_record_functions, null);
@@ -119,7 +116,8 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TestErrorShower.showErrorDevelopment(getContext());
+                        viewModel.addToPlaylistClicked(record);
+                        dialog.dismiss();
                     }
                 });
         bottomSheetView.findViewById(R.id.mlr_download)
@@ -131,6 +129,4 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                 });
         dialog.show();
     }
-
-
 }

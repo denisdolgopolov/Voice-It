@@ -10,12 +10,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.com.technoparkproject.R;
+import com.com.technoparkproject.view.activities.MainActivity;
 
 public class PersonalPageFragment extends Fragment {
+
+    private static final int FRAGMENT_PERSONAL_PAGE_NAME = R.string.fragment_personal_page_name;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ((MainActivity) getActivity()).setToolbar(getString(FRAGMENT_PERSONAL_PAGE_NAME));
         return inflater.inflate(R.layout.fragment_personal_page, container, false);
     }
 }
