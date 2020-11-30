@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.com.technoparkproject.R;
+import com.com.technoparkproject.models.RecordUtils;
 import com.com.technoparkproject.view_models.PlayerViewModel;
 
 public class MinimizedPlayerFragment extends Fragment {
@@ -86,7 +87,7 @@ public class MinimizedPlayerFragment extends Fragment {
         mediaPositionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                currentTime.setText(durationFormat(i));
+                currentTime.setText(RecordUtils.durationFormatted(i));
             }
 
             @Override
@@ -136,22 +137,9 @@ public class MinimizedPlayerFragment extends Fragment {
             }
             titleAudio.setText(metadata.getDescription().getTitle());
             authorAudio.setText(metadata.getDescription().getDescription());
-            duration.setText(durationFormat(metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
+            duration.setText(RecordUtils.durationFormatted(metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
             mediaPositionSeekBar.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         }
     }
 
-    // TODO вынести это в какой-нибудь утильный класс
-    public static String durationFormat(long duration) {
-        String durationString;
-        int seconds = (int) duration / 1000;
-        int minutes = (int) seconds / 60;
-        seconds = seconds - minutes * 60;
-        if (seconds >= 10) {
-            durationString = minutes + ":" + seconds;
-        } else {
-            durationString = minutes + ":0" + seconds;
-        }
-        return durationString;
-    }
 }

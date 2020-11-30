@@ -76,7 +76,8 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     }
 
     private void showItems(ArrayMap<Topic, List<Record>> list) {
-        int startIndex = items.size() - 1;
+        int startIndex = items.size();
+
         for (int i = 0; i < list.size(); i++) {
             Topic topic = list.keyAt(i);
             items.add(topic);
@@ -86,16 +87,8 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
             }
             if (countRecordShow == COUNT_RECORDS_SHOW)
                 items.add(topic.uuid);
-            notifyItemRangeChanged(startIndex, items.size() - startIndex);
         }
-    }
-
-
-    public void addItems(Topic topic, List<Record> list) {
-        allTopics.put(topic, list);
-        ArrayMap<Topic, List<Record>> map = new ArrayMap<>();
-        map.put(topic, list);
-        showItems(map);
+        notifyDataSetChanged();
     }
 
     public void setItems(ArrayMap<Topic, List<Record>> map) {

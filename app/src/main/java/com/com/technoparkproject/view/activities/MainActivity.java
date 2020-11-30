@@ -15,7 +15,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.com.technoparkproject.R;
-import com.technopark.recorder.service.RecordIntentConstants;
 import com.com.technoparkproject.view.fragments.LanguageFragment;
 import com.com.technoparkproject.view.fragments.MainListOfRecordsFragment;
 import com.com.technoparkproject.view.fragments.PasswordFragment;
@@ -24,6 +23,7 @@ import com.com.technoparkproject.view.fragments.PlaylistFragment;
 import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.technopark.recorder.service.RecordIntentConstants;
 
 public class MainActivity extends AppCompatActivity {
     private String currentFragment = null;
@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         if (currentFragment == null) {
             bottomNavigation.setSelectedItemId(R.id.nav_home);
         }
-        bottomNavigation.setSelectedItemId(R.id.nav_home);
         if (savedInstanceState == null) {
             checkRecordIntent(getIntent());
         }

@@ -20,4 +20,5 @@ public final class Record {
         this.userUUID = userUUID;
         this.duration = duration;
     }
+
 }
