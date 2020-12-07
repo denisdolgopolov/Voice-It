@@ -120,17 +120,14 @@ public class RecordViewModel extends RecorderViewModel {
 
     private void handleStop(final boolean isOnSave){
         mRecStopState.setValue(RecStopState.STOP_IN_PROGRESS);
-        mRecStopState.addSource(getRecState(), new Observer<RecordState>() {
-            @Override
-            public void onChanged(RecordState recordState) {
-                if (recordState == RecordState.STOP){
-                    mRecStopState.setValue(RecStopState.STOP_COMPLETED);
-                    mRecStopState.removeSource(getRecState());
-                    if (isOnSave)
-                        saveRec();
-                }
-
+        mRecStopState.addSource(getRecState(), recordState -> {
+            if (recordState == RecordState.STOP){
+                mRecStopState.setValue(RecStopState.STOP_COMPLETED);
+                mRecStopState.removeSource(getRecState());
+                if (isOnSave)
+                    saveRec();
             }
+
         });
     }
 
@@ -145,7 +142,6 @@ public class RecordViewModel extends RecorderViewModel {
         loadFile(repo.getLastRecord());
     }
 
-    //todo upload recording
     private void loadFile(RecordTopic recTopic) {
         try {
             FileInputStream inputStream = new FileInputStream(recTopic.getRecordFile());

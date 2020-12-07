@@ -15,7 +15,6 @@ import com.technopark.recorder.service.storage.RecordingProfileStorage;
 import com.technopark.recorder.service.tasks.DrainWriterTask;
 import com.technopark.recorder.service.tasks.RecorderTask;
 import com.technopark.recorder.service.tasks.StreamWriterTask;
-import com.technopark.recorder.utils.SingleLiveEvent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -89,12 +88,7 @@ public class AudioRecorder implements Recorder {
         mRecordState = new MutableLiveData<>();
         mMarkerPos = NO_MARKER;
 
-        mRecordingExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                configureSelf();
-            }
-        });
+        mRecordingExecutor.execute(this::configureSelf);
     }
 
     public RecordingProfile getRecProfile(){
@@ -204,17 +198,14 @@ public class AudioRecorder implements Recorder {
         mWriterExecutor.execute(writeTask);
 
 
-        Runnable timer = new Runnable() {
-            @Override
-            public void run() {
-                mRecordTimeInMills+=100;
-                //LiveData updates every second
-                if (mRecordTimeInMills % 1000 == 0) {
-                    int seconds = mRecordTimeInMills/1000;
-                    mRecTime.postValue(seconds);
-                    if (mMarkerPos != NO_MARKER && mMarkerPos == seconds){
-                        mRecMarkerReached.postValue(true);
-                    }
+        Runnable timer = () -> {
+            mRecordTimeInMills+=100;
+            //LiveData updates every second
+            if (mRecordTimeInMills % 1000 == 0) {
+                int seconds = mRecordTimeInMills/1000;
+                mRecTime.postValue(seconds);
+                if (mMarkerPos != NO_MARKER && mMarkerPos == seconds){
+                    mRecMarkerReached.postValue(true);
                 }
             }
         };
@@ -258,12 +249,7 @@ public class AudioRecorder implements Recorder {
         //using recording executor to make sure
         //recording task is finished and we can start to drain encoder
         mRecordingExecutor.execute(writeTask);
-        mRecordingExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                closeFile();
-            }
-        });
+        mRecordingExecutor.execute(this::closeFile);
 
     }
 
@@ -285,8 +271,7 @@ public class AudioRecorder implements Recorder {
     public int getDuration(){
         int bytesPerSecond = mRecProfile.getFrameSize()*mRecProfile.getSamplingRate();
         double recSeconds = (double)mRecRawSize.get() / bytesPerSecond;
-        int recMillis = (int)(recSeconds*1000);
-        return recMillis;
+        return (int)(recSeconds*1000);
     }
 
     @Override
