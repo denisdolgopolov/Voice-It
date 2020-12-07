@@ -107,6 +107,7 @@ public class RecordingService extends Service implements Recorder {
     @Override
     public void pause(){
         mAudioRecorder.pause();
+        RecorderNotification.updateNotification("Пауза...", RecordingService.this,FOREGROUND_ID);
     }
 
 
