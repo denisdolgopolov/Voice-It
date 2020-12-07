@@ -17,7 +17,6 @@ import com.technopark.recorder.repository.RecordTopicRepo;
 import com.technopark.recorder.service.storage.RecordingProfile;
 
 import java.io.File;
-import java.util.UUID;
 
 public class RecordingService extends Service implements Recorder {
 
@@ -87,8 +86,8 @@ public class RecordingService extends Service implements Recorder {
     public void start() {
         String fileFormat = mAudioRecorder.getRecProfile().getFileFormat();
         RecordTopicRepo recTopicRepo = RecorderApplication.from(getApplicationContext()).getRecordTopicRepo();
-        UUID recTopicID = recTopicRepo.createRecord(fileFormat);
-        File recordFile = recTopicRepo.getRecord(recTopicID).getRecordFile();
+        recTopicRepo.createRecord(fileFormat);
+        File recordFile = recTopicRepo.getLastRecord().getRecordFile();
         mAudioRecorder.prepare(recordFile);
 
         mAudioRecorder.start();

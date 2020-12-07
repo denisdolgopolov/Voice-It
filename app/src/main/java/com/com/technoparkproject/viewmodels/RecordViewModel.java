@@ -176,8 +176,6 @@ public class RecordViewModel extends RecorderViewModel {
         }
     }
 
-    //private RecordTopic mRec;
-
     private void saveRec(){
         RecordTopicRepo repo = RecorderApplication.from(getApplication()).getRecordTopicRepo();
         repo.updateLastDuration(getRecorder().getDuration());
