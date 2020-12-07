@@ -1,16 +1,10 @@
 package com.com.technoparkproject.viewmodels;
 
 import android.app.Application;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -22,9 +16,8 @@ import com.technopark.recorder.RecordState;
 import com.technopark.recorder.RecorderApplication;
 import com.technopark.recorder.repository.RecordTopic;
 import com.technopark.recorder.repository.RecordTopicRepo;
-import com.technopark.recorder.service.Recorder;
-import com.technopark.recorder.service.RecordingService;
 import com.technopark.recorder.utils.SingleLiveEvent;
+import com.technopark.recorder.viewmodels.RecorderViewModel;
 
 import java.io.FileInputStream;
 import java.util.Collections;
@@ -36,11 +29,9 @@ import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseListener;
 import voice.it.firebaseloadermodule.model.FirebaseTopic;
 
-public class RecorderViewModel extends AndroidViewModel {
+public class RecordViewModel extends RecorderViewModel {
 
     private final RecTimeLimitObserver mRecLimObserver;
-    private final ServiceConnection serviceConnection;
-    private Recorder mRecorder;
 
     private class RecTimeLimitObserver implements Observer<Boolean> {
         @Override
@@ -69,56 +60,49 @@ public class RecorderViewModel extends AndroidViewModel {
 
     private static final int MAX_RECORD_LENGTH = 15; //max allowed recording in seconds
 
-    public RecorderViewModel(@NonNull Application application) {
+    public RecordViewModel(@NonNull Application application) {
         super(application);
         mRecLimObserver = new RecTimeLimitObserver();
         mRecState = new MediatorLiveData<>();
         mRecState.setValue(RecordState.INIT);
         mRecTime = new MediatorLiveData<>();
         mRecTime.setValue(0);
-        serviceConnection = new ServiceConnection() {
+    }
 
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mRecorder = ((RecordingService.RecordBinder) service).getRecorder();
-                mRecState.addSource(mRecorder.getRecordState(),
-                        mRecState::setValue);
-                mRecTime.addSource(mRecorder.getRecTime(),
-                        mRecTime::setValue);
-                mRecorder.getRecMarker().observeForever(mRecLimObserver);
-            }
+    @Override
+    protected void onRecorderDisconnected() {
+        mRecState.removeSource(getRecorder().getRecordState());
+        mRecTime.removeSource(getRecorder().getRecTime());
+        getRecorder().getRecMarker().removeObserver(mRecLimObserver);
+    }
 
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                mRecState.removeSource(mRecorder.getRecordState());
-                mRecTime.removeSource(mRecorder.getRecTime());
-                mRecorder.getRecMarker().removeObserver(mRecLimObserver);
-                mRecorder = null;
-            }
-        };
-        final Intent serviceIntent = new Intent(application, RecordingService.class);
-        application.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    @Override
+    protected void onRecorderConnected() {
+        mRecState.addSource(getRecorder().getRecordState(),
+                mRecState::setValue);
+        mRecTime.addSource(getRecorder().getRecTime(),
+                mRecTime::setValue);
+        getRecorder().getRecMarker().observeForever(mRecLimObserver);
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        getApplication().unbindService(serviceConnection);
-        mRecState.removeSource(mRecorder.getRecordState());
-        mRecTime.removeSource(mRecorder.getRecTime());
-        mRecorder.getRecMarker().removeObserver(mRecLimObserver);
+        mRecState.removeSource(getRecorder().getRecordState());
+        mRecTime.removeSource(getRecorder().getRecTime());
+        getRecorder().getRecMarker().removeObserver(mRecLimObserver);
     }
 
 
     public void OnRecPauseClick(){
         if (getRecState().getValue() == RecordState.INIT) {
-            mRecorder.setMarkerPos(getMaxRecordLength());
-            mRecorder.start();
+            getRecorder().setMarkerPos(getMaxRecordLength());
+            getRecorder().start();
         }
         else if (getRecState().getValue() == RecordState.PAUSE)
-            mRecorder.resume();
+            getRecorder().resume();
         else if (getRecState().getValue() == RecordState.RECORDING)
-            mRecorder.pause();
+            getRecorder().pause();
 
     }
 
@@ -130,7 +114,7 @@ public class RecorderViewModel extends AndroidViewModel {
     }
 
     private void onStopClick(final boolean isOnSave){
-        mRecorder.stop();
+        getRecorder().stop();
         handleStop(isOnSave);
     }
 
@@ -200,10 +184,10 @@ public class RecorderViewModel extends AndroidViewModel {
 
     private void saveRec(){
         RecordTopicRepo repo = RecorderApplication.from(getApplication()).getRecordTopicRepo();
-        repo.updateLastDuration(mRecorder.getDuration());
+        repo.updateLastDuration(getRecorder().getDuration());
 
         //configure recorder for next recording
-        mRecorder.configure();
+        getRecorder().configure();
 
         mSaveEvent.call(); //recording is ready to be saved to repo/other storage
     }

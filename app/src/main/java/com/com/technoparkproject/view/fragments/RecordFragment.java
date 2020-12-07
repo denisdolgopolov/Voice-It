@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
-import com.com.technoparkproject.viewmodels.RecorderViewModel;
+import com.com.technoparkproject.viewmodels.RecordViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -68,7 +68,7 @@ public class RecordFragment extends RecorderFragment {
         mDoneButton = view.findViewById(R.id.done_button);
         mTimeTextView = view.findViewById(R.id.record_time_text);
 
-        final RecorderViewModel recViewModel = new ViewModelProvider(requireActivity()).get(RecorderViewModel.class);
+        final RecordViewModel recViewModel = new ViewModelProvider(requireActivity()).get(RecordViewModel.class);
         mRecPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,9 +96,9 @@ public class RecordFragment extends RecorderFragment {
                 recViewModel.onSaveClick(recName, topicName);
             }
         });
-        recViewModel.getNameState().observe(getViewLifecycleOwner(), new Observer<RecorderViewModel.RecTextState>() {
+        recViewModel.getNameState().observe(getViewLifecycleOwner(), new Observer<RecordViewModel.RecTextState>() {
             @Override
-            public void onChanged(RecorderViewModel.RecTextState recTextState) {
+            public void onChanged(RecordViewModel.RecTextState recTextState) {
                 switch (recTextState){
                     case INVALID:
                         recNameInput.setErrorEnabled(true);
@@ -111,9 +111,9 @@ public class RecordFragment extends RecorderFragment {
                 }
             }
         });
-        recViewModel.getTopicState().observe(getViewLifecycleOwner(), new Observer<RecorderViewModel.RecTextState>() {
+        recViewModel.getTopicState().observe(getViewLifecycleOwner(), new Observer<RecordViewModel.RecTextState>() {
             @Override
-            public void onChanged(RecorderViewModel.RecTextState recTextState) {
+            public void onChanged(RecordViewModel.RecTextState recTextState) {
                 switch (recTextState){
                     case INVALID:
                         recTopicInput.setErrorEnabled(true);
@@ -140,12 +140,12 @@ public class RecordFragment extends RecorderFragment {
 
         final ProgressBar stopProgress = view.findViewById(R.id.record_stop_progress);
         stopProgress.setVisibility(View.GONE);
-        recViewModel.mRecStopState.observe(getViewLifecycleOwner(), new Observer<RecorderViewModel.RecStopState>() {
+        recViewModel.mRecStopState.observe(getViewLifecycleOwner(), new Observer<RecordViewModel.RecStopState>() {
             @Override
-            public void onChanged(RecorderViewModel.RecStopState recStopState) {
-                if (recStopState == RecorderViewModel.RecStopState.STOP_IN_PROGRESS)
+            public void onChanged(RecordViewModel.RecStopState recStopState) {
+                if (recStopState == RecordViewModel.RecStopState.STOP_IN_PROGRESS)
                     stopProgress.setVisibility(View.VISIBLE);
-                else if (recStopState == RecorderViewModel.RecStopState.STOP_COMPLETED)
+                else if (recStopState == RecordViewModel.RecStopState.STOP_COMPLETED)
                     stopProgress.setVisibility(View.GONE);
             }
         });
