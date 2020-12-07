@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.technopark.recorder.service.Recorder;
 import com.technopark.recorder.service.coders.ADTSStream;
 import com.technopark.recorder.service.coders.PacketStream;
 import com.technopark.recorder.service.storage.RecordingProfile;
@@ -14,6 +15,7 @@ import com.technopark.recorder.service.storage.RecordingProfileStorage;
 import com.technopark.recorder.service.tasks.DrainWriterTask;
 import com.technopark.recorder.service.tasks.RecorderTask;
 import com.technopark.recorder.service.tasks.StreamWriterTask;
+import com.technopark.recorder.utils.SingleLiveEvent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,8 +33,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class AudioRecorder {
+public class AudioRecorder implements Recorder {
     private static final int QUEUE_CAPACITY = 100;
+    public static final int NO_MARKER = -1;
     private PacketStream<ByteBuffer> mADTSStream;
     private final BlockingDeque<ByteBuffer> mBuffersQ;
 
@@ -54,7 +57,9 @@ public class AudioRecorder {
 
     private int mRecordTimeInMills; //internal record time in millis
     private boolean mIsAudioRecordInit;
+    private int mMarkerPos;
 
+    @Override
     public LiveData<RecordState> getRecordState(){
         return mRecordState;
     }
@@ -63,6 +68,7 @@ public class AudioRecorder {
 
     private final MutableLiveData<Integer> mRecTime;
 
+    @Override
     public LiveData<Integer> getRecTime() {
         return mRecTime;
     }
@@ -81,6 +87,7 @@ public class AudioRecorder {
 
         mRecTime = new MutableLiveData<>();
         mRecordState = new MutableLiveData<>();
+        mMarkerPos = NO_MARKER;
 
         mRecordingExecutor.execute(new Runnable() {
             @Override
@@ -90,7 +97,7 @@ public class AudioRecorder {
         });
     }
 
-    public RecordingProfile getRecordingProfile(){
+    public RecordingProfile getRecProfile(){
         return mRecProfile;
     }
 
@@ -160,6 +167,7 @@ public class AudioRecorder {
     private void reset(){
         mRecRawSize.set(0);
         mRecordTimeInMills = 0;
+        mRecMarkerReached.setValue(false);
     }
 
     private void setOutputFile(File outFile){
@@ -204,6 +212,9 @@ public class AudioRecorder {
                 if (mRecordTimeInMills % 1000 == 0) {
                     int seconds = mRecordTimeInMills/1000;
                     mRecTime.postValue(seconds);
+                    if (mMarkerPos != NO_MARKER && mMarkerPos == seconds){
+                        mRecMarkerReached.postValue(true);
+                    }
                 }
             }
         };
@@ -276,6 +287,23 @@ public class AudioRecorder {
         double recSeconds = (double)mRecRawSize.get() / bytesPerSecond;
         int recMillis = (int)(recSeconds*1000);
         return recMillis;
+    }
+
+    @Override
+    public int getMarkerPos() {
+        return mMarkerPos;
+    }
+
+    @Override
+    public void setMarkerPos(int seconds) {
+        mMarkerPos = seconds;
+    }
+
+    private final MutableLiveData<Boolean> mRecMarkerReached = new MutableLiveData<>();
+
+    @Override
+    public LiveData<Boolean> getRecMarker(){
+        return mRecMarkerReached;
     }
 
 }

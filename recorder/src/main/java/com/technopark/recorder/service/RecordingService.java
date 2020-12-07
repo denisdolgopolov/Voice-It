@@ -11,15 +11,15 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.technopark.recorder.AudioRecorder;
+import com.technopark.recorder.RecordState;
 import com.technopark.recorder.RecorderApplication;
 import com.technopark.recorder.repository.RecordTopicRepo;
-import com.technopark.recorder.utils.InjectorUtils;
-import com.technopark.recorder.utils.SingleLiveEvent;
+import com.technopark.recorder.service.storage.RecordingProfile;
 
 import java.io.File;
 import java.util.UUID;
 
-public class RecordingService extends Service implements RecService {
+public class RecordingService extends Service implements Recorder {
 
 
     private static final int FOREGROUND_ID = 1111;
@@ -29,10 +29,11 @@ public class RecordingService extends Service implements RecService {
 
 
     private final IBinder mBinder = new RecordBinder();
+    private RecTimeLimitObserver mRecLimObserver;
 
 
     public class RecordBinder extends Binder {
-        public RecService getRecorder() {
+        public Recorder getRecorder() {
             return RecordingService.this;
         }
     }
@@ -48,6 +49,9 @@ public class RecordingService extends Service implements RecService {
         mAudioRecorder = RecorderApplication.from(this).getRecorder();
         mRecTimeObserver = new RecTimeObserver();
         mAudioRecorder.getRecTime().observeForever(mRecTimeObserver);
+
+        mRecLimObserver = new RecTimeLimitObserver();
+        mAudioRecorder.getRecMarker().observeForever(mRecLimObserver);
     }
 
     private boolean mIsForeground = false;
@@ -72,13 +76,17 @@ public class RecordingService extends Service implements RecService {
     }
 
 
-    public void configureRecording() {
+
+    @Override
+    public void configure() {
         mAudioRecorder.configure();
     }
 
-    public void startRecording() {
-        String fileFormat = mAudioRecorder.getRecordingProfile().getFileFormat();
-        RecordTopicRepo recTopicRepo = InjectorUtils.provideRecordTopicRepo(this);
+
+    @Override
+    public void start() {
+        String fileFormat = mAudioRecorder.getRecProfile().getFileFormat();
+        RecordTopicRepo recTopicRepo = RecorderApplication.from(getApplicationContext()).getRecordTopicRepo();
         UUID recTopicID = recTopicRepo.createRecord(fileFormat);
         File recordFile = recTopicRepo.getRecord(recTopicID).getRecordFile();
         mAudioRecorder.prepare(recordFile);
@@ -90,22 +98,63 @@ public class RecordingService extends Service implements RecService {
     }
 
 
-    public void resumeRecording(){
+    @Override
+    public void resume(){
         mAudioRecorder.resume();
     }
 
-    public void pauseRecording(){
+
+    @Override
+    public void pause(){
         mAudioRecorder.pause();
     }
 
-    public void stopRecording(){
+
+    @Override
+    public void stop(){
         mAudioRecorder.stop();
         runForeground(false);
         stopSelf();
     }
 
-    public int getRecordDuration(){
+    @Override
+    public int getDuration(){
         return mAudioRecorder.getDuration();
+    }
+
+    @Override
+    public int getMarkerPos() {
+        return mAudioRecorder.getMarkerPos();
+    }
+
+    @Override
+    public void setMarkerPos(int seconds) {
+        mAudioRecorder.setMarkerPos(seconds);
+    }
+
+    @Override
+    public LiveData<RecordState> getRecordState() {
+        return mAudioRecorder.getRecordState();
+    }
+
+    @Override
+    public LiveData<Integer> getRecTime() {
+        return mAudioRecorder.getRecTime();
+    }
+
+    @Override
+    public RecordingProfile getRecProfile() {
+        return mAudioRecorder.getRecProfile();
+    }
+
+    @Override
+    public LiveData<Boolean> getRecMarker() {
+        return mAudioRecorder.getRecMarker();
+    }
+
+    @Override
+    public void release() {
+        mAudioRecorder.release();
     }
 
 
@@ -113,20 +162,16 @@ public class RecordingService extends Service implements RecService {
     public void onDestroy() {
         super.onDestroy();
         mAudioRecorder.getRecTime().removeObserver(mRecTimeObserver);
+        mAudioRecorder.getRecMarker().removeObserver(mRecLimObserver);
         mAudioRecorder = null;
     }
 
-    private static final int MAX_RECORD_LENGTH = 10*60; //max allowed recording in seconds
-
-    @Override
-    public int getMaxRecDuration() {
-        return MAX_RECORD_LENGTH;
-    }
-
-    private final SingleLiveEvent<Void> mRecLimitEvent = new SingleLiveEvent<>();
-
-    public LiveData<Void> getRecLimitEvent(){
-        return mRecLimitEvent;
+    private class RecTimeLimitObserver implements Observer<Boolean> {
+        @Override
+        public void onChanged(Boolean markerReached) {
+            if (markerReached)
+                stop();
+        }
     }
 
     private class RecTimeObserver implements Observer<Integer> {
@@ -134,11 +179,6 @@ public class RecordingService extends Service implements RecService {
         public void onChanged(Integer seconds) {
             if (!mIsForeground)
                 return;
-            if (seconds == getMaxRecDuration()){
-                mRecLimitEvent.call();
-                stopRecording();
-                return;
-            }
             String notifyText = DateUtils.formatElapsedTime(seconds);
             RecorderNotification.updateNotification(notifyText, RecordingService.this,FOREGROUND_ID);
         }
