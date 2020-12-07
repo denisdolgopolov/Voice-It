@@ -1,4 +1,4 @@
-package com.com.technoparkproject.viewmodels;
+package com.com.technoparkproject.view_models;
 
 import android.app.Application;
 import android.text.TextUtils;

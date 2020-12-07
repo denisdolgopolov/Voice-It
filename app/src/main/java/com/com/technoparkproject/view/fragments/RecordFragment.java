@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
-import com.com.technoparkproject.viewmodels.RecordViewModel;
+import com.com.technoparkproject.view_models.RecordViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
