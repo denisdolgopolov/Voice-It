@@ -39,14 +39,20 @@ public class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
         textViewRecordTime.setText(RecordUtils.durationFormatted(record.duration));
 
 
-        if (listener != null)
+        if (listener != null) {
             bMoreInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     listener.showRecordMoreFun(record);
                 }
             });
-        else
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.itemClicked(record);
+                }
+            });
+        } else
             bMoreInfo.setVisibility(View.GONE);
     }
 }

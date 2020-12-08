@@ -69,17 +69,17 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     public void queryRecord(final Topic topic) {
         new FirebaseLoader().getAll(FirebaseCollections.Topics, topic.uuid,
                 new FirebaseGetListListener<FirebaseRecord>() {
-            @Override
-            public void onFailure(String error) {
-            }
+                    @Override
+                    public void onFailure(String error) {
+                    }
 
-            @Override
-            public void onGet(List<FirebaseRecord> item) {
-                List<Record> records = new FirebaseConverter().toRecordList(item);
-                MainListOfRecordsViewModel.this.records.getValue().put(topic, records);
-                MainListOfRecordsViewModel.this.records.setValue(MainListOfRecordsViewModel.this.records.getValue());
-            }
-        });
+                    @Override
+                    public void onGet(List<FirebaseRecord> item) {
+                        List<Record> records = new FirebaseConverter().toRecordList(item);
+                        MainListOfRecordsViewModel.this.records.getValue().put(topic, records);
+                        MainListOfRecordsViewModel.this.records.setValue(MainListOfRecordsViewModel.this.records.getValue());
+                    }
+                });
     }
 
     public LiveData<String> getSearchingValue() {
@@ -106,6 +106,26 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     public void addToPlaylistClicked(Record record) {
         //TODO
         playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(record));
+    }
+
+
+    public void itemClicked(Record record) {
+        playerServiceConnection.clearPlaylist();
+        Topic currentTopic = null;
+        for (Topic topic : topics.getValue()) {
+            if (topic.uuid.equals(record.topicUUID)) {
+                currentTopic = topic;
+            }
+        }
+        if (currentTopic != null) {
+            for (Record recordInTopic : records.getValue().get(currentTopic)) {
+                playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(recordInTopic));
+                if (recordInTopic.equals(record)) {
+                    playerServiceConnection.setCurrentIndex(records.getValue().get(currentTopic).indexOf(record));
+                }
+            }
+        }
+        playerServiceConnection.mediaController.getTransportControls().play();
     }
 
     public MainListOfRecordsViewModel(@NonNull Application application) {

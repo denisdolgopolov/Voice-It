@@ -235,7 +235,7 @@ final public class PlayerService extends Service {
                     mediaSession.setPlaybackState(
                             stateBuilder.setState(
                                     PlaybackStateCompat.STATE_PLAYING,
-                                    PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
+                                    0,
                                     1).build()
                     );
                 }

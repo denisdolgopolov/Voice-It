@@ -82,8 +82,8 @@ public class PlayerServiceConnection {
         final Runnable checkPlaybackPosition = new Runnable() {
             @Override
             public void run() {
-                if (playerService.exoPlayer != null) {
-                    Long currPosition = playerService.exoPlayer.getCurrentPosition();
+                if (mediaController.getPlaybackState() != null) {
+                    Long currPosition = mediaController.getPlaybackState().getPosition();
                     if (!currPosition.equals(mediaPosition.getValue())) {
                         mediaPosition.postValue(currPosition);
                     }
@@ -109,6 +109,9 @@ public class PlayerServiceConnection {
         }
         temp.add(record);
         playerService.playlist.setValue(temp);
+    }
+    public void clearPlaylist(){
+        playerService.playlist.setValue(new ArrayList<>());
     }
 
     /*

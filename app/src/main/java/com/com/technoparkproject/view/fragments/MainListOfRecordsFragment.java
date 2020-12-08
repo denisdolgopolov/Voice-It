@@ -136,6 +136,11 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     @Override
+    public void itemClicked(Record record) {
+        viewModel.itemClicked(record);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         getActivity().registerReceiver(receiverUpdateList, receiverUpdateList.getIntentFilter());
