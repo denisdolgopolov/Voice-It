@@ -7,7 +7,8 @@ import com.technopark.room.entities.TopicTypes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ToRoomConverter {
+public final class ToRoomConverter {
+    private ToRoomConverter(){}
     public static Topic toModel(com.com.technoparkproject.models.Topic topic) {
         return new Topic(topic.uuid,
                 topic.name,

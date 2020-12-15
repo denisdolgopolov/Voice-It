@@ -2,7 +2,6 @@ package com.com.technoparkproject.model_converters;
 
 import android.util.ArrayMap;
 
-import com.com.technoparkproject.R;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.models.TopicTypes;
@@ -10,10 +9,8 @@ import com.com.technoparkproject.models.TopicTypes;
 import java.util.ArrayList;
 import java.util.List;
 
-import voice.it.firebaseloadermodule.model.FirebaseRecord;
-import voice.it.firebaseloadermodule.model.FirebaseTopic;
-
-public class FromRoomConverter {
+public final class FromRoomConverter {
+    private FromRoomConverter(){}
     public static Topic toModel(com.technopark.room.entities.Topic roomTopic) {
         return new Topic(roomTopic.getUuid(),
                 roomTopic.getName(),
