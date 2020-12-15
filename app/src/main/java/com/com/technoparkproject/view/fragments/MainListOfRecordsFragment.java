@@ -66,20 +66,15 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
-        viewModel.getTopics().observe(getViewLifecycleOwner(), new Observer<List<Topic>>() {
+        viewModel.getTopicRecords().observe(getViewLifecycleOwner(), new Observer<ArrayMap<Topic, List<Record>>>() {
             @Override
-            public void onChanged(List<Topic> topics) {
-                viewModel.clearRecordsList();
-                for(Topic topic: topics)
-                    viewModel.queryRecord(topic);
-                setAutoCompleteValues(topics);
-            }
-        });
-
-        viewModel.getRecords().observe(getViewLifecycleOwner(), new Observer<ArrayMap<Topic, List<Record>>>() {
-            @Override
-            public void onChanged(ArrayMap<Topic, List<Record>> map) {
-                adapter.setItems(map);
+            public void onChanged(ArrayMap<Topic, List<Record>> topicRecs) {
+                List<String> topicNames = new ArrayList<>();
+                for (Topic topic : topicRecs.keySet()){
+                    topicNames.add(topic.name);
+                }
+                setAutoCompleteValues(topicNames);
+                adapter.setItems(topicRecs);
             }
         });
 
@@ -92,10 +87,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         });
     }
 
-    private void setAutoCompleteValues(List<Topic> topics) {
-        ArrayList<String> names = new ArrayList<>();
+    private void setAutoCompleteValues(List<String> names) {
+        /*ArrayList<String> names = new ArrayList<>();
         for (Topic topic: topics)
-            names.add(topic.name);
+            names.add(topic.name);*/
 
         if(getContext() == null) return;
         ArrayAdapter adapter = new ArrayAdapter<>(getContext(),
@@ -142,7 +137,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         receiverUpdateList.setListener(new BroadcastUpdateListRecordListener() {
             @Override
             public void onUpdate() {
-                viewModel.queryTopics();
+                viewModel.queryRecordTopics();
             }
         });
 

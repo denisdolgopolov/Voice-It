@@ -1,3 +1,4 @@
+include ':roomcache'
 include ':player'
 include ':recorder'
 rootProject.name='TechnoparkProject'

@@ -34,6 +34,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
     implementation project(path: ':recorder')
+    implementation project(path: ':roomcache')
+    implementation 'androidx.room:room-runtime:2.2.5'
     testImplementation 'junit:junit:4.12'
     implementation project(path: ':player')
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

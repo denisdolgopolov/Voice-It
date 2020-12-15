@@ -8,6 +8,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -23,7 +24,16 @@ import voice.it.firebaseloadermodule.model.FirebaseTopic;
 import voice.it.firebaseloadermodule.model.FirebaseUser;
 
 public class FirebaseLoader {
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    public FirebaseLoader(){
+        //turning off offline caching
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        db = FirebaseFirestore.getInstance();
+        db.setFirestoreSettings(settings);
+    }
+    private final FirebaseFirestore db;
 
     public void add(FirebaseModel item, final FirebaseListener listener) {
         String collectionName = FirebaseHelper.getCollectionNameByModel(item);
@@ -42,6 +52,35 @@ public class FirebaseLoader {
                         listener.onFailure(e.getLocalizedMessage());
                     }
                 });
+    }
+
+    public void getFirst(final FirebaseCollections collection,
+                         final FirebaseGetListener<FirebaseModel> listener){
+        db.collection(collection.toString())
+                .limit(1)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        QuerySnapshot result = task.getResult();
+                        if (result==null || result.getDocuments().size()==0) {
+                            listener.onGet(null);
+                            return;
+                        }
+                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        if (document != null && document.exists()) {
+                            FirebaseModel model = getModel(document, collection);
+                            listener.onGet(model);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onFailure(e.getLocalizedMessage());
+                    }
+                });
+
     }
 
 
