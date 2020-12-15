@@ -4,11 +4,9 @@ import android.content.Context;
 import android.util.ArrayMap;
 import android.util.Log;
 
-import androidx.core.util.Pair;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
 import com.com.technoparkproject.model_converters.FirebaseConverter;
@@ -16,14 +14,8 @@ import com.com.technoparkproject.model_converters.FromRoomConverter;
 import com.com.technoparkproject.model_converters.ToRoomConverter;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
-import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
 import com.technopark.room.db.AppRoomDatabase;
-import com.technopark.room.entities.TopicRecords;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
