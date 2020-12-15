@@ -38,7 +38,7 @@ import voice.it.firebaseloadermodule.model.FirebaseModel;
 import voice.it.firebaseloadermodule.model.FirebaseRecord;
 import voice.it.firebaseloadermodule.model.FirebaseTopic;
 
-public class AppRepoImpl {
+public class AppRepoImpl implements AppRepo{
     private final Executor mDiskIO;
 
     private final Executor mNetworkIO;
@@ -55,7 +55,7 @@ public class AppRepoImpl {
     }
 
 
-    public static AppRepoImpl getAppRepo(final Context context) {
+    public static AppRepo getAppRepo(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppRepoImpl.class) {
                 if (INSTANCE == null) {
