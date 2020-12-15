@@ -88,10 +88,6 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void setAutoCompleteValues(List<String> names) {
-        /*ArrayList<String> names = new ArrayList<>();
-        for (Topic topic: topics)
-            names.add(topic.name);*/
-
         if(getContext() == null) return;
         ArrayAdapter adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, names);

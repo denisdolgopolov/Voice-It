@@ -65,21 +65,6 @@ public class AppRepoImpl {
         }
         return INSTANCE;
     }
-    
-    // TCP/HTTP/DNS (depending on the port, 53=DNS, 80=HTTP, etc.)
-    private boolean isOnline() {
-        try {
-            int timeoutMs = 1500;
-            Socket sock = new Socket();
-            SocketAddress sockaddr = new InetSocketAddress("8.8.8.8", 53);
-
-            sock.connect(sockaddr, timeoutMs);
-            sock.close();
-
-            return true;
-        } catch (IOException e) { return false; }
-
-    }
 
     private void testOnline() {
         new FirebaseLoader().getFirst(FirebaseCollections.Topics, new FirebaseGetListener<FirebaseModel>() {
@@ -181,97 +166,5 @@ public class AppRepoImpl {
 
     }
 
-    private LiveData<List<Topic>> queryCacheTopics(){
-        return Transformations.map(mAppDb.appDao().getAllTopics(),
-                FromRoomConverter::toTopicList);
-    }
-
-    public LiveData<List<Topic>> queryTopics() {
-        testOnline();
-        MediatorLiveData<List<Topic>> topicsData = new MediatorLiveData<>();
-        topicsData.addSource(isOnline, online -> {
-            if (online){
-                queryOnlineTopics(topicsData);
-            }
-            else {
-                LiveData<List<Topic>> cacheTopics = queryCacheTopics();
-                topicsData.addSource(cacheTopics, topics -> {
-                    Log.d("Room","topics fetch");
-                    topicsData.setValue(topics);
-                    topicsData.removeSource(cacheTopics);
-                });
-            }
-            topicsData.removeSource(isOnline);
-        });
-        return topicsData;
-    }
-
-    private void queryOnlineTopics(MutableLiveData<List<Topic>> topicsData) {
-        new FirebaseLoader().getAll(FirebaseCollections.Topics, new FirebaseGetListListener<FirebaseTopic>() {
-            @Override
-            public void onFailure(String error) {
-            }
-
-            @Override
-            public void onGet(List<FirebaseTopic> item) {
-                if (item.size() == 0) {
-                    Log.d("firebase topics", "empty response");
-                    return;
-                }
-                Log.d("Firebase","topics fetch");
-                List<Topic> topics = new FirebaseConverter().toTopicList(item);
-                topicsData.setValue(topics);
-
-                mDiskIO.execute(() -> mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics)));
-            }
-        });
-    }
-
-    private LiveData<List<Record>> queryCacheRecords(final Topic topic){
-        return Transformations.map(mAppDb.appDao().getRecordsByTopic(topic.uuid),
-                FromRoomConverter::toRecordList);
-    }
-
-
-    public LiveData<List<Record>> queryRecords(final Topic topic) {
-        testOnline();
-        MediatorLiveData<List<Record>> recordsData = new MediatorLiveData<>();
-        recordsData.addSource(isOnline, online -> {
-            if (online){
-                queryOnlineRecords(recordsData,topic);
-            }
-            else {
-                LiveData<List<Record>> cacheTopics = queryCacheRecords(topic);
-                recordsData.addSource(cacheTopics, records -> {
-                    Log.d("Room","records fetch");
-                    recordsData.setValue(records);
-                    recordsData.removeSource(cacheTopics);
-                });
-            }
-            recordsData.removeSource(isOnline);
-        });
-        return recordsData;
-    }
-
-    private void queryOnlineRecords(MutableLiveData<List<Record>> recordsList, Topic topic) {
-        new FirebaseLoader().getAll(FirebaseCollections.Topics, topic.uuid,
-                new FirebaseGetListListener<FirebaseRecord>() {
-                    @Override
-                    public void onFailure(String error) {
-                    }
-
-                    @Override
-                    public void onGet(List<FirebaseRecord> item) {
-                        if (item.size() == 0) {
-                            Log.d("firebase records", "empty response");
-                            return;
-                        }
-                        List<Record> records = new FirebaseConverter().toRecordList(item);
-                        Log.d("Firebase","records fetch");
-                        recordsList.setValue(records);
-                        mDiskIO.execute(() -> mAppDb.appDao().insertRecords(ToRoomConverter.toRecordList(records)));
-                    }
-                });
-    }
 
 }
