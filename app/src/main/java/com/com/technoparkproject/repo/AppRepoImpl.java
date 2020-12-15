@@ -2,8 +2,6 @@ package com.com.technoparkproject.repo;
 
 import android.content.Context;
 import android.util.ArrayMap;
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -86,7 +84,6 @@ public class AppRepoImpl implements AppRepo{
                 addSingleSource(topicRecords,queryOnlineAllTopicRecords());
             }
             else {
-                Log.d("Room","RECTOPIC fetch");
                 addSingleSource(topicRecords,queryCacheAllTopicRecords());
             }
             topicRecords.removeSource(isOnline);
@@ -109,10 +106,8 @@ public class AppRepoImpl implements AppRepo{
             @Override
             public void onGet(List<FirebaseTopic> item) {
                 if (item.size() == 0) {
-                    Log.d("firebase topics", "empty response");
                     return;
                 }
-                Log.d("Firebase","topics fetch");
                 List<Topic> topics = new FirebaseConverter().toTopicList(item);
                 mDiskIO.execute(() -> mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics)));
                 queryOnlineRecords(topicRecordsData,topics);
@@ -134,11 +129,9 @@ public class AppRepoImpl implements AppRepo{
                         @Override
                         public void onGet(List<FirebaseRecord> item) {
                             if (item.size() == 0) {
-                                Log.d("firebase records", "empty response");
                                 return;
                             }
                             List<Record> records = new FirebaseConverter().toRecordList(item);
-                            Log.d("Firebase","records fetch");
                             topicRecords.put(topic,records);
                             if (topicRecords.size() == topics.size()){
                                 topicRecordsData.postValue(topicRecords);
