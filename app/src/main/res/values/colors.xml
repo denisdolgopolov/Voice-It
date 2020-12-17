@@ -8,6 +8,9 @@
     <color name="colorGrey">#BCB8B8</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorDarkRed">#840202</color>
+    <color name="colorFacebook">#3B5999</color>
+    <color name="colorTwitter">#55ACEE</color>
 
     <color name="red">#C42014</color>
     <color name="white">#FFF</color>
@@ -18,4 +21,5 @@
     <color name="mainBackgroundColor">#f9feff</color>
     <color name="red_default">#C42014</color>
     <color name="service_notification_color">@color/red</color>
+    <color name="colorDarkGrey">#858585</color>
 </resources>
