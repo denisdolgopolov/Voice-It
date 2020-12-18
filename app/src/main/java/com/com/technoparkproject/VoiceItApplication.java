@@ -5,7 +5,7 @@ import com.technopark.recorder.RecorderApplication;
 
 public class VoiceItApplication extends RecorderApplication {
 
-    public PlayerServiceConnection playerServiceConnection;
+    private PlayerServiceConnection playerServiceConnection;
 
     public PlayerServiceConnection getPlayerServiceConnection() {
         return this.playerServiceConnection;

@@ -1,11 +1,16 @@
 package com.com.technoparkproject.view.adapters.main_list_records;
 
+import android.graphics.Color;
 import android.util.ArrayMap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
@@ -18,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
+    public static final String TAG = "ADAPTER_TAG";
     private final ArrayList<Object> items = new ArrayList<>();
     private final ArrayMap<Topic, List<Record>> allTopics = new ArrayMap<>();
     private static final int COUNT_RECORDS_SHOW = 3;
@@ -31,7 +37,7 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        switch(viewType) {
+        switch (viewType) {
             case ViewTypes.TYPE_TOPIC_NAME:
                 View viewTopicName = inflater.inflate(R.layout.mlr_item_topic_name,
                         parent, false);
@@ -51,7 +57,7 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int type = getItemViewType(position);
         Object item = items.get(position);
-        switch(type) {
+        switch (type) {
             case ViewTypes.TYPE_TOPIC_NAME:
                 Topic topic = (Topic) item;
                 ItemTopicNameViewHolder topicViewHolder = (ItemTopicNameViewHolder) holder;
@@ -59,6 +65,23 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
                 break;
             case ViewTypes.TYPE_RECORD:
                 Record record = (Record) item;
+                // TODO ???
+                listener.getNowPlayingRecordUUID().observe((LifecycleOwner) listener, new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        if (listener.getNowPlayingRecordUUID().getValue() != null) {
+                            Log.d(TAG, "onChanged: not null");
+                            if (record.uuid.equals(listener.getNowPlayingRecordUUID().getValue())) {
+                                holder.itemView.setBackgroundColor(Color.parseColor("#FFC4C4"));
+                            } else {
+                                holder.itemView.setBackgroundColor(Color.parseColor("#f9feff"));
+                            }
+                        } else {
+                            Log.d(TAG, "onChanged: null");
+                            holder.itemView.setBackgroundColor(Color.parseColor("#f9feff"));
+                        }
+                    }
+                });
                 ItemListRecordsViewHolder recordViewHolder = (ItemListRecordsViewHolder) holder;
                 recordViewHolder.bindViewHolder(listener, record);
                 break;
@@ -76,8 +99,6 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     }
 
     private void showItems(ArrayMap<Topic, List<Record>> list) {
-        int startIndex = items.size();
-
         for (int i = 0; i < list.size(); i++) {
             Topic topic = list.keyAt(i);
             items.add(topic);

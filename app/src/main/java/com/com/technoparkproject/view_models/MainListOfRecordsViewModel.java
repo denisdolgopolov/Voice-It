@@ -31,6 +31,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     private MutableLiveData<List<Topic>> topics;
     private MutableLiveData<ArrayMap<Topic, List<Record>>> records;
     private final MutableLiveData<String> searchingValue = new MutableLiveData<>();
+    public MutableLiveData<String> nowPlayingRecordUUID;
 
     public LiveData<List<Topic>> getTopics() {
         if (topics == null) {
@@ -111,26 +112,34 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
 
     public void itemClicked(Record record) {
         playerServiceConnection.clearPlaylist();
-        Topic currentTopic = null;
-        for (Topic topic : topics.getValue()) {
-            if (topic.uuid.equals(record.topicUUID)) {
-                currentTopic = topic;
-            }
-        }
-        if (currentTopic != null) {
-            for (Record recordInTopic : records.getValue().get(currentTopic)) {
-                playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(recordInTopic));
-                if (recordInTopic.equals(record)) {
-                    playerServiceConnection.setCurrentIndex(records.getValue().get(currentTopic).indexOf(record));
+        int currentIndex = 0;
+        ArrayMap<Topic, List<Record>> list = records.getValue();
+        for (int i = 0; i < list.size(); i++) {
+            for (int g = 0; g < list.valueAt(i).size(); g++) {
+                Record currentRecord = list.valueAt(i).get(g);
+                playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(currentRecord));
+                if (currentRecord.equals(record)) {
+                    playerServiceConnection.setCurrentIndex(currentIndex);
                 }
             }
+            currentIndex++;
         }
+        /*for (Topic topic : topics.getValue()) {
+            for (Record recordInTopic : records.getValue().get(topic)) {
+                playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(recordInTopic));
+                if (recordInTopic.equals(record)) {
+                    playerServiceConnection.setCurrentIndex(currentIndex);
+                }
+            }
+            currentIndex++;
+        }*/
         playerServiceConnection.mediaController.getTransportControls().play();
     }
 
     public MainListOfRecordsViewModel(@NonNull Application application) {
         super(application);
-        this.playerServiceConnection = ((VoiceItApplication) application).playerServiceConnection;
+        this.playerServiceConnection = ((VoiceItApplication) application).getPlayerServiceConnection();
+        this.nowPlayingRecordUUID = playerServiceConnection.nowPlayingRecordUUID;
     }
 
 }

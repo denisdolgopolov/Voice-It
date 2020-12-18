@@ -26,6 +26,7 @@ public class PlayerServiceConnection {
     private PlayerService.PlayerServiceBinder playerServiceBinder;
     public MediaControllerCompat mediaController;
     public MutableLiveData<MediaMetadataCompat> nowPlayingMediaMetadata = new MutableLiveData<>();
+    public MutableLiveData<String> nowPlayingRecordUUID = new MutableLiveData<>();
     public MutableLiveData<PlaybackStateCompat> playbackState = new MutableLiveData<>();
     public MutableLiveData<Long> mediaPosition = new MutableLiveData<>();
     ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -65,7 +66,6 @@ public class PlayerServiceConnection {
                 if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
                     timeFuture = scheduledExecutorService.scheduleAtFixedRate(checkPlaybackPosition,
                             0, POSITION_UPDATE_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
-
                 } else {
                     timeFuture.cancel(false);
                 }
@@ -76,6 +76,12 @@ public class PlayerServiceConnection {
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             super.onMetadataChanged(metadata);
             nowPlayingMediaMetadata.postValue(metadata);
+            if (metadata != null) {
+                nowPlayingRecordUUID.postValue(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID));
+            }
+            else {
+                nowPlayingRecordUUID.postValue(null);
+            }
             mediaPosition.postValue(0L);
         }
 
@@ -110,7 +116,8 @@ public class PlayerServiceConnection {
         temp.add(record);
         playerService.playlist.setValue(temp);
     }
-    public void clearPlaylist(){
+
+    public void clearPlaylist() {
         playerService.playlist.setValue(new ArrayList<>());
     }
 

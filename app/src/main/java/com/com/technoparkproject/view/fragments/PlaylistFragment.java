@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistFragment extends Fragment {
+    public static final String TAG = "PLAYLISTFRAGMENTTAG";
     PlaylistAdapter playlistAdapter = new PlaylistAdapter();
     PlaylistViewModel playlistViewModel;
 
@@ -43,7 +45,7 @@ public class PlaylistFragment extends Fragment {
         getChildFragmentManager().beginTransaction().replace(R.id.minimized_player, new MinimizedPlayerFragment()).commit();
 
         View playerView = view.findViewById(R.id.minimized_player);
-        BottomSheetBehavior behavior = BottomSheetBehavior.from(playerView);
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(playerView);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         playlistViewModel.currentPlaylist.observe(getViewLifecycleOwner(), new Observer<List<Record>>() {
@@ -60,18 +62,17 @@ public class PlaylistFragment extends Fragment {
                     if (playbackStateCompat.getState() != PlaybackStateCompat.STATE_STOPPED) {
                         if (behavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
                             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                            PlaylistRecyclerView.setPaddingRelative(PlaylistRecyclerView.getPaddingStart(), PlaylistRecyclerView.getPaddingTop(), PlaylistRecyclerView.getPaddingEnd(), playerView.getHeight() + 10);
+                            PlaylistRecyclerView.setPaddingRelative(PlaylistRecyclerView.getPaddingStart(), PlaylistRecyclerView.getPaddingTop(), PlaylistRecyclerView.getPaddingEnd(), playerView.getHeight() + 8);
                             behavior.setHideable(false);
                         }
                     } else {
                         if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                             behavior.setHideable(true);
                             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                            PlaylistRecyclerView.setPaddingRelative(PlaylistRecyclerView.getPaddingStart(), PlaylistRecyclerView.getPaddingTop(), PlaylistRecyclerView.getPaddingEnd(), 10);
+                            PlaylistRecyclerView.setPaddingRelative(PlaylistRecyclerView.getPaddingStart(), PlaylistRecyclerView.getPaddingTop(), PlaylistRecyclerView.getPaddingEnd(), 8);
                         }
                     }
                 }
-
             }
         });
         return view;

@@ -1,12 +1,15 @@
 package com.com.technoparkproject.view.adapters.main_list_records;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
@@ -32,7 +35,6 @@ public class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindViewHolder(final MainListRecordsInterface listener, final Record record) {
-        Context context = itemView.getContext();
 
         textViewTitle.setText(record.name);
         textViewDesc.setText(record.dateOfCreation);
@@ -52,6 +54,7 @@ public class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
                     listener.itemClicked(record);
                 }
             });
+
         } else
             bMoreInfo.setVisibility(View.GONE);
     }
