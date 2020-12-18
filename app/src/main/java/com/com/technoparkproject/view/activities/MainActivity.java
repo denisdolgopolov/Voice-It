@@ -34,8 +34,11 @@ import com.com.technoparkproject.view.fragments.StartFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.technopark.recorder.service.RecordIntentConstants;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText editTextEmailToLogin;
     private EditText editTextPasswordToLogin;
+
+    private EditText editTextCurrentPassword;
+    private EditText editTextNewPassword;
+    private EditText editTextRepeatNewPassword;
 
     private Button buttonRegisterUser;
     private Button buttonLoginUser;
@@ -171,6 +178,68 @@ public class MainActivity extends AppCompatActivity {
                 loginUser();
                 break;
         }
+    }
+
+    private boolean updatePasswordOfUser() {
+        String currentPassword = editTextCurrentPassword.getText().toString().trim();
+        String newPassword = editTextNewPassword.getText().toString().trim();
+        String repeatNewPassword = editTextRepeatNewPassword.getText().toString().trim();
+
+        if (currentPassword.isEmpty()) {
+            editTextCurrentPassword.setError("Enter your current password!");
+            editTextCurrentPassword.requestFocus();
+            return false;
+        }
+
+        if (newPassword.isEmpty()) {
+            editTextNewPassword.setError("Enter your new password!");
+            editTextNewPassword.requestFocus();
+            return false;
+        }
+
+        if (repeatNewPassword.isEmpty()) {
+            editTextRepeatNewPassword.setError("Repeat your new password!");
+            editTextRepeatNewPassword.requestFocus();
+            return false;
+        }
+
+        if (!repeatNewPassword.equals(newPassword)) {
+            editTextRepeatNewPassword.setError("Your passwords don't match!");
+            editTextRepeatNewPassword.requestFocus();
+            return false;
+        }
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userEmail = user.getEmail();
+
+        AuthCredential credential = EmailAuthProvider.getCredential(userEmail, currentPassword);
+
+        progressDialog.setMessage("Please wait...");
+        progressDialog.show();
+        progressDialog.setCanceledOnTouchOutside(false);
+
+        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(MainActivity.this, "Password updated", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, "Error password not updated", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(MainActivity.this, "Error auth failed", Toast.LENGTH_LONG).show();
+                }
+                progressDialog.dismiss();
+            }
+        });
+
+        return true;
     }
 
     private void loginUser() {
@@ -322,8 +391,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickTickOrCancelButton(View view) {
+    public void onClickCancelButton(View view) {
         if (currentFragment.equals(getString(FRAGMENT_PASSWORD_NAME)) || currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
+            currentFragment = getString(FRAGMENT_SETTINGS_NAME);
+            undoFragment();
+        }
+    }
+
+    public void onClickTickButton(View view) {
+        if (currentFragment.equals(getString(FRAGMENT_PASSWORD_NAME))) {
+            progressDialog = new ProgressDialog(this);
+            editTextCurrentPassword = findViewById(R.id.et_enter_current_password);
+            editTextNewPassword = findViewById(R.id.et_enter_new_password);
+            editTextRepeatNewPassword = findViewById(R.id.et_repeat_new_password);
+            if (updatePasswordOfUser()) {
+                currentFragment = getString(FRAGMENT_SETTINGS_NAME);
+                undoFragment();
+            }
+        } else if (currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
             currentFragment = getString(FRAGMENT_SETTINGS_NAME);
             undoFragment();
         }
