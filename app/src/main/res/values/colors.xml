@@ -18,4 +18,6 @@
     <color name="mainBackgroundColor">#f9feff</color>
     <color name="red_default">#C42014</color>
     <color name="service_notification_color">@color/red</color>
+
+    <color name="selected_record_color">#FFC4C4</color>
 </resources>

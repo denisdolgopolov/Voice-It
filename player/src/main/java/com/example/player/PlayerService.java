@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
@@ -21,7 +20,8 @@ import android.os.IBinder;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Toast;
 
@@ -41,14 +41,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import okhttp3.OkHttpClient;
 import voice.it.firebaseloadermodule.FirebaseFileLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetUriListener;
@@ -60,6 +54,9 @@ final public class PlayerService extends Service implements ImageLoadingListener
     private static final String NOTIFICATION_DEFAULT_CHANNEL_ID = "default_channel";
     public static final String MEDIA_SESSION_COMPAT_TAG = "PlayerService";
     public static final String TAG = "PLAYERSERVICETAG";
+    private boolean ongoingCall = false;
+    private PhoneStateListener phoneStateListener;
+    private TelephonyManager telephonyManager;
 
     private final PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder().setActions(
             PlaybackStateCompat.ACTION_PLAY
@@ -275,7 +272,6 @@ final public class PlayerService extends Service implements ImageLoadingListener
                         return;
                 }
                 prepareToPlay(getCurrentRecordUUID());
-
                 if (currentState == PlaybackStateCompat.STATE_PAUSED) {
                     long position = exoPlayer.getCurrentPosition();
                     mediaSession.setPlaybackState(
@@ -286,13 +282,6 @@ final public class PlayerService extends Service implements ImageLoadingListener
                     );
                     currentState = PlaybackStateCompat.STATE_PLAYING;
                     refreshNotificationAndForegroundStatus(currentState);
-                } else {
-                    mediaSession.setPlaybackState(
-                            stateBuilder.setState(
-                                    PlaybackStateCompat.STATE_PLAYING,
-                                    0,
-                                    1).build()
-                    );
                 }
                 currentState = PlaybackStateCompat.STATE_PLAYING;
             }
@@ -336,7 +325,6 @@ final public class PlayerService extends Service implements ImageLoadingListener
                     audioManager.abandonAudioFocus(audioFocusChangeListener);
                 }
             }
-            mediaSession.setMetadata(null);
             mediaSession.setActive(false);
             mediaSession.setPlaybackState(
                     stateBuilder
@@ -346,9 +334,10 @@ final public class PlayerService extends Service implements ImageLoadingListener
                                     1
                             ).build()
             );
-
+            mediaSession.setMetadata(null);
             currentState = PlaybackStateCompat.STATE_STOPPED;
             refreshNotificationAndForegroundStatus(currentState);
+            currentRecordUUID = "";
             stopSelf();
         }
 
@@ -410,18 +399,30 @@ final public class PlayerService extends Service implements ImageLoadingListener
 
     private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange -> {
         if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-            mediaSessionCallback.onPlay();
+            if(mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                mediaSession.getController().getTransportControls().play();
+            }
+            if (mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING){
+                exoPlayer.setVolume(1.0f);
+            }
         }
         if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-            mediaSessionCallback.onPause();
+            mediaSession.getController().getTransportControls().pause();
         }
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            mediaSession.getController().getTransportControls().pause();
+        }
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+            exoPlayer.setVolume(0.2f);
+        }
+
     };
 
     private final BroadcastReceiver becomingNoisyReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-                mediaSessionCallback.onPause();
+                mediaSession.getController().getTransportControls().pause();
             }
         }
     };
@@ -510,6 +511,34 @@ final public class PlayerService extends Service implements ImageLoadingListener
 
         void getImageSourceURLByUUID(String UUID, FirebaseGetUriListener listener);
     }
+
+  /*  private void callStateListener() {
+        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        phoneStateListener = new PhoneStateListener() {
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                switch (state) {
+                    case TelephonyManager.CALL_STATE_OFFHOOK:
+                    case TelephonyManager.CALL_STATE_RINGING:
+                        if (mediaSession.isActive()) {
+                            mediaSession.getController().getTransportControls().pause();
+                            ongoingCall = true;
+                        }
+                        break;
+                    case TelephonyManager.CALL_STATE_IDLE:
+                        if (mediaSession.isActive()) {
+                            if (ongoingCall) {
+                                ongoingCall = false;
+                                mediaSession.getController().getTransportControls().play();
+                            }
+                        }
+                        break;
+                }
+            }
+        };
+        telephonyManager.listen(phoneStateListener,
+                PhoneStateListener.LISTEN_CALL_STATE);
+    }*/
 
 }
 

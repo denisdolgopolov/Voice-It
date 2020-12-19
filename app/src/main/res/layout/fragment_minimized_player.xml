@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="144dp"
         android:gravity="center"
-        android:background="#FFC4C4"
+        android:background="@drawable/minimized_player_background"
         android:orientation="vertical"
         tools:context=".view.fragments.MinimizedPlayerFragment">
 

@@ -1,5 +1,6 @@
 package com.com.technoparkproject.view.adapters.main_list_records;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -57,6 +58,7 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int type = getItemViewType(position);
         Object item = items.get(position);
+        Context context = holder.itemView.getContext();
         switch (type) {
             case ViewTypes.TYPE_TOPIC_NAME:
                 Topic topic = (Topic) item;
@@ -70,15 +72,13 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
                     @Override
                     public void onChanged(String s) {
                         if (listener.getNowPlayingRecordUUID().getValue() != null) {
-                            Log.d(TAG, "onChanged: not null");
                             if (record.uuid.equals(listener.getNowPlayingRecordUUID().getValue())) {
-                                holder.itemView.setBackgroundColor(Color.parseColor("#FFC4C4"));
+                                holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.selected_record_color));
                             } else {
-                                holder.itemView.setBackgroundColor(Color.parseColor("#f9feff"));
+                                holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.mainBackgroundColor));
                             }
                         } else {
-                            Log.d(TAG, "onChanged: null");
-                            holder.itemView.setBackgroundColor(Color.parseColor("#f9feff"));
+                            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.mainBackgroundColor));
                         }
                     }
                 });

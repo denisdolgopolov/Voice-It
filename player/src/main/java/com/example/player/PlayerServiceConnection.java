@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class PlayerServiceConnection {
-    private static final Long POSITION_UPDATE_INTERVAL_MILLIS = 1000L;
+    private static final Long POSITION_UPDATE_INTERVAL_MILLIS = 200L;
     public PlayerService playerService;
     private PlayerService.PlayerServiceBinder playerServiceBinder;
     public MediaControllerCompat mediaController;
