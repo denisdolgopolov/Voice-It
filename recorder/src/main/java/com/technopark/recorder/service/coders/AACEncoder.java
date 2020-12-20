@@ -210,8 +210,7 @@ public class AACEncoder implements Encoder<ByteBuffer> {
             //throw new IllegalArgumentException
              //       ("Can't encode PCM frame, length " + pcmFrame.remaining() + " exceeds " + MAX_AAC_FRAME_LENGTH);
         enqueueEncodeData(pcmFrame);
-        final ByteBuffer outFrame = dequeueEncodedData();
-        return outFrame;
+        return dequeueEncodedData();
     }
 
     public List<ByteBuffer> drainEncoder(){

@@ -21,9 +21,6 @@ public final class RecordTopicRepoImpl implements RecordTopicRepo{
         mContext = context;
     }
 
-    public static RecordTopicRepo getInstance(Context context) {
-        return RecorderApplication.from(context).getRecordTopicRepo();
-    }
 
     final Map<UUID,RecordTopic> mRecTopics = new HashMap<>();
 
@@ -48,7 +45,10 @@ public final class RecordTopicRepoImpl implements RecordTopicRepo{
     }
 
     public RecordTopic getRecord(UUID uuid){
-        return new RecordTopic(mRecTopics.get(uuid));
+        RecordTopic recordTopic = mRecTopics.get(uuid);
+        if (recordTopic != null)
+            return new RecordTopic(recordTopic);
+        return null;
     }
 
     public RecordTopic getLastRecord(){
@@ -56,20 +56,27 @@ public final class RecordTopicRepoImpl implements RecordTopicRepo{
     }
 
     public void updateLastTopic(String topic){
-        mRecTopics.get(mLastRecTopicUUID).setTopic(topic);
+        RecordTopic lastRecord = mRecTopics.get(mLastRecTopicUUID);
+        if (lastRecord!=null)
+            lastRecord.setTopic(topic);
     }
 
     public void updateLastName(String name){
-        mRecTopics.get(mLastRecTopicUUID).setName(name);
+        RecordTopic lastRecord = mRecTopics.get(mLastRecTopicUUID);
+        if (lastRecord!=null)
+            lastRecord.setName(name);
     }
 
     public void updateLastDuration(int duration){
-        mRecTopics.get(mLastRecTopicUUID).setDuration(duration);
+        RecordTopic lastRecord = mRecTopics.get(mLastRecTopicUUID);
+        if (lastRecord!=null)
+            lastRecord.setDuration(duration);
     }
 
     public void deleteLastRecord(){
         RecordTopic recordTopic = mRecTopics.remove(mLastRecTopicUUID);
-        deleteTempFile(recordTopic.getRecordFile());
+        if (recordTopic!=null)
+            deleteTempFile(recordTopic.getRecordFile());
     }
 
     //generates temporary file for recording
