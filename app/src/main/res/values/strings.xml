@@ -75,11 +75,19 @@
     <string name="enter_your_parrword">Enter your new password!</string>
     <string name="repeat_answer">Repeat your new password!</string>
     <string name="password_dont_match">Your passwords don\'t match!</string>
-    <string name="please_wait">Please wait...</string>
     <string name="password_update">Password updated</string>
     <string name="error_password">Error password not updated</string>
     <string name="error_auth">Error auth failed</string>
     <string name="enter_your_email">Enter your email!</string>
     <string name="enter_your_password">Enter your password!</string>
     <string name="please_wait">Please wait...</string>
+    <string name="s1">Successfully sign in</string>
+    <string name="s2">Sign in fail!</string>
+    <string name="s3">Email is required!</string>
+    <string name="s4">Password is required!</string>
+    <string name="s5">Please provide valid email!</string>
+    <string name="s6">Min password length should be 6 characters!</string>
+    <string name="s7">Successfully logout</string>
+    <string name="s8">Sign up fail!</string>
+    <string name="s9">Successfully registered</string>
 </resources>

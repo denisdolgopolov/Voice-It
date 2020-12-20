@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentFragment = null;
     private String userName = null;
 
-    private static final String CURRENT_FRAGMENT = "Current fragment";
+    private static final String CURRENT_FRAGMENT = "CURRENT FRAGMENT";
 
     private EditText editTextEmailToRegister;
     private EditText editTextPasswordToRegister;
@@ -248,11 +248,11 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     userName = getUsername();
-                    Toast.makeText(MainActivity.this, "Successfully sign in", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.s1), Toast.LENGTH_LONG).show();
                     clearBackStack();
                     enterToApp();
                 } else {
-                    Toast.makeText(MainActivity.this, "Sign in fail!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this,  getString(R.string.s2), Toast.LENGTH_LONG).show();
                 }
                 progressDialog.dismiss();
             }
@@ -274,30 +274,30 @@ public class MainActivity extends AppCompatActivity {
         String password = editTextPasswordToRegister.getText().toString().trim();
 
         if (email.isEmpty()) {
-            editTextEmailToRegister.setError("Email is required!");
+            editTextEmailToRegister.setError(getString(R.string.s3));
             editTextEmailToRegister.requestFocus();
             return;
         }
 
         if (password.isEmpty()) {
-            editTextPasswordToRegister.setError("Password is required!");
+            editTextPasswordToRegister.setError(getString(R.string.s4));
             editTextPasswordToRegister.requestFocus();
             return;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            editTextEmailToRegister.setError("Please provide valid email!");
+            editTextEmailToRegister.setError(getString(R.string.s5));
             editTextEmailToRegister.requestFocus();
             return;
         }
 
         if (password.length() < 6) {
-            editTextPasswordToRegister.setError("Min password length should be 6 characters!");
+            editTextPasswordToRegister.setError(getString(R.string.s6));
             editTextPasswordToRegister.requestFocus();
             return;
         }
 
-        progressDialog.setMessage("Please wait...");
+        progressDialog.setMessage(getString(R.string.please_wait));
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
 
@@ -306,12 +306,12 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     userName = getUsername();
-                    Toast.makeText(MainActivity.this, "Successfully registered", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, R.string.s9, Toast.LENGTH_LONG).show();
                     clearBackStack();
                     enterToApp();
 
                 } else {
-                    Toast.makeText(MainActivity.this, "Sign up fail!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, R.string.s8, Toast.LENGTH_LONG).show();
                 }
                 progressDialog.dismiss();
             }
@@ -319,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logoutUser() {
-        Toast.makeText(MainActivity.this, "Successfully logout", Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, getString(R.string.s7), Toast.LENGTH_LONG).show();
         mAuth.signOut();
         clearBackStack();
         firstEnterInApp();
