@@ -58,7 +58,7 @@ public class RecordViewModel extends RecorderViewModel {
         return MAX_RECORD_LENGTH;
     }
 
-    private static final int MAX_RECORD_LENGTH = 15; //max allowed recording in seconds
+    private static final int MAX_RECORD_LENGTH = 45; //max allowed recording in seconds
 
     public RecordViewModel(@NonNull Application application) {
         super(application);

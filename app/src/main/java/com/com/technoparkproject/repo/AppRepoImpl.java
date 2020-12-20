@@ -131,9 +131,6 @@ public class AppRepoImpl implements AppRepo{
 
                         @Override
                         public void onGet(List<FirebaseRecord> item) {
-                            if (item.size() == 0) {
-                                return;
-                            }
                             List<Record> records = new FirebaseConverter().toRecordList(item);
                             topicRecords.put(topic,records);
                             if (topicRecords.size() == topics.size()){
