@@ -161,9 +161,18 @@ public class RecordViewModel extends RecorderViewModel {
                             inputStream,
                             FirebaseFileTypes.RECORDS,
                             recTopic.getRecordFile().length(),
-                            RecordConverter.toFirebaseModel(recTopic, recordUUID, topicUUID)
+                            RecordConverter.toFirebaseModel(recTopic, recordUUID, topicUUID),
+                            new FirebaseListener() {
+                                @Override
+                                public void onSuccess() {
+                                    dismissRecording();
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+                                }
+                            }
                     );
-                    Log.d("save file", "saving record: " + recTopic.toString());
                 }
 
                 @Override

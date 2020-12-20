@@ -20,6 +20,7 @@ import java.util.List;
 import voice.it.firebaseloadermodule.cnst.FileLoadState;
 import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetUriListener;
+import voice.it.firebaseloadermodule.listeners.FirebaseListener;
 import voice.it.firebaseloadermodule.model.FirebaseModel;
 import voice.it.firebaseloadermodule.service.IntentManager;
 import voice.it.firebaseloadermodule.service.ServiceAction;
@@ -36,7 +37,8 @@ public class FirebaseFileLoader {
     public void uploadFile(final InputStream stream,
                            FirebaseFileTypes type,
                            final Long size,
-                           final FirebaseModel item) {
+                           final FirebaseModel item,
+                           final FirebaseListener listener) {
         final Intent intent = new Intent(context, ServiceLoadFileState.class);
         final IntentManager manager = new IntentManager(context);
         manager.sendIntent(intent);
@@ -65,6 +67,7 @@ public class FirebaseFileLoader {
                 uploadTask.removeOnProgressListener(progressListener);
                 if (task.isSuccessful()) {
                     intent.setAction(ServiceAction.SUCCESS);
+                    listener.onSuccess();
                 } else {
                     intent.setAction(ServiceAction.FAILED);
                 }
@@ -77,6 +80,7 @@ public class FirebaseFileLoader {
                 uploadTask.removeOnProgressListener(progressListener);
                 intent.setAction(ServiceAction.FAILED);
                 manager.sendIntent(intent);
+                listener.onFailure(e.getLocalizedMessage());
             }
         };
         uploadTask.addOnProgressListener(progressListener)
