@@ -127,8 +127,8 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getActivity().registerReceiver(receiverUpdateList, receiverUpdateList.getIntentFilter());
         receiverUpdateList.setListener(new BroadcastUpdateListRecordListener() {
             @Override
@@ -136,7 +136,6 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                 viewModel.queryRecordTopics();
             }
         });
-
     }
 
     @Override

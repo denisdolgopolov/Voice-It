@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.technopark.recorder.service.Recorder;
 import com.technopark.recorder.service.coders.ADTSStream;
 import com.technopark.recorder.service.coders.PacketStream;
 import com.technopark.recorder.service.storage.RecordingProfile;
@@ -31,8 +32,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class AudioRecorder {
+public class AudioRecorder implements Recorder {
     private static final int QUEUE_CAPACITY = 100;
+    public static final int NO_MARKER = -1;
     private PacketStream<ByteBuffer> mADTSStream;
     private final BlockingDeque<ByteBuffer> mBuffersQ;
 
@@ -54,7 +56,9 @@ public class AudioRecorder {
 
     private int mRecordTimeInMills; //internal record time in millis
     private boolean mIsAudioRecordInit;
+    private int mMarkerPos;
 
+    @Override
     public LiveData<RecordState> getRecordState(){
         return mRecordState;
     }
@@ -63,6 +67,7 @@ public class AudioRecorder {
 
     private final MutableLiveData<Integer> mRecTime;
 
+    @Override
     public LiveData<Integer> getRecTime() {
         return mRecTime;
     }
@@ -81,16 +86,12 @@ public class AudioRecorder {
 
         mRecTime = new MutableLiveData<>();
         mRecordState = new MutableLiveData<>();
+        mMarkerPos = NO_MARKER;
 
-        mRecordingExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                configureSelf();
-            }
-        });
+        mRecordingExecutor.execute(this::configureSelf);
     }
 
-    public RecordingProfile getRecordingProfile(){
+    public RecordingProfile getRecProfile(){
         return mRecProfile;
     }
 
@@ -160,6 +161,7 @@ public class AudioRecorder {
     private void reset(){
         mRecRawSize.set(0);
         mRecordTimeInMills = 0;
+        mRecMarkerReached.setValue(false);
     }
 
     private void setOutputFile(File outFile){
@@ -196,14 +198,14 @@ public class AudioRecorder {
         mWriterExecutor.execute(writeTask);
 
 
-        Runnable timer = new Runnable() {
-            @Override
-            public void run() {
-                mRecordTimeInMills+=100;
-                //LiveData updates every second
-                if (mRecordTimeInMills % 1000 == 0) {
-                    int seconds = mRecordTimeInMills/1000;
-                    mRecTime.postValue(seconds);
+        Runnable timer = () -> {
+            mRecordTimeInMills+=100;
+            //LiveData updates every second
+            if (mRecordTimeInMills % 1000 == 0) {
+                int seconds = mRecordTimeInMills/1000;
+                mRecTime.postValue(seconds);
+                if (mMarkerPos != NO_MARKER && mMarkerPos == seconds){
+                    mRecMarkerReached.postValue(true);
                 }
             }
         };
@@ -247,12 +249,7 @@ public class AudioRecorder {
         //using recording executor to make sure
         //recording task is finished and we can start to drain encoder
         mRecordingExecutor.execute(writeTask);
-        mRecordingExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                closeFile();
-            }
-        });
+        mRecordingExecutor.execute(this::closeFile);
 
     }
 
@@ -274,8 +271,24 @@ public class AudioRecorder {
     public int getDuration(){
         int bytesPerSecond = mRecProfile.getFrameSize()*mRecProfile.getSamplingRate();
         double recSeconds = (double)mRecRawSize.get() / bytesPerSecond;
-        int recMillis = (int)(recSeconds*1000);
-        return recMillis;
+        return (int)(recSeconds*1000);
+    }
+
+    @Override
+    public int getMarkerPos() {
+        return mMarkerPos;
+    }
+
+    @Override
+    public void setMarkerPos(int seconds) {
+        mMarkerPos = seconds;
+    }
+
+    private final MutableLiveData<Boolean> mRecMarkerReached = new MutableLiveData<>();
+
+    @Override
+    public LiveData<Boolean> getRecMarker(){
+        return mRecMarkerReached;
     }
 
 }

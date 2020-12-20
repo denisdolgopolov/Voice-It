@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
-import com.technopark.recorder.utils.InjectorUtils;
+import com.technopark.recorder.RecorderApplication;
 
 public abstract class RecorderFragment extends Fragment {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1000;
@@ -36,7 +36,7 @@ public abstract class RecorderFragment extends Fragment {
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //configure recorder manually, because it's not possible to fully init it
                 //before permissions are granted by the user
-                InjectorUtils.provideRecService(getContext()).configureRecording();
+                RecorderApplication.from(getContext()).getRecorder().configure();
                 setPermissionGrantedLayout();
             } else {
                 setPermissionDeniedLayout();

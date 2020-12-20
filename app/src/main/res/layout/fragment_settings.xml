@@ -33,13 +33,13 @@
                     style="@style/Button"
                     android:autofillHints="username"
                     android:inputType="textAutoCorrect"
-                    android:text="@string/et_new_nickname" />
+                    android:hint="@string/et_new_nickname" />
 
             <EditText
                     style="@style/Button"
                     android:autofillHints="user_email"
                     android:inputType="textEmailAddress"
-                    android:text="@string/et_new_email" />
+                    android:hint="@string/et_new_email" />
 
             <Button
                     android:id="@+id/btn_change_password"

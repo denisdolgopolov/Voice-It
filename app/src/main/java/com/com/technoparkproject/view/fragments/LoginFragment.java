@@ -12,15 +12,14 @@ import androidx.fragment.app.Fragment;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.activities.MainActivity;
 
-public class PersonalPageFragment extends Fragment {
+public class LoginFragment extends Fragment {
 
-    private static final int FRAGMENT_PERSONAL_PAGE_NAME = R.string.fragment_personal_page_name;
+    private static final int FRAGMENT_LOGIN_NAME = R.string.fragment_login_name;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ((MainActivity) getActivity()).setToolbar(getString(FRAGMENT_PERSONAL_PAGE_NAME));
-        return inflater.inflate(R.layout.fragment_personal_page, container, false);
+        ((MainActivity) getActivity()).setToolbar(getString(FRAGMENT_LOGIN_NAME));
+        return inflater.inflate(R.layout.fragment_login, container, false);
     }
-
 }
