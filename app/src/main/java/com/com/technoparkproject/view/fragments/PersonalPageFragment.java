@@ -22,4 +22,5 @@ public class PersonalPageFragment extends Fragment {
         ((MainActivity) getActivity()).setToolbar(getString(FRAGMENT_PERSONAL_PAGE_NAME));
         return inflater.inflate(R.layout.fragment_personal_page, container, false);
     }
+
 }

@@ -88,11 +88,15 @@ public class MainActivity extends AppCompatActivity {
     private static final int FRAGMENT_START_NAME = R.string.fragment_start_name;
     private static final int FRAGMENT_LOGIN_NAME = R.string.fragment_login_name;
 
+
     private PasswordFragment changePasswordFragment;
     private LanguageFragment changeLanguageFragment;
     private StartFragment startFragment;
     private LoginFragment loginFragment;
     private RegistrationFragment registrationFragment;
+
+    BottomNavigationView bottomNavigation;
+
 
     private Toolbar toolbar;
     private BottomNavigationView bottomNavigation;
@@ -158,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 
     @SuppressLint("NonConstantResourceId")
     public void onClickCreateAccountOrLoginButton(View view) {
@@ -371,12 +376,12 @@ public class MainActivity extends AppCompatActivity {
     public void onClickChangePasswordOrLanguageButton(View view) {
         switch (view.getId()) {
             case R.id.btn_change_password:
-                changePasswordFragment = new PasswordFragment();
+                PasswordFragment changePasswordFragment = new PasswordFragment();
                 currentFragment = getString(FRAGMENT_PASSWORD_NAME);
                 loadFragment(changePasswordFragment, currentFragment);
                 break;
             case R.id.btn_change_language:
-                changeLanguageFragment = new LanguageFragment();
+                LanguageFragment changeLanguageFragment = new LanguageFragment();
                 currentFragment = getString(FRAGMENT_LANGUAGE_NAME);
                 loadFragment(changeLanguageFragment, currentFragment);
                 break;
@@ -435,7 +440,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "record":
                 toolbarTitleView.setText(TOOLBAR_RECORD_TEXT);
-                toolbarBackButton.setVisibility(View.VISIBLE);
                 break;
             case "settings":
                 toolbarTitleView.setText(TOOLBAR_SETTINGS_TEXT);
