@@ -71,4 +71,15 @@
     <string name="count_publications">0</string>
     <string name="subscribers">Подписчики</string>
     <string name="subscriptions">Подписки</string>
+    <string name="enter_your_current_password">Enter your current password!</string>
+    <string name="enter_your_parrword">Enter your new password!</string>
+    <string name="repeat_answer">Repeat your new password!</string>
+    <string name="password_dont_match">Your passwords don\'t match!</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="password_update">Password updated</string>
+    <string name="error_password">Error password not updated</string>
+    <string name="error_auth">Error auth failed</string>
+    <string name="enter_your_email">Enter your email!</string>
+    <string name="enter_your_password">Enter your password!</string>
+    <string name="please_wait">Please wait...</string>
 </resources>

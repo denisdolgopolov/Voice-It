@@ -48,13 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String CURRENT_FRAGMENT = "Current fragment";
 
-    private TextView toolbarTitleView;
-
-    private ImageButton toolbarBackButton;
-    private ImageButton toolbarLogoutButton;
-    private ImageButton toolbarCancelButton;
-    private ImageButton toolbarTickButton;
-
     private EditText editTextEmailToRegister;
     private EditText editTextPasswordToRegister;
 
@@ -64,9 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private EditText editTextCurrentPassword;
     private EditText editTextNewPassword;
     private EditText editTextRepeatNewPassword;
-
-    private Button buttonRegisterUser;
-    private Button buttonLoginUser;
 
     private static final int TOOLBAR_HOME_TEXT = R.string.toolbar_home_text;
     private static final int TOOLBAR_PLAYLIST_TEXT = R.string.toolbar_playlist_text;
@@ -88,18 +78,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int FRAGMENT_START_NAME = R.string.fragment_start_name;
     private static final int FRAGMENT_LOGIN_NAME = R.string.fragment_login_name;
 
-
-    private PasswordFragment changePasswordFragment;
-    private LanguageFragment changeLanguageFragment;
-    private StartFragment startFragment;
-    private LoginFragment loginFragment;
-    private RegistrationFragment registrationFragment;
-
     BottomNavigationView bottomNavigation;
 
 
     private Toolbar toolbar;
-    private BottomNavigationView bottomNavigation;
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
 
@@ -135,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     private void firstEnterInApp() {
         toolbar.setVisibility(View.GONE);
         bottomNavigation.setVisibility(View.GONE);
-        startFragment = new StartFragment();
+        StartFragment startFragment = new StartFragment();
         currentFragment = getString(FRAGMENT_START_NAME);
         loadFragment(startFragment, currentFragment);
     }
@@ -169,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.btn_create_account:
                 progressDialog = new ProgressDialog(this);
-                buttonRegisterUser = findViewById(R.id.btn_create_account);
+                Button buttonRegisterUser = findViewById(R.id.btn_create_account);
                 editTextEmailToRegister = findViewById(R.id.registration_email);
                 editTextPasswordToRegister = findViewById(R.id.registration_password);
                 registerUser();
@@ -177,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.btn_login:
                 progressDialog = new ProgressDialog(this);
-                buttonLoginUser = findViewById(R.id.btn_login);
+                Button buttonLoginUser = findViewById(R.id.btn_login);
                 editTextEmailToLogin = findViewById(R.id.login_email);
                 editTextPasswordToLogin = findViewById(R.id.login_password);
                 loginUser();
@@ -191,25 +173,25 @@ public class MainActivity extends AppCompatActivity {
         String repeatNewPassword = editTextRepeatNewPassword.getText().toString().trim();
 
         if (currentPassword.isEmpty()) {
-            editTextCurrentPassword.setError("Enter your current password!");
+            editTextCurrentPassword.setError(getString(R.string.enter_your_current_password));
             editTextCurrentPassword.requestFocus();
             return false;
         }
 
         if (newPassword.isEmpty()) {
-            editTextNewPassword.setError("Enter your new password!");
+            editTextNewPassword.setError(getString(R.string.enter_your_parrword));
             editTextNewPassword.requestFocus();
             return false;
         }
 
         if (repeatNewPassword.isEmpty()) {
-            editTextRepeatNewPassword.setError("Repeat your new password!");
+            editTextRepeatNewPassword.setError(getString(R.string.repeat_answer));
             editTextRepeatNewPassword.requestFocus();
             return false;
         }
 
         if (!repeatNewPassword.equals(newPassword)) {
-            editTextRepeatNewPassword.setError("Your passwords don't match!");
+            editTextRepeatNewPassword.setError(getString(R.string.password_dont_match));
             editTextRepeatNewPassword.requestFocus();
             return false;
         }
@@ -219,29 +201,23 @@ public class MainActivity extends AppCompatActivity {
 
         AuthCredential credential = EmailAuthProvider.getCredential(userEmail, currentPassword);
 
-        progressDialog.setMessage("Please wait...");
+        progressDialog.setMessage(getString(R.string.please_wait));
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
 
-        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    user.updatePassword(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(MainActivity.this, "Password updated", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(MainActivity.this, "Error password not updated", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                } else {
-                    Toast.makeText(MainActivity.this, "Error auth failed", Toast.LENGTH_LONG).show();
-                }
-                progressDialog.dismiss();
+        user.reauthenticate(credential).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                user.updatePassword(newPassword).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Toast.makeText(MainActivity.this, getString(R.string.password_update), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, getString(R.string.error_password), Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else {
+                Toast.makeText(MainActivity.this, getString(R.string.error_auth), Toast.LENGTH_LONG).show();
             }
+            progressDialog.dismiss();
         });
 
         return true;
@@ -252,18 +228,18 @@ public class MainActivity extends AppCompatActivity {
         String password = editTextPasswordToLogin.getText().toString().trim();
 
         if (email.isEmpty()) {
-            editTextEmailToLogin.setError("Enter your email!");
+            editTextEmailToLogin.setError(getString(R.string.enter_your_email));
             editTextEmailToLogin.requestFocus();
             return;
         }
 
         if (password.isEmpty()) {
-            editTextPasswordToLogin.setError("Enter your password!");
+            editTextPasswordToLogin.setError(getString(R.string.enter_your_password));
             editTextPasswordToLogin.requestFocus();
             return;
         }
 
-        progressDialog.setMessage("Please wait...");
+        progressDialog.setMessage(getString(R.string.please_wait));
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
 
@@ -359,12 +335,12 @@ public class MainActivity extends AppCompatActivity {
     public void onClickRegistrationOrLoginButton(View view) {
         switch (view.getId()) {
             case R.id.btn_registration:
-                registrationFragment = new RegistrationFragment();
+                RegistrationFragment registrationFragment = new RegistrationFragment();
                 currentFragment = getString(FRAGMENT_REGISTRATION_NAME);
                 loadFragment(registrationFragment, currentFragment);
                 break;
             case R.id.btn_login:
-                loginFragment = new LoginFragment();
+                LoginFragment loginFragment = new LoginFragment();
                 currentFragment = getString(FRAGMENT_LOGIN_NAME);
                 loadFragment(loginFragment, currentFragment);
                 break;
@@ -420,11 +396,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setToolbar(String nameSelectedFragment) {
-        toolbarTitleView = findViewById(R.id.toolbar_title);
-        toolbarBackButton = findViewById(R.id.toolbar_back_button);
-        toolbarLogoutButton = findViewById(R.id.toolbar_logout_button);
-        toolbarCancelButton = findViewById(R.id.toolbar_cancel_button);
-        toolbarTickButton = findViewById(R.id.toolbar_tick_button);
+        TextView toolbarTitleView = findViewById(R.id.toolbar_title);
+        ImageButton toolbarBackButton = findViewById(R.id.toolbar_back_button);
+        ImageButton toolbarLogoutButton = findViewById(R.id.toolbar_logout_button);
+        ImageButton toolbarCancelButton = findViewById(R.id.toolbar_cancel_button);
+        ImageButton toolbarTickButton = findViewById(R.id.toolbar_tick_button);
 
         toolbarBackButton.setVisibility(View.GONE);
         toolbarLogoutButton.setVisibility(View.GONE);
