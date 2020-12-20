@@ -50,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int FRAGMENT_PASSWORD_NAME = R.string.fragment_password_name;
     private static final int FRAGMENT_LANGUAGE_NAME = R.string.fragment_language_name;
 
-    private PasswordFragment changePasswordFragment;
-    private LanguageFragment changeLanguageFragment;
     BottomNavigationView bottomNavigation;
 
     private static final String CURRENT_FRAGMENT = "Current fragment";
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         checkRecordIntent(intent);
     }
 
-    private void checkRecordIntent(Intent intent){
+    private void checkRecordIntent(Intent intent) {
         String nextFragment = intent.getStringExtra(RecordIntentConstants.NAME);
         if (nextFragment != null) {
             //if activity received intent from record notification go to record fragment
@@ -95,16 +93,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     @SuppressLint("NonConstantResourceId")
     public void onClickChangePasswordOrLanguageButton(View view) {
         switch (view.getId()) {
             case R.id.btn_change_password:
-                changePasswordFragment = new PasswordFragment();
+                PasswordFragment changePasswordFragment = new PasswordFragment();
                 currentFragment = getString(FRAGMENT_PASSWORD_NAME);
                 loadFragment(changePasswordFragment, currentFragment);
                 break;
             case R.id.btn_change_language:
-                changeLanguageFragment = new LanguageFragment();
+                LanguageFragment changeLanguageFragment = new LanguageFragment();
                 currentFragment = getString(FRAGMENT_LANGUAGE_NAME);
                 loadFragment(changeLanguageFragment, currentFragment);
                 break;
@@ -139,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "record":
                 toolbarTitleView.setText(TOOLBAR_RECORD_TEXT);
-                toolbarBackButton.setVisibility(View.VISIBLE);
                 break;
             case "settings":
                 toolbarTitleView.setText(TOOLBAR_SETTINGS_TEXT);
