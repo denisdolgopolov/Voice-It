@@ -45,7 +45,6 @@ public class MinimizedPlayerFragment extends Fragment {
         prevButton = view.findViewById(R.id.prev_button);
         playButton = view.findViewById(R.id.play_button);
         titleAudio = view.findViewById(R.id.audio_title_tv);
-        authorAudio = view.findViewById(R.id.audio_author_tv);
         mediaPositionSeekBar = view.findViewById(R.id.seekBar);
         currentTime = view.findViewById(R.id.current_time_tv);
         duration = view.findViewById(R.id.duration_tv);
@@ -136,7 +135,6 @@ public class MinimizedPlayerFragment extends Fragment {
                 playButton.setVisibility(View.VISIBLE);
             }
             titleAudio.setText(metadata.getDescription().getTitle());
-            authorAudio.setText(metadata.getDescription().getDescription());
             duration.setText(RecordUtils.durationFormatted(metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)));
             mediaPositionSeekBar.setMax((int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
         }

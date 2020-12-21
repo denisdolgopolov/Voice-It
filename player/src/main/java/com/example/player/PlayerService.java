@@ -462,8 +462,6 @@ final public class PlayerService extends Service implements ImageLoadingListener
         /*Bitmap art = BitmapFactory.decodeResource(getResources(), R.drawable.mlr_test_record_image);*/
         metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, art);
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, record.name);
-        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, record.topicUUID);
-        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, record.userUUID);
         metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, Long.parseLong(record.duration));
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, record.uuid);
         return metadataBuilder.build();
