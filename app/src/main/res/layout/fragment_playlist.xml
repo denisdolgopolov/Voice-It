@@ -3,18 +3,17 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/fragment_playlist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/mainBackgroundColor">
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/playlist_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:clipToPadding="false"
             android:overScrollMode="never"
-            android:paddingTop="10dp"
-
-            android:paddingBottom="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:scrollbars="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
@@ -22,23 +21,12 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/minimized_player"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/minimized_player_background"
+            android:layout_height="144dp"
             android:orientation="vertical"
             android:paddingTop="8dp"
             app:behavior_hideable="true"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
             tools:context=".view.fragments.MinimizedPlayerFragment">
-
-        <!--<LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toTopOf="parent">
-        </LinearLayout>-->
-
 
     </LinearLayout>
 

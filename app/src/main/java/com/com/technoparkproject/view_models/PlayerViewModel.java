@@ -43,7 +43,7 @@ public class PlayerViewModel extends AndroidViewModel {
 
     public PlayerViewModel(@NonNull Application application) {
         super(application);
-        this.playerServiceConnection = ((VoiceItApplication) application).playerServiceConnection;
+        this.playerServiceConnection = ((VoiceItApplication) application).getPlayerServiceConnection();
         this.currentMetadata = playerServiceConnection.nowPlayingMediaMetadata;
         this.currentState = playerServiceConnection.playbackState;
         this.currentPosition = playerServiceConnection.mediaPosition;

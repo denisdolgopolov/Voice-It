@@ -6,8 +6,8 @@
         android:topRightRadius="@dimen/player_fragment_rad"
         android:topLeftRadius="@dimen/player_fragment_rad" />
     <gradient
-        android:startColor="#FFC4C4"
-        android:endColor="#FFFFFF"
+        android:startColor="@color/selected_record_color"
+        android:endColor="@color/white"
         android:angle="270">
     </gradient>
 </shape>

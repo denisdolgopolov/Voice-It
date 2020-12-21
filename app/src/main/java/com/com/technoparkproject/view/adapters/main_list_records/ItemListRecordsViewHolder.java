@@ -1,12 +1,15 @@
 package com.com.technoparkproject.view.adapters.main_list_records;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
@@ -32,21 +35,27 @@ public class ItemListRecordsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindViewHolder(final MainListRecordsInterface listener, final Record record) {
-        Context context = itemView.getContext();
 
         textViewTitle.setText(record.name);
         textViewDesc.setText(record.dateOfCreation);
         textViewRecordTime.setText(RecordUtils.durationFormatted(record.duration));
 
 
-        if (listener != null)
+        if (listener != null) {
             bMoreInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     listener.showRecordMoreFun(record);
                 }
             });
-        else
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.itemClicked(record);
+                }
+            });
+
+        } else
             bMoreInfo.setVisibility(View.GONE);
     }
 }

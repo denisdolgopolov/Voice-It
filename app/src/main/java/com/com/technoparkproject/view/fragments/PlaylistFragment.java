@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistFragment extends Fragment {
+    public static final String TAG = "PLAYLISTFRAGMENTTAG";
     PlaylistAdapter playlistAdapter = new PlaylistAdapter();
     PlaylistViewModel playlistViewModel;
+    RecyclerView playlistRecyclerView;
 
     @Nullable
     @Override
@@ -37,13 +40,13 @@ public class PlaylistFragment extends Fragment {
 
         playlistViewModel = new ViewModelProvider(getActivity()).get(PlaylistViewModel.class);
 
-        RecyclerView PlaylistRecyclerView = view.findViewById(R.id.playlist_recycler_view);
-        PlaylistRecyclerView.setAdapter(playlistAdapter);
+        playlistRecyclerView = view.findViewById(R.id.playlist_recycler_view);
+        playlistRecyclerView.setAdapter(playlistAdapter);
 
         getChildFragmentManager().beginTransaction().replace(R.id.minimized_player, new MinimizedPlayerFragment()).commit();
 
         View playerView = view.findViewById(R.id.minimized_player);
-        BottomSheetBehavior behavior = BottomSheetBehavior.from(playerView);
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(playerView);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         playlistViewModel.currentPlaylist.observe(getViewLifecycleOwner(), new Observer<List<Record>>() {
@@ -59,19 +62,19 @@ public class PlaylistFragment extends Fragment {
                 if (playbackStateCompat != null) {
                     if (playbackStateCompat.getState() != PlaybackStateCompat.STATE_STOPPED) {
                         if (behavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
-                            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                            PlaylistRecyclerView.setPaddingRelative(PlaylistRecyclerView.getPaddingStart(), PlaylistRecyclerView.getPaddingTop(), PlaylistRecyclerView.getPaddingEnd(), playerView.getHeight() + 10);
                             behavior.setHideable(false);
+                            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                            playerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                            playlistRecyclerView.setPadding(playlistRecyclerView.getPaddingStart(), playlistRecyclerView.getPaddingTop(), playlistRecyclerView.getPaddingEnd(), playerView.getMeasuredHeight() + 8);
                         }
                     } else {
                         if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                             behavior.setHideable(true);
                             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                            PlaylistRecyclerView.setPaddingRelative(PlaylistRecyclerView.getPaddingStart(), PlaylistRecyclerView.getPaddingTop(), PlaylistRecyclerView.getPaddingEnd(), 10);
+                            playlistRecyclerView.setPaddingRelative(playlistRecyclerView.getPaddingStart(), playlistRecyclerView.getPaddingTop(), playlistRecyclerView.getPaddingEnd(), 8);
                         }
                     }
                 }
-
             }
         });
         return view;
@@ -98,10 +101,12 @@ public class PlaylistFragment extends Fragment {
                 public void onChanged(MediaMetadataCompat mediaMetadataCompat) {
                     if (playlistViewModel.currentMetadata.getValue() != null) {
                         if (record.uuid.equals(playlistViewModel.currentMetadata.getValue().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
-                            holder.itemView.setBackgroundColor(Color.parseColor(getString(R.string.selected_record_color)));
+                            holder.itemView.setBackgroundColor(getResources().getColor(R.color.selected_record_color));
                         } else {
-                            holder.itemView.setBackgroundColor(Color.WHITE);
+                            holder.itemView.setBackgroundColor(getResources().getColor(R.color.mainBackgroundColor));
                         }
+                    } else {
+                        holder.itemView.setBackgroundColor(getResources().getColor(R.color.mainBackgroundColor));
                     }
                 }
             });

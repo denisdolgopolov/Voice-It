@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
@@ -21,6 +20,10 @@ import android.os.IBinder;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
@@ -33,6 +36,10 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.List;
 
@@ -40,12 +47,16 @@ import voice.it.firebaseloadermodule.FirebaseFileLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetUriListener;
 
-final public class PlayerService extends Service {
+final public class PlayerService extends Service implements ImageLoadingListener {
     public static final String NOTIFICATION_CHANNEL_NAME = "PlayerControl";
     private static final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
     private static final int NOTIFICATION_ID = 404;
     private static final String NOTIFICATION_DEFAULT_CHANNEL_ID = "default_channel";
     public static final String MEDIA_SESSION_COMPAT_TAG = "PlayerService";
+    public static final String TAG = "PLAYERSERVICETAG";
+    private boolean ongoingCall = false;
+    private PhoneStateListener phoneStateListener;
+    private TelephonyManager telephonyManager;
 
     private final PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder().setActions(
             PlaybackStateCompat.ACTION_PLAY
@@ -61,6 +72,7 @@ final public class PlayerService extends Service {
     private AudioFocusRequest audioFocusRequest;
     private boolean audioFocusRequested = false;
     public SimpleExoPlayer exoPlayer;
+    private ImageLoader imageLoader;
 
     RecordLoader recordLoader = new RecordLoader() {
 
@@ -80,9 +92,9 @@ final public class PlayerService extends Service {
         }
 
         @Override
-        public String getImageSourceURLByUUID(String UUID) {
-            //return TestRecordsRepository.getImageSourceURLByUUID(UUID);
-            return "";
+        public void getImageSourceURLByUUID(String UUID, FirebaseGetUriListener listener) {
+            new FirebaseFileLoader(getApplicationContext())
+                    .getDownloadUri(FirebaseFileTypes.USER_PROFILE_IMAGES, UUID, listener);
         }
     };
 
@@ -142,6 +154,8 @@ final public class PlayerService extends Service {
         initMediaSession();
         initExoPLayer();
         registerReceiver(becomingNoisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(new ImageLoaderConfiguration.Builder(PlayerService.this).build());
 
     }
 
@@ -167,6 +181,42 @@ final public class PlayerService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return new PlayerServiceBinder();
+    }
+
+    @Override
+    public void onLoadingStarted(String imageUri, View view) {
+
+    }
+
+    @Override
+    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+        Toast toast = Toast.makeText(PlayerService.this, "Нет интернет-соединения", Toast.LENGTH_SHORT);
+        toast.show();
+        /*mediaSession.setMetadata(getMediaMetadataFromUUID(getCurrentRecordUUID(),
+                BitmapFactory.decodeResource(getResources(), R.drawable.mlr_test_record_image)));
+        mediaSession.setActive(true);
+        exoPlayer.setPlayWhenReady(true);
+        refreshNotificationAndForegroundStatus(mediaSession.getController().getPlaybackState().getState());*/
+    }
+
+    @Override
+    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+        mediaSession.setMetadata(getMediaMetadataFromUUID(getCurrentRecordUUID(), loadedImage));
+
+        mediaSession.setActive(true);
+        exoPlayer.setPlayWhenReady(true);
+        mediaSession.setPlaybackState(
+                stateBuilder.setState(
+                        PlaybackStateCompat.STATE_PLAYING,
+                        0,
+                        1).build()
+        );
+        refreshNotificationAndForegroundStatus(mediaSession.getController().getPlaybackState().getState());
+    }
+
+    @Override
+    public void onLoadingCancelled(String imageUri, View view) {
+
     }
 
     public class PlayerServiceBinder extends Binder {
@@ -221,23 +271,17 @@ final public class PlayerService extends Service {
                     if (audioFocusResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
                         return;
                 }
-
                 prepareToPlay(getCurrentRecordUUID());
-
                 if (currentState == PlaybackStateCompat.STATE_PAUSED) {
                     long position = exoPlayer.getCurrentPosition();
                     mediaSession.setPlaybackState(
                             stateBuilder.setState(
                                     PlaybackStateCompat.STATE_PLAYING,
                                     position, 1).build()
+
                     );
-                } else {
-                    mediaSession.setPlaybackState(
-                            stateBuilder.setState(
-                                    PlaybackStateCompat.STATE_PLAYING,
-                                    PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
-                                    1).build()
-                    );
+                    currentState = PlaybackStateCompat.STATE_PLAYING;
+                    refreshNotificationAndForegroundStatus(currentState);
                 }
                 currentState = PlaybackStateCompat.STATE_PLAYING;
             }
@@ -290,8 +334,10 @@ final public class PlayerService extends Service {
                                     1
                             ).build()
             );
+            mediaSession.setMetadata(null);
             currentState = PlaybackStateCompat.STATE_STOPPED;
             refreshNotificationAndForegroundStatus(currentState);
+            currentRecordUUID = "";
             stopSelf();
         }
 
@@ -308,16 +354,18 @@ final public class PlayerService extends Service {
         private void prepareToPlay(String preparingRecordUUID) {
             if (!currentRecordUUID.equals(preparingRecordUUID)) {
                 currentRecordUUID = preparingRecordUUID;
+
                 recordLoader.getAudioSourceURLByRecordUUID(currentRecordUUID, new FirebaseGetUriListener() {
                     @Override
                     public void onGet(Uri uri) {
-                        mediaSession.setMetadata(getMediaMetadataFromUUID(currentRecordUUID, uri));
                         exoPlayer.setMediaItem(MediaItem.fromUri(uri));
+                        // TODO убрать хардкод
+                        String imageURL = "https://cdn.arstechnica.net/wp-content/uploads/2016/02/5718897981_10faa45ac3_b-640x624.jpg";
                         exoPlayer.prepare();
-                        mediaSession.setActive(true);
-                        exoPlayer.setPlayWhenReady(true);
-
-                        refreshNotificationAndForegroundStatus(currentState);
+                        imageLoader.stop();
+                        /*Log.d(TAG, "onGet: ");
+                        recordLoader.getImageSourceURLByUUID(recordLoader.getRecordByUUID(currentRecordUUID).userUUID);*/
+                        imageLoader.loadImage(imageURL, PlayerService.this);
                     }
 
                     @Override
@@ -326,11 +374,11 @@ final public class PlayerService extends Service {
                     }
                 });
             } else {
+                exoPlayer.setPlayWhenReady(true);
+                refreshNotificationAndForegroundStatus(currentState);
                 if (currentState != PlaybackStateCompat.STATE_PAUSED) {
                     exoPlayer.seekTo(0L);
                 }
-                mediaSession.setActive(true);
-                exoPlayer.setPlayWhenReady(true);
             }
         }
 
@@ -351,19 +399,30 @@ final public class PlayerService extends Service {
 
     private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange -> {
         if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-            mediaSessionCallback.onPlay();
+            if(mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                mediaSession.getController().getTransportControls().play();
+            }
+            if (mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING){
+                exoPlayer.setVolume(1.0f);
+            }
         }
         if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-            mediaSessionCallback.onPause();
+            mediaSession.getController().getTransportControls().pause();
         }
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+            mediaSession.getController().getTransportControls().pause();
+        }
+        if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+            exoPlayer.setVolume(0.2f);
+        }
+
     };
 
     private final BroadcastReceiver becomingNoisyReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Стопаем звук при вытаскивании наушников
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-                mediaSessionCallback.onPause();
+                mediaSession.getController().getTransportControls().pause();
             }
         }
     };
@@ -394,26 +453,20 @@ final public class PlayerService extends Service {
     }
 
 
-    MediaMetadataCompat getMediaMetadataFromUUID(String UUID, Uri uri) {
+    MediaMetadataCompat getMediaMetadataFromUUID(String UUID, Bitmap art) {
         Record record = recordLoader.getRecordByUUID(UUID);
-        return recordToMediaMetadataCompat(record, uri);
+        return recordToMediaMetadataCompat(record, art);
     }
 
-
-    public MediaMetadataCompat recordToMediaMetadataCompat(Record record, Uri uri) {
-        // TODO убрать хардкод
-        Bitmap art = BitmapFactory.decodeResource(getResources(), R.drawable.mlr_test_record_image);
+    public MediaMetadataCompat recordToMediaMetadataCompat(Record record, Bitmap art) {
+        /*Bitmap art = BitmapFactory.decodeResource(getResources(), R.drawable.mlr_test_record_image);*/
         metadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, art);
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, record.name);
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, record.topicUUID);
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, record.userUUID);
         metadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, Long.parseLong(record.duration));
         metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, record.uuid);
-        metadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, uri.toString());
-        MediaMetadataCompat mediaMetadataCompat = metadataBuilder.build();
-
-        return mediaMetadataCompat;
-
+        return metadataBuilder.build();
     }
 
     private void initExoPLayer() {
@@ -456,8 +509,37 @@ final public class PlayerService extends Service {
 
         void getAudioSourceURLByRecordUUID(String UUID, FirebaseGetUriListener listener);
 
-        String getImageSourceURLByUUID(String UUID);
+        void getImageSourceURLByUUID(String UUID, FirebaseGetUriListener listener);
     }
+
+  /*  private void callStateListener() {
+        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        phoneStateListener = new PhoneStateListener() {
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                switch (state) {
+                    case TelephonyManager.CALL_STATE_OFFHOOK:
+                    case TelephonyManager.CALL_STATE_RINGING:
+                        if (mediaSession.isActive()) {
+                            mediaSession.getController().getTransportControls().pause();
+                            ongoingCall = true;
+                        }
+                        break;
+                    case TelephonyManager.CALL_STATE_IDLE:
+                        if (mediaSession.isActive()) {
+                            if (ongoingCall) {
+                                ongoingCall = false;
+                                mediaSession.getController().getTransportControls().play();
+                            }
+                        }
+                        break;
+                }
+            }
+        };
+        telephonyManager.listen(phoneStateListener,
+                PhoneStateListener.LISTEN_CALL_STATE);
+    }*/
+
 }
 
 

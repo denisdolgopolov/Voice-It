@@ -26,7 +26,7 @@ public class PlaylistViewModel extends AndroidViewModel {
 
     public PlaylistViewModel(@NonNull Application application) {
         super(application);
-        this.playerServiceConnection = ((VoiceItApplication) application).playerServiceConnection;
+        this.playerServiceConnection = ((VoiceItApplication) application).getPlayerServiceConnection();
         this.currentPlaylist = Transformations.map(playerServiceConnection.playerService.playlist, new Function<List<com.example.player.Record>, List<Record>>() {
             @Override
             public List<Record> apply(List<com.example.player.Record> input) {

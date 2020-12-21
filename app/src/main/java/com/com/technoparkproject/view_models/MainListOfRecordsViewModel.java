@@ -25,6 +25,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     PlayerServiceConnection playerServiceConnection;
     private final MediatorLiveData<ArrayMap<Topic, List<Record>>> topicRecords;
     private final MutableLiveData<String> searchingValue = new MutableLiveData<>();
+    public MutableLiveData<String> nowPlayingRecordUUID;
 
     public LiveData<ArrayMap<Topic, List<Record>>> getTopicRecords() {
         return topicRecords;
@@ -64,8 +65,36 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
         playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(record));
     }
 
+
+    public void itemClicked(Record record) {
+        playerServiceConnection.clearPlaylist();
+        int currentIndex = 0;
+        ArrayMap<Topic, List<Record>> list = records.getValue();
+        for (int i = 0; i < list.size(); i++) {
+            for (int g = 0; g < list.valueAt(i).size(); g++) {
+                Record currentRecord = list.valueAt(i).get(g);
+                playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(currentRecord));
+                if (currentRecord.equals(record)) {
+                    playerServiceConnection.setCurrentIndex(currentIndex);
+                }
+            }
+            currentIndex++;
+        }
+        /*for (Topic topic : topics.getValue()) {
+            for (Record recordInTopic : records.getValue().get(topic)) {
+                playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(recordInTopic));
+                if (recordInTopic.equals(record)) {
+                    playerServiceConnection.setCurrentIndex(currentIndex);
+                }
+            }
+            currentIndex++;
+        }*/
+        playerServiceConnection.mediaController.getTransportControls().play();
+    }
+
     public MainListOfRecordsViewModel(@NonNull Application application) {
         super(application);
+
         this.playerServiceConnection = ((VoiceItApplication) application).playerServiceConnection;
         topicRecords = new MediatorLiveData<>();
         topicRecords.setValue(new ArrayMap<>());

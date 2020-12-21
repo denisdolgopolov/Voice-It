@@ -34,7 +34,6 @@
     <string name="download">Загрузить</string>
     <string name="record_logo">логотип записи</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="selected_record_color">#FFC4C4</string>
     <string name="hello_record_fragment">Record fragment</string>
     <string name="text_record_permission_denied">Вы отказались предоставить разрешение на запись. Вы можете предоставить его в настройках.</string>
     <string name="channel_audio_app">Voice-it channel</string>
