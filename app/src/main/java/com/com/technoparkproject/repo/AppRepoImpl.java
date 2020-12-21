@@ -135,8 +135,8 @@ public class AppRepoImpl implements AppRepo{
                             topicRecords.put(topic,records);
                             if (topicRecords.size() == topics.size()){
                                 topicRecordsData.postValue(topicRecords);
+                                updateRecordsCache(topicRecords.values());
                             }
-                            updateRecordsCache(topicRecords.values());
                         }
                     });
         }
