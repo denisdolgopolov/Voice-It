@@ -111,7 +111,10 @@ public class AppRepoImpl implements AppRepo{
                     return;
                 }
                 List<Topic> topics = new FirebaseConverter().toTopicList(item);
-                mDiskIO.execute(() -> mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics)));
+                mDiskIO.execute(() ->{
+                    mAppDb.clearAllTables();
+                    mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics));
+                });
                 queryOnlineRecords(topicRecordsData,topics);
             }
         })
@@ -135,8 +138,8 @@ public class AppRepoImpl implements AppRepo{
                             topicRecords.size();
                             if (topicRecords.size() == topics.size()) {
                                 topicRecordsData.postValue(topicRecords);
+                                updateRecordsCache(topicRecords.values());
                             }
-                            updateRecordsCache(topicRecords.values());
                         }
                     });
         }

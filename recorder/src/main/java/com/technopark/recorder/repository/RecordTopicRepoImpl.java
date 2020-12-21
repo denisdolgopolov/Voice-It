@@ -75,14 +75,16 @@ public final class RecordTopicRepoImpl implements RecordTopicRepo{
 
     public void deleteLastRecord(){
         RecordTopic recordTopic = mRecTopics.remove(mLastRecTopicUUID);
-        if (recordTopic!=null)
+        if (recordTopic!=null) {
             deleteTempFile(recordTopic.getRecordFile());
+            mLastRecTopicUUID = null;
+        }
     }
 
     //generates temporary file for recording
     private File createTempFile(String suffix) {
         try {
-            File tempFileDir = mContext.getCacheDir();
+            File tempFileDir = mContext.getExternalCacheDir();
             return File.createTempFile(DEFAULT_RECORD_NAME, suffix, tempFileDir);
         } catch (IOException e) {
             e.printStackTrace();
