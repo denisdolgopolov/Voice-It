@@ -17,19 +17,13 @@
             android:id="@+id/audio_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:textSize="24sp"
             android:text="@string/unknown_record"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-    <TextView
-            android:id="@+id/audio_author_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/unknown_author"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/audio_title_tv" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/duration_tv"/>
 
 
     <TextView
@@ -40,7 +34,7 @@
             android:paddingVertical="8dp"
             android:text="@string/unknown_duration"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/audio_author_tv"
+            app:layout_constraintTop_toBottomOf="@id/audio_title_tv"
             app:layout_constraintBottom_toTopOf="@id/seekBar"/>
 
     <TextView
@@ -51,7 +45,7 @@
             android:paddingVertical="8dp"
             android:text="@string/unknown_duration"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/audio_author_tv"
+            app:layout_constraintTop_toBottomOf="@id/audio_title_tv"
             app:layout_constraintBottom_toTopOf="@id/seekBar"/>
 
     <SeekBar
