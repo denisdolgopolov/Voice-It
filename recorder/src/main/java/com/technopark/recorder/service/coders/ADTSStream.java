@@ -242,8 +242,7 @@ public class ADTSStream implements PacketStream<ByteBuffer>{
         //no CRC used => no adts_error_check
 
 
-        ByteBuffer headerBuffer = ByteBuffer.wrap(headerADTS);
-        return headerBuffer;
+        return ByteBuffer.wrap(headerADTS);
     }
 
 

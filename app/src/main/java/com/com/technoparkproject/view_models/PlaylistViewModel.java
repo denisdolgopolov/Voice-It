@@ -44,15 +44,4 @@ public class PlaylistViewModel extends AndroidViewModel {
         playerServiceConnection.setCurrentIndex(position);
         playerServiceConnection.mediaController.getTransportControls().play();
     }
-
-    /*
-    public List<Record> getListOfRecordsFromUUIDs(List<String> ListOfUUIDs){
-        List<Record> listOfRecords = new ArrayList<>();
-        for(String UUID: ListOfUUIDs){
-            //listOfRecords.add(TestRecordsRepository.getRecordByUUID(UUID));
-        }
-        return listOfRecords;
-    }
-
-     */
 }
