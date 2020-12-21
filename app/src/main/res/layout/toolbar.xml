@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:background="@drawable/ic_cancel"
-            android:onClick="onClickTickOrCancelButton"/>
+            android:onClick="onClickCancelButton"/>
 
     <ImageButton
             android:id="@+id/toolbar_tick_button"
@@ -46,6 +46,6 @@
             android:layout_gravity="end"
             android:layout_margin="14dp"
             android:background="@drawable/ic_tick"
-            android:onClick="onClickTickOrCancelButton"/>
+            android:onClick="onClickTickButton"/>
 
 </androidx.appcompat.widget.Toolbar>
