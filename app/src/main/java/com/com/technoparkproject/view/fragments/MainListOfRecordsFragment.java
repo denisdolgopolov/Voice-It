@@ -3,7 +3,6 @@ package com.com.technoparkproject.view.fragments;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.TestErrorShower;
-import com.com.technoparkproject.broadcasts.BroadcastUpdateListRecordListener;
 import com.com.technoparkproject.broadcasts.BroadcastUpdateListRecords;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
@@ -66,25 +63,17 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
-        viewModel.getTopicRecords().observe(getViewLifecycleOwner(), new Observer<ArrayMap<Topic, List<Record>>>() {
-            @Override
-            public void onChanged(ArrayMap<Topic, List<Record>> topicRecs) {
-                List<String> topicNames = new ArrayList<>();
-                for (Topic topic : topicRecs.keySet()){
-                    topicNames.add(topic.name);
-                }
-                setAutoCompleteValues(topicNames);
-                adapter.setItems(topicRecs);
+        viewModel.getTopicRecords().observe(getViewLifecycleOwner(), topicRecs -> {
+            List<String> topicNames = new ArrayList<>();
+            for (Topic topic : topicRecs.keySet()){
+                topicNames.add(topic.name);
             }
+            setAutoCompleteValues(topicNames);
+            adapter.setItems(topicRecs);
         });
 
         viewModel.setSearchingInput(searchingField);
-        viewModel.getSearchingValue().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                adapter.filterItemsByTopicName(s);
-            }
-        });
+        viewModel.getSearchingValue().observe(getViewLifecycleOwner(), s -> adapter.filterItemsByTopicName(s));
     }
 
     private void setAutoCompleteValues(List<String> names) {
@@ -109,20 +98,12 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                 .inflate(R.layout.mlr_bottom_sheet_record_functions, null);
         dialog.setContentView(bottomSheetView);
         bottomSheetView.findViewById(R.id.mlr_add_to_queue)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        viewModel.addToPlaylistClicked(record);
-                        dialog.dismiss();
-                    }
+                .setOnClickListener(v -> {
+                    viewModel.addToPlaylistClicked(record);
+                    dialog.dismiss();
                 });
         bottomSheetView.findViewById(R.id.mlr_download)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        TestErrorShower.showErrorDevelopment(getContext());
-                    }
-                });
+                .setOnClickListener(v -> TestErrorShower.showErrorDevelopment(getContext()));
         dialog.show();
     }
 
@@ -139,16 +120,9 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     @Override
     public void onResume() {
         super.onResume();
-      
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
         getActivity().registerReceiver(receiverUpdateList, receiverUpdateList.getIntentFilter());
-        receiverUpdateList.setListener(new BroadcastUpdateListRecordListener() {
-            @Override
-            public void onUpdate() {
-                viewModel.queryRecordTopics();
-            }
-        });
+        receiverUpdateList.setListener(() -> viewModel.queryRecordTopics());
     }
 
     @Override

@@ -69,7 +69,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     public void itemClicked(Record record) {
         playerServiceConnection.clearPlaylist();
         int currentIndex = 0;
-        ArrayMap<Topic, List<Record>> list = records.getValue();
+        ArrayMap<Topic, List<Record>> list = topicRecords.getValue();
         for (int i = 0; i < list.size(); i++) {
             for (int g = 0; g < list.valueAt(i).size(); g++) {
                 Record currentRecord = list.valueAt(i).get(g);
@@ -80,22 +80,13 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
             }
             currentIndex++;
         }
-        /*for (Topic topic : topics.getValue()) {
-            for (Record recordInTopic : records.getValue().get(topic)) {
-                playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(recordInTopic));
-                if (recordInTopic.equals(record)) {
-                    playerServiceConnection.setCurrentIndex(currentIndex);
-                }
-            }
-            currentIndex++;
-        }*/
         playerServiceConnection.mediaController.getTransportControls().play();
     }
 
     public MainListOfRecordsViewModel(@NonNull Application application) {
         super(application);
 
-        this.playerServiceConnection = ((VoiceItApplication) application).playerServiceConnection;
+        this.playerServiceConnection = ((VoiceItApplication) application).getPlayerServiceConnection();
         topicRecords = new MediatorLiveData<>();
         topicRecords.setValue(new ArrayMap<>());
         queryRecordTopics();

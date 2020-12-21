@@ -2,6 +2,7 @@ package com.com.technoparkproject.repo;
 
 import android.content.Context;
 import android.util.ArrayMap;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -60,6 +61,7 @@ public class AppRepoImpl implements AppRepo{
         new FirebaseLoader().getFirst(FirebaseCollections.Topics, new FirebaseGetListener<FirebaseModel>() {
             @Override
             public void onFailure(String error) {
+                //
             }
             @Override
             public void onGet(FirebaseModel item) {
@@ -128,12 +130,10 @@ public class AppRepoImpl implements AppRepo{
 
                         @Override
                         public void onGet(List<FirebaseRecord> item) {
-                            if (item.size() == 0) {
-                                return;
-                            }
                             List<Record> records = new FirebaseConverter().toRecordList(item);
                             topicRecords.put(topic,records);
-                            if (topicRecords.size() == topics.size()){
+                            topicRecords.size();
+                            if (topicRecords.size() == topics.size()) {
                                 topicRecordsData.postValue(topicRecords);
                             }
                             updateRecordsCache(topicRecords.values());
