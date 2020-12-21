@@ -25,7 +25,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     PlayerServiceConnection playerServiceConnection;
     private final MediatorLiveData<ArrayMap<Topic, List<Record>>> topicRecords;
     private final MutableLiveData<String> searchingValue = new MutableLiveData<>();
-    public MutableLiveData<String> nowPlayingRecordUUID;
+    public MutableLiveData<String> nowPlayingRecordUUID = new MediatorLiveData<>();
 
     public LiveData<ArrayMap<Topic, List<Record>>> getTopicRecords() {
         return topicRecords;
