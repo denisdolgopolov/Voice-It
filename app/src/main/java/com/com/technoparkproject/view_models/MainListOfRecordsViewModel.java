@@ -18,6 +18,8 @@ import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.repo.AppRepoImpl;
 import com.example.player.PlayerServiceConnection;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -32,7 +34,12 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     }
 
     public void queryRecordTopics(){
-        LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl.getAppRepo(getApplication()).queryAllTopicRecords();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userUUID = "randomUUID";
+        if (user != null) {
+            userUUID = user.getUid();
+        }
+        LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl.getAppRepo(getApplication()).queryAllTopicRecordsByUser(userUUID);
         topicRecords.addSource(repoRecords, topicRecs -> {
             topicRecords.setValue(topicRecs);
             topicRecords.removeSource(repoRecords);

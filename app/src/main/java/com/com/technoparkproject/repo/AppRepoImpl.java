@@ -18,6 +18,7 @@ import com.technopark.room.db.AppRoomDatabase;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -171,7 +172,6 @@ public class AppRepoImpl implements AppRepo{
                         @Override
                         public void onFailure(String error) {
                         }
-
                         @Override
                         public void onGet(List<FirebaseRecord> item) {
                             List<Record> records = new FirebaseConverter().toRecordList(item);
@@ -195,5 +195,77 @@ public class AppRepoImpl implements AppRepo{
 
     }
 
+    public LiveData<ArrayMap<Topic, List<Record>>> queryAllTopicRecordsByUser(String userUUID) {
+        testOnline();
+        MediatorLiveData<ArrayMap<Topic,List<Record>>> topicRecords = new MediatorLiveData<>();
+        topicRecords.addSource(isOnline, online -> {
+            if (online){
+                addSingleSource(topicRecords,queryOnlineAllTopicRecordsByUser(userUUID));
+            }
+            else {
+                addSingleSource(topicRecords,queryCacheAllTopicRecordsByUser(userUUID));
+            }
+            topicRecords.removeSource(isOnline);
+        });
+        return topicRecords;
+    }
+
+    private LiveData<ArrayMap<Topic,List<Record>>> queryOnlineAllTopicRecordsByUser(String userUUID){
+        MutableLiveData<ArrayMap<Topic,List<Record>>> topicRecordsData = new MutableLiveData<>();
+        mNetworkIO.execute(() -> new FirebaseLoader().getAll(FirebaseCollections.Topics, new FirebaseGetListListener<FirebaseTopic>() {
+                    @Override
+                    public void onFailure(String error) {
+                    }
+
+                    @Override
+                    public void onGet(List<FirebaseTopic> item) {
+                        if (item.size() == 0) {
+                            return;
+                        }
+                        List<Topic> topics = new FirebaseConverter().toTopicList(item);
+                        mDiskIO.execute(() -> mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics)));
+                        queryOnlineRecordsByUser(topicRecordsData,topics, userUUID);
+                    }
+                })
+        );
+        return topicRecordsData;
+    }
+
+    private void queryOnlineRecordsByUser(MutableLiveData<ArrayMap<Topic, List<Record>>> topicRecordsData,
+                                          List<Topic> topics,
+                                          String userUUID) {
+        ArrayMap<Topic,List<Record>> topicRecords = new ArrayMap<>();
+        FirebaseLoader firebaseLoader = new FirebaseLoader();
+        ListIterator<Topic> topicsIter = topics.listIterator();
+        while (topicsIter.hasNext()){
+            int index = topicsIter.nextIndex();
+            Topic topic = topicsIter.next();
+            FirebaseGetListListener<FirebaseRecord> recordsListener = new FirebaseGetListListener<FirebaseRecord>() {
+                @Override
+                public void onFailure(String error) {
+                }
+
+                @Override
+                public void onGet(List<FirebaseRecord> item) {
+                    if (item.isEmpty())
+                        return;
+                    List<Record> records = new FirebaseConverter().toRecordList(item);
+                    topicRecords.put(topic, records);
+                    topicRecords.size();
+                    if (index == topics.size()-1) {
+                        topicRecordsData.postValue(topicRecords);
+                        updateRecordsCache(topicRecords.values());
+                    }
+                }
+            };
+            firebaseLoader.getAllByUser(FirebaseCollections.Topics, topic.uuid,
+                    userUUID,recordsListener);
+        }
+    }
+
+    private LiveData<ArrayMap<Topic,List<Record>>> queryCacheAllTopicRecordsByUser(String userUUID){
+        return Transformations.map(mAppDb.appDao().getAllTopicRecordsByUser(userUUID),
+                FromRoomConverter::toTopicRecords);
+    }
 
 }

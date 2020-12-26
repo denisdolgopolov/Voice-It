@@ -151,6 +151,20 @@ public class FirebaseLoader {
                 .addOnFailureListener(getListOnFailureListener(listener));
     }
 
+    public <T extends FirebaseModel> void getAllByUser(final FirebaseCollections parentType,
+                                                       final String parentUUID,
+                                                       final String userUUID,
+                                                       final FirebaseGetListListener<T> listener) {
+        String key = getKeyByParentType(parentType);
+        String userKey = getKeyByParentType(FirebaseCollections.Records);
+        db.collection(FirebaseCollections.Records.toString())
+                .whereEqualTo(key, parentUUID)
+                .whereEqualTo(userKey, userUUID)
+                .get()
+                .addOnCompleteListener(getListOnCompleteListener(listener, FirebaseCollections.Records))
+                .addOnFailureListener(getListOnFailureListener(listener));
+    }
+
 
     private <T extends FirebaseModel> OnCompleteListener<QuerySnapshot>
     getListOnCompleteListener(final FirebaseGetListListener<T> listener,

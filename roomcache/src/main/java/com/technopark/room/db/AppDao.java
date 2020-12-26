@@ -31,4 +31,8 @@ public interface AppDao {
     @Transaction
     @Query("SELECT * FROM Topic")
     LiveData<List<TopicRecords>> getAllTopicRecords();
+
+    @Transaction
+    @Query("SELECT * FROM Topic INNER JOIN Record WHERE userUUID=:userUUID")
+    LiveData<List<TopicRecords>> getAllTopicRecordsByUser(String userUUID);
 }
