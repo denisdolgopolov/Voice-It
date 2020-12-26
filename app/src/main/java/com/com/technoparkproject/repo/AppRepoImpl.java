@@ -78,6 +78,47 @@ public class AppRepoImpl implements AppRepo{
         });
     }
 
+    public LiveData<List<Topic>> queryAllTopics() {
+        testOnline();
+        MediatorLiveData<List<Topic>> topicsData = new MediatorLiveData<>();
+        topicsData.addSource(isOnline, online -> {
+            if (online){
+                addSingleSource(topicsData,queryOnlineAllTopics());
+            }
+            else {
+                addSingleSource(topicsData,queryCacheAllTopics());
+            }
+            topicsData.removeSource(isOnline);
+        });
+        return topicsData;
+    }
+
+    private LiveData<List<Topic>> queryCacheAllTopics(){
+        return Transformations.map(mAppDb.appDao().getAllTopics(),
+                FromRoomConverter::toTopicList);
+    }
+
+    private LiveData<List<Topic>> queryOnlineAllTopics() {
+        MutableLiveData<List<Topic>> topicsData = new MutableLiveData<>();
+        mNetworkIO.execute(() -> new FirebaseLoader().getAll(FirebaseCollections.Topics, new FirebaseGetListListener<FirebaseTopic>() {
+            @Override
+            public void onFailure(String error) {
+            }
+
+            @Override
+            public void onGet(List<FirebaseTopic> item) {
+                if (item.size() == 0) {
+                    return;
+                }
+                List<Topic> topics = new FirebaseConverter().toTopicList(item);
+                topicsData.postValue(topics);
+                mDiskIO.execute(() -> mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics)));
+            }
+        }));
+        return topicsData;
+    }
+
+
     public LiveData<ArrayMap<Topic,List<Record>>> queryAllTopicRecords(){
         testOnline();
         MediatorLiveData<ArrayMap<Topic,List<Record>>> topicRecords = new MediatorLiveData<>();

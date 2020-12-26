@@ -11,5 +11,6 @@ import java.util.List;
 
 public interface AppRepo {
     LiveData<ArrayMap<Topic, List<Record>>> queryAllTopicRecords();
+    LiveData<List<Topic>> queryAllTopics();
 }
 
