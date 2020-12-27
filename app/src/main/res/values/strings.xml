@@ -89,4 +89,15 @@
     <string name="s7">Successfully logout</string>
     <string name="s8">Sign up fail!</string>
     <string name="s9">Successfully registered</string>
+    <string name="go_to_account">Перейти на аккаунт</string>
+    <string name="fragment_another_account_name">another_account</string>
+    <string name="subscribe">Подписаться</string>
+    <string name="tv_change_email">изменить e-mail</string>
+    <string name="et_enter_new_email">Введите новый e-mail</string>
+    <string name="fragment_email_name">email</string>
+    <string name="toolbar_email_text">Изменить e-mail</string>
+    <string name="enter_your_new_email">Введите новый e-mail!</string>
+    <string name="email_update">E-mail successfully updated</string>
+    <string name="username_updated">UserName successfully updated!</string>
+    <string name="error_username_updated">Error updating userame</string>
 </resources>
