@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +21,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.com.technoparkproject.R;
+import com.com.technoparkproject.view.fragments.AnotherAccountFragment;
+import com.com.technoparkproject.view.fragments.EmailFragment;
 import com.com.technoparkproject.view.fragments.LanguageFragment;
 import com.com.technoparkproject.view.fragments.LoginFragment;
 import com.com.technoparkproject.view.fragments.MainListOfRecordsFragment;
@@ -32,19 +34,29 @@ import com.com.technoparkproject.view.fragments.RegistrationFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.com.technoparkproject.view.fragments.StartFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.technopark.recorder.service.RecordIntentConstants;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import voice.it.firebaseloadermodule.listeners.FirebaseGetListener;
 
 public class MainActivity extends AppCompatActivity {
 
     private String currentFragment = null;
     private String userName = null;
+    private String anotherAccountName = null;
 
     private static final String CURRENT_FRAGMENT = "CURRENT FRAGMENT";
 
@@ -58,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText editTextNewPassword;
     private EditText editTextRepeatNewPassword;
 
+    private EditText editTextNewUsername;
+    private EditText editTextNewEmail;
+
     private static final int TOOLBAR_HOME_TEXT = R.string.toolbar_home_text;
     private static final int TOOLBAR_PLAYLIST_TEXT = R.string.toolbar_playlist_text;
     private static final int TOOLBAR_RECORD_TEXT = R.string.toolbar_record_text;
@@ -66,24 +81,29 @@ public class MainActivity extends AppCompatActivity {
     private static final int TOOLBAR_LANGUAGE_TEXT = R.string.toolbar_language_text;
     private static final int TOOLBAR_REGISTRATION_TEXT = R.string.toolbar_register_text;
     private static final int TOOLBAR_LOGIN_TEXT = R.string.toolbar_login_text;
+    private static final int TOOLBAR_EMAIL_TEXT = R.string.toolbar_email_text;
 
     private static final int FRAGMENT_HOME_NAME = R.string.fragment_home_name;
     private static final int FRAGMENT_PLAYLIST_NAME = R.string.fragment_playlist_name;
     private static final int FRAGMENT_RECORD_NAME = R.string.fragment_record_name;
     private static final int FRAGMENT_SETTINGS_NAME = R.string.fragment_settings_name;
     private static final int FRAGMENT_PERSONAL_PAGE_NAME = R.string.fragment_personal_page_name;
+    private static final int FRAGMENT_EMAIL_NAME = R.string.fragment_email_name;
     private static final int FRAGMENT_PASSWORD_NAME = R.string.fragment_password_name;
     private static final int FRAGMENT_LANGUAGE_NAME = R.string.fragment_language_name;
     private static final int FRAGMENT_REGISTRATION_NAME = R.string.fragment_registration_name;
     private static final int FRAGMENT_START_NAME = R.string.fragment_start_name;
     private static final int FRAGMENT_LOGIN_NAME = R.string.fragment_login_name;
+    private static final int FRAGMENT_ANOTHER_ACCOUNT_NAME = R.string.fragment_another_account_name;
 
     BottomNavigationView bottomNavigation;
-
+    FirebaseFirestore dataBase;
 
     private Toolbar toolbar;
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
+
+    private final String TAG = "TAG";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mAuth = FirebaseAuth.getInstance();
+        dataBase = FirebaseFirestore.getInstance();
 
         if (savedInstanceState != null) {
             currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
@@ -107,11 +128,63 @@ public class MainActivity extends AppCompatActivity {
         if (mAuth.getCurrentUser() == null) {
             firstEnterInApp();
         } else {
-            userName = getUsername();
             if (currentFragment == null) {
                 enterToApp();
             }
         }
+    }
+
+    public void onClickGoToAccount(String userUUID) {
+        currentFragment = getString(FRAGMENT_ANOTHER_ACCOUNT_NAME);
+        AnotherAccountFragment anotherAccountFragment = new AnotherAccountFragment();
+        loadFragment(anotherAccountFragment, currentFragment);
+        setUserName(userUUID, listener);
+    }
+
+    private void setUserName(String userUUID, FirebaseGetListener<String> listener) {
+        DocumentReference docRef = dataBase.collection("users").document(userUUID);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        userName = document.getString("userName");
+                        listener.onGet(userName);
+                    } else {
+                        Log.d(TAG, "No such document");
+                        listener.onFailure("No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    private final FirebaseGetListener<String> listener = new FirebaseGetListener<String>() {
+        @Override
+        public void onFailure(String error) {
+            Log.d(TAG, error);
+        }
+
+        @Override
+        public void onGet(String item) {
+            TextView toolbarTitleView = findViewById(R.id.toolbar_title);
+            if (currentFragment.equals(getString(FRAGMENT_PERSONAL_PAGE_NAME))) {
+                userName = item;
+                toolbarTitleView.setText(userName);
+            }
+            else if (currentFragment.equals(getString(FRAGMENT_ANOTHER_ACCOUNT_NAME))) {
+                anotherAccountName = item;
+                toolbarTitleView.setText(anotherAccountName);
+            }
+        }
+    };
+
+    public String getCurrentUserId() {
+        return mAuth.getCurrentUser().getUid();
     }
 
     private void firstEnterInApp() {
@@ -145,26 +218,47 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean updateEmailOfUser() {
+        String currentPassword = editTextCurrentPassword.getText().toString().trim();
+        String newEmail = editTextNewEmail.getText().toString().trim();
 
-    @SuppressLint("NonConstantResourceId")
-    public void onClickCreateAccountOrLoginButton(View view) {
-        switch (view.getId()) {
-            case R.id.btn_create_account:
-                progressDialog = new ProgressDialog(this);
-                Button buttonRegisterUser = findViewById(R.id.btn_create_account);
-                editTextEmailToRegister = findViewById(R.id.registration_email);
-                editTextPasswordToRegister = findViewById(R.id.registration_password);
-                registerUser();
-                break;
-
-            case R.id.btn_login:
-                progressDialog = new ProgressDialog(this);
-                Button buttonLoginUser = findViewById(R.id.btn_login);
-                editTextEmailToLogin = findViewById(R.id.login_email);
-                editTextPasswordToLogin = findViewById(R.id.login_password);
-                loginUser();
-                break;
+        if (newEmail.isEmpty()) {
+            editTextNewPassword.setError(getString(R.string.enter_your_new_email));
+            editTextNewPassword.requestFocus();
+            return false;
         }
+
+        if (currentPassword.isEmpty()) {
+            editTextCurrentPassword.setError(getString(R.string.enter_your_current_password));
+            editTextCurrentPassword.requestFocus();
+            return false;
+        }
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userEmail = user.getEmail();
+
+        AuthCredential credential = EmailAuthProvider.getCredential(userEmail, currentPassword);
+
+        progressDialog.setMessage(getString(R.string.please_wait));
+        progressDialog.show();
+        progressDialog.setCanceledOnTouchOutside(false);
+
+        user.reauthenticate(credential).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Toast.makeText(MainActivity.this, getString(R.string.email_update), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, getString(R.string.error_password), Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else {
+                Toast.makeText(MainActivity.this, getString(R.string.error_auth), Toast.LENGTH_LONG).show();
+            }
+            progressDialog.dismiss();
+        });
+
+        return true;
     }
 
     private boolean updatePasswordOfUser() {
@@ -243,30 +337,17 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
 
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    userName = getUsername();
-                    Toast.makeText(MainActivity.this, getString(R.string.s1), Toast.LENGTH_LONG).show();
-                    clearBackStack();
-                    enterToApp();
-                } else {
-                    Toast.makeText(MainActivity.this,  getString(R.string.s2), Toast.LENGTH_LONG).show();
-                }
-                progressDialog.dismiss();
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                setUserName(getCurrentUserId(), listener);
+                Toast.makeText(MainActivity.this, getString(R.string.s1), Toast.LENGTH_LONG).show();
+                clearBackStack();
+                enterToApp();
+            } else {
+                Toast.makeText(MainActivity.this, getString(R.string.s2), Toast.LENGTH_LONG).show();
             }
+            progressDialog.dismiss();
         });
-    }
-
-    private String getUsername() {
-        String username = mAuth.getCurrentUser().getEmail();
-        for (int i = 0; i < username.length(); i++) {
-            if (username.charAt(i) == '@') {
-                username = username.substring(0, i);
-            }
-        }
-        return username;
     }
 
     private void registerUser() {
@@ -301,20 +382,34 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
 
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    userName = getUsername();
-                    Toast.makeText(MainActivity.this, R.string.s9, Toast.LENGTH_LONG).show();
-                    clearBackStack();
-                    enterToApp();
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(MainActivity.this, R.string.s9, Toast.LENGTH_LONG).show();
+                clearBackStack();
+                enterToApp();
 
-                } else {
-                    Toast.makeText(MainActivity.this, R.string.s8, Toast.LENGTH_LONG).show();
-                }
-                progressDialog.dismiss();
+                Map<String, Object> userData = new HashMap<>();
+                userData.put("userName", userName);
+                userData.put("userAuthUUID", getCurrentUserId());
+                dataBase.collection("users").document(getCurrentUserId())
+                        .set(userData)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully written!");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error writing document", e);
+                            }
+                        });
+                setUserName(getCurrentUserId(), listener);
+            } else {
+                Toast.makeText(MainActivity.this, R.string.s8, Toast.LENGTH_LONG).show();
             }
+            progressDialog.dismiss();
         });
     }
 
@@ -323,6 +418,27 @@ public class MainActivity extends AppCompatActivity {
         mAuth.signOut();
         clearBackStack();
         firstEnterInApp();
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    public void onClickCreateAccountOrLoginButton(View view) {
+        switch (view.getId()) {
+            case R.id.btn_create_account:
+                progressDialog = new ProgressDialog(this);
+                Button buttonRegisterUser = findViewById(R.id.btn_create_account);
+                editTextEmailToRegister = findViewById(R.id.registration_email);
+                editTextPasswordToRegister = findViewById(R.id.registration_password);
+                registerUser();
+                break;
+
+            case R.id.btn_login:
+                progressDialog = new ProgressDialog(this);
+                Button buttonLoginUser = findViewById(R.id.btn_login);
+                editTextEmailToLogin = findViewById(R.id.login_email);
+                editTextPasswordToLogin = findViewById(R.id.login_password);
+                loginUser();
+                break;
+        }
     }
 
     public void onClickLogoutButton(View view) {
@@ -339,6 +455,7 @@ public class MainActivity extends AppCompatActivity {
                 currentFragment = getString(FRAGMENT_REGISTRATION_NAME);
                 loadFragment(registrationFragment, currentFragment);
                 break;
+
             case R.id.btn_login:
                 LoginFragment loginFragment = new LoginFragment();
                 currentFragment = getString(FRAGMENT_LOGIN_NAME);
@@ -349,17 +466,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("NonConstantResourceId")
-    public void onClickChangePasswordOrLanguageButton(View view) {
+    public void onClickChangePasswordOrLanguageOrEmailButton(View view) {
         switch (view.getId()) {
             case R.id.btn_change_password:
                 PasswordFragment changePasswordFragment = new PasswordFragment();
                 currentFragment = getString(FRAGMENT_PASSWORD_NAME);
                 loadFragment(changePasswordFragment, currentFragment);
                 break;
+
             case R.id.btn_change_language:
                 LanguageFragment changeLanguageFragment = new LanguageFragment();
                 currentFragment = getString(FRAGMENT_LANGUAGE_NAME);
                 loadFragment(changeLanguageFragment, currentFragment);
+                break;
+
+            case R.id.btn_change_email:
+                EmailFragment changeEmailFragment = new EmailFragment();
+                currentFragment = getString(FRAGMENT_EMAIL_NAME);
+                loadFragment(changeEmailFragment, currentFragment);
                 break;
         }
     }
@@ -373,7 +497,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickCancelButton(View view) {
-        if (currentFragment.equals(getString(FRAGMENT_PASSWORD_NAME)) || currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
+        if (currentFragment.equals(getString(FRAGMENT_PASSWORD_NAME)) || currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME)) || currentFragment.equals(getString(FRAGMENT_EMAIL_NAME))) {
             currentFragment = getString(FRAGMENT_SETTINGS_NAME);
             undoFragment();
         }
@@ -389,9 +513,42 @@ public class MainActivity extends AppCompatActivity {
                 currentFragment = getString(FRAGMENT_SETTINGS_NAME);
                 undoFragment();
             }
-        } else if (currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
+        }
+        else if (currentFragment.equals(getString(FRAGMENT_EMAIL_NAME))) {
+            progressDialog = new ProgressDialog(this);
+            editTextCurrentPassword = findViewById(R.id.et_current_password);
+            editTextNewEmail = findViewById(R.id.et_enter_new_email);
+            if (updateEmailOfUser()) {
+                currentFragment = getString(FRAGMENT_SETTINGS_NAME);
+                undoFragment();
+            }
+        }
+        else if (currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
             currentFragment = getString(FRAGMENT_SETTINGS_NAME);
             undoFragment();
+        }
+        else if (currentFragment.equals(getString(FRAGMENT_SETTINGS_NAME))) {
+            editTextNewUsername = findViewById(R.id.et_new_nickname);
+            String newUsername = editTextNewUsername.getText().toString().trim();
+            DocumentReference currentUserReference = dataBase.collection("users").document(getCurrentUserId());
+
+            currentUserReference
+                    .update("userName", newUsername)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            userName = newUsername;
+                            editTextNewUsername.setText("");
+                            Toast.makeText(MainActivity.this, R.string.username_updated, Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error updating userName", e);
+                            Toast.makeText(MainActivity.this, R.string.error_username_updated, Toast.LENGTH_LONG).show();
+                        }
+                    });
         }
     }
 
@@ -422,8 +579,13 @@ public class MainActivity extends AppCompatActivity {
                 toolbarTickButton.setVisibility(View.VISIBLE);
                 break;
             case "personal_page":
-                toolbarTitleView.setText(userName);
+                setUserName(getCurrentUserId(), listener);
                 toolbarLogoutButton.setVisibility(View.VISIBLE);
+                break;
+            case "email":
+                toolbarTitleView.setText(TOOLBAR_EMAIL_TEXT);
+                toolbarCancelButton.setVisibility(View.VISIBLE);
+                toolbarTickButton.setVisibility(View.VISIBLE);
                 break;
             case "language":
                 toolbarTitleView.setText(TOOLBAR_LANGUAGE_TEXT);
@@ -443,47 +605,47 @@ public class MainActivity extends AppCompatActivity {
                 toolbarTitleView.setText(TOOLBAR_LOGIN_TEXT);
                 toolbarBackButton.setVisibility(View.VISIBLE);
                 break;
+            case "another_account":
+                toolbarTitleView.setText(anotherAccountName);
+                break;
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     private final BottomNavigationView.OnNavigationItemSelectedListener navigationListener =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @SuppressLint("NonConstantResourceId")
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    Fragment selectedFragment = null;
-                    String nameSelectedFragment = null;
+            item -> {
+                Fragment selectedFragment = null;
+                String nameSelectedFragment = null;
 
-                    switch (item.getItemId()) {
-                        case R.id.nav_home:
-                            selectedFragment = new MainListOfRecordsFragment();
-                            nameSelectedFragment = getResources().getString(FRAGMENT_HOME_NAME);
-                            break;
-                        case R.id.nav_playlist:
-                            selectedFragment = new PlaylistFragment();
-                            nameSelectedFragment = getResources().getString(FRAGMENT_PLAYLIST_NAME);
-                            break;
-                        case R.id.nav_record:
-                            selectedFragment = new RecordFragment();
-                            nameSelectedFragment = getResources().getString(FRAGMENT_RECORD_NAME);
-                            break;
-                        case R.id.nav_settings:
-                            selectedFragment = new SettingsFragment();
-                            nameSelectedFragment = getResources().getString(FRAGMENT_SETTINGS_NAME);
-                            break;
-                        case R.id.nav_personal_page:
-                            selectedFragment = new PersonalPageFragment();
-                            nameSelectedFragment = getResources().getString(FRAGMENT_PERSONAL_PAGE_NAME);
-                            break;
-                    }
-
-                    if (currentFragment == null || !currentFragment.equals(nameSelectedFragment)) {
-                        assert selectedFragment != null;
-                        loadFragment(selectedFragment, currentFragment);
-                        currentFragment = nameSelectedFragment;
-                    }
-                    return true;
+                switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        selectedFragment = new MainListOfRecordsFragment();
+                        nameSelectedFragment = getResources().getString(FRAGMENT_HOME_NAME);
+                        break;
+                    case R.id.nav_playlist:
+                        selectedFragment = new PlaylistFragment();
+                        nameSelectedFragment = getResources().getString(FRAGMENT_PLAYLIST_NAME);
+                        break;
+                    case R.id.nav_record:
+                        selectedFragment = new RecordFragment();
+                        nameSelectedFragment = getResources().getString(FRAGMENT_RECORD_NAME);
+                        break;
+                    case R.id.nav_settings:
+                        selectedFragment = new SettingsFragment();
+                        nameSelectedFragment = getResources().getString(FRAGMENT_SETTINGS_NAME);
+                        break;
+                    case R.id.nav_personal_page:
+                        selectedFragment = new PersonalPageFragment();
+                        nameSelectedFragment = getResources().getString(FRAGMENT_PERSONAL_PAGE_NAME);
+                        break;
                 }
+
+                if (currentFragment == null || !currentFragment.equals(nameSelectedFragment)) {
+                    assert selectedFragment != null;
+                    loadFragment(selectedFragment, currentFragment);
+                    currentFragment = nameSelectedFragment;
+                }
+                return true;
             };
 
     @Override
