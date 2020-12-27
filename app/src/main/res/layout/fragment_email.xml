@@ -11,12 +11,14 @@
     <EditText
             android:id="@+id/et_enter_new_email"
             style="@style/Button"
+            android:textColor="@color/text_black"
             android:hint="@string/et_enter_new_email"
             android:inputType="textEmailAddress" />
 
     <EditText
             android:id="@+id/et_current_password"
             style="@style/Button"
+            android:textColor="@color/text_black"
             android:hint="@string/et_enter_current_password"
             android:inputType="textPassword" />
 
