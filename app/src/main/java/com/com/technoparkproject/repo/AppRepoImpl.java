@@ -195,22 +195,22 @@ public class AppRepoImpl implements AppRepo{
 
     }
 
-    public LiveData<ArrayMap<Topic, List<Record>>> queryAllTopicRecordsByUser(String userUUID) {
+    public LiveData<ArrayMap<Topic, List<Record>>> queryAllTopicRecordsByUser(String userUUID, boolean exceptUser) {
         testOnline();
         MediatorLiveData<ArrayMap<Topic,List<Record>>> topicRecords = new MediatorLiveData<>();
         topicRecords.addSource(isOnline, online -> {
             if (online){
-                addSingleSource(topicRecords,queryOnlineAllTopicRecordsByUser(userUUID));
+                addSingleSource(topicRecords,queryOnlineAllTopicRecordsByUser(userUUID,exceptUser));
             }
             else {
-                addSingleSource(topicRecords,queryCacheAllTopicRecordsByUser(userUUID));
+                addSingleSource(topicRecords,queryCacheAllTopicRecordsByUser(userUUID,exceptUser));
             }
             topicRecords.removeSource(isOnline);
         });
         return topicRecords;
     }
 
-    private LiveData<ArrayMap<Topic,List<Record>>> queryOnlineAllTopicRecordsByUser(String userUUID){
+    private LiveData<ArrayMap<Topic,List<Record>>> queryOnlineAllTopicRecordsByUser(String userUUID,boolean exceptUser){
         MutableLiveData<ArrayMap<Topic,List<Record>>> topicRecordsData = new MutableLiveData<>();
         mNetworkIO.execute(() -> new FirebaseLoader().getAll(FirebaseCollections.Topics, new FirebaseGetListListener<FirebaseTopic>() {
                     @Override
@@ -224,7 +224,7 @@ public class AppRepoImpl implements AppRepo{
                         }
                         List<Topic> topics = new FirebaseConverter().toTopicList(item);
                         mDiskIO.execute(() -> mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics)));
-                        queryOnlineRecordsByUser(topicRecordsData,topics, userUUID);
+                        queryOnlineRecordsByUser(topicRecordsData,topics, userUUID, exceptUser);
                     }
                 })
         );
@@ -233,7 +233,8 @@ public class AppRepoImpl implements AppRepo{
 
     private void queryOnlineRecordsByUser(MutableLiveData<ArrayMap<Topic, List<Record>>> topicRecordsData,
                                           List<Topic> topics,
-                                          String userUUID) {
+                                          String userUUID,
+                                          boolean exceptUser) {
         ArrayMap<Topic,List<Record>> topicRecords = new ArrayMap<>();
         FirebaseLoader firebaseLoader = new FirebaseLoader();
         ListIterator<Topic> topicsIter = topics.listIterator();
@@ -259,13 +260,17 @@ public class AppRepoImpl implements AppRepo{
                 }
             };
             firebaseLoader.getAllByUser(FirebaseCollections.Topics, topic.uuid,
-                    userUUID,recordsListener);
+                    userUUID,recordsListener,exceptUser);
         }
     }
 
-    private LiveData<ArrayMap<Topic,List<Record>>> queryCacheAllTopicRecordsByUser(String userUUID){
-       return Transformations.map(mAppDb.appDao().getAllTopicRecordsByUser(userUUID),
-          FromRoomConverter::recTopicsToTopicRecords);
+    private LiveData<ArrayMap<Topic,List<Record>>> queryCacheAllTopicRecordsByUser(String userUUID, boolean exceptUser){
+        if (exceptUser)
+            return Transformations.map(mAppDb.appDao().getAllTopicRecordsExceptUser(userUUID),
+                    FromRoomConverter::recTopicsToTopicRecords);
+        else
+           return Transformations.map(mAppDb.appDao().getAllTopicRecordsByUser(userUUID),
+              FromRoomConverter::recTopicsToTopicRecords);
     }
 
 }

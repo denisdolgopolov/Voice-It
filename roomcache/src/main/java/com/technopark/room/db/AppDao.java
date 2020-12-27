@@ -36,4 +36,8 @@ public interface AppDao {
     @Transaction
     @Query("SELECT * FROM Record WHERE userUUID=:userUUID")
     LiveData<List<RecordTopic>> getAllTopicRecordsByUser(String userUUID);
+
+    @Transaction
+    @Query("SELECT * FROM Record WHERE userUUID!=:userUUID")
+    LiveData<List<RecordTopic>> getAllTopicRecordsExceptUser(String userUUID);
 }
