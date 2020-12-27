@@ -137,7 +137,7 @@ public class AppRepoImpl implements AppRepo{
 
     private LiveData<ArrayMap<Topic,List<Record>>> queryCacheAllTopicRecords(){
         return Transformations.map(mAppDb.appDao().getAllTopicRecords(),
-                FromRoomConverter::toTopicRecords);
+                FromRoomConverter::topicRecsToTopicRecords);
     }
 
     private LiveData<ArrayMap<Topic,List<Record>>> queryOnlineAllTopicRecords(){
@@ -264,8 +264,8 @@ public class AppRepoImpl implements AppRepo{
     }
 
     private LiveData<ArrayMap<Topic,List<Record>>> queryCacheAllTopicRecordsByUser(String userUUID){
-        return Transformations.map(mAppDb.appDao().getAllTopicRecordsByUser(userUUID),
-                FromRoomConverter::toTopicRecords);
+       return Transformations.map(mAppDb.appDao().getAllTopicRecordsByUser(userUUID),
+          FromRoomConverter::recTopicsToTopicRecords);
     }
 
 }
