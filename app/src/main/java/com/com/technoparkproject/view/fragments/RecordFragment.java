@@ -63,12 +63,13 @@ public class RecordFragment extends RecorderFragment {
         super.onViewCreated(view, savedInstanceState);
 
         mRecPauseButton = view.findViewById(R.id.record_pause_button);
-        mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_fiber_manual_record_24));
+        mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_round_fiber_manual_record_24));
         mStopButton = view.findViewById(R.id.stop_button);
         mDoneButton = view.findViewById(R.id.done_button);
         mTimeTextView = view.findViewById(R.id.record_time_text);
 
         final RecordViewModel recViewModel = new ViewModelProvider(requireActivity()).get(RecordViewModel.class);
+        recViewModel.setCurrentUserId(((MainActivity) getActivity()).getCurrentUserId());
         mRecPauseButton.setOnClickListener(v -> recViewModel.OnRecPauseClick());
 
         mStopButton.setOnClickListener(v -> recViewModel.onStopClick());
@@ -84,7 +85,7 @@ public class RecordFragment extends RecorderFragment {
             recViewModel.onSaveClick(recName, topicName);
         });
         recViewModel.getNameState().observe(getViewLifecycleOwner(), recTextState -> {
-            switch (recTextState){
+            switch (recTextState) {
                 case INVALID:
                     recNameInput.setErrorEnabled(true);
                     recNameInput.setError(getString(R.string.enter_record_name));
@@ -96,7 +97,7 @@ public class RecordFragment extends RecorderFragment {
             }
         });
         recViewModel.getTopicState().observe(getViewLifecycleOwner(), recTextState -> {
-            switch (recTextState){
+            switch (recTextState) {
                 case INVALID:
                     recTopicInput.setErrorEnabled(true);
                     recTopicInput.setError(getString(R.string.enter_topic));
@@ -109,8 +110,7 @@ public class RecordFragment extends RecorderFragment {
         });
 
 
-        recViewModel.getRecState()
-                .observe(getViewLifecycleOwner(), new MyObserver());
+        recViewModel.getRecState().observe(getViewLifecycleOwner(), new MyObserver());
 
         recViewModel.getRecTime().observe(getViewLifecycleOwner(), sec -> mTimeTextView.setText(DateUtils.formatElapsedTime(sec)));
 
@@ -127,7 +127,7 @@ public class RecordFragment extends RecorderFragment {
         final Snackbar saveSnack = Snackbar
                 .make(view, R.string.cancel_save_record, BaseTransientBottomBar.LENGTH_LONG)
                 .setAction(R.string.cancel, view1 -> recViewModel.dismissRecording());
-        saveSnack.addCallback(new Snackbar.Callback(){
+        saveSnack.addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {
                 super.onDismissed(transientBottomBar, event);
@@ -155,15 +155,15 @@ public class RecordFragment extends RecorderFragment {
     private class MyObserver implements Observer<RecordState> {
         @Override
         public void onChanged(RecordState recordState) {
-            switch (recordState){
-                case INIT:{
+            switch (recordState) {
+                case INIT: {
                     mStopButton.setEnabled(false);
                     mRecPauseButton.setEnabled(true);
                     mDoneButton.setEnabled(false);
                     break;
                 }
-                case RECORDING:{
-                    mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_pause_24));
+                case RECORDING: {
+                    mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_round_pause_24));
                     mStopButton.setEnabled(true);
                     mDoneButton.setEnabled(true);
                     break;
@@ -172,8 +172,8 @@ public class RecordFragment extends RecorderFragment {
                     mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_round_fiber_manual_record_24));
                     break;
                 }
-                case STOP:{
-                    mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(),R.drawable.ic_round_fiber_manual_record_24));
+                case STOP: {
+                    mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_round_fiber_manual_record_24));
                     mStopButton.setEnabled(false);
                     mRecPauseButton.setEnabled(false);
                     break;

@@ -65,7 +65,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
         viewModel.getTopicRecords().observe(getViewLifecycleOwner(), topicRecs -> {
             List<String> topicNames = new ArrayList<>();
-            for (Topic topic : topicRecs.keySet()){
+            for (Topic topic : topicRecs.keySet()) {
                 topicNames.add(topic.name);
             }
             setAutoCompleteValues(topicNames);
@@ -77,7 +77,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void setAutoCompleteValues(List<String> names) {
-        if(getContext() == null) return;
+        if (getContext() == null) return;
         ArrayAdapter adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, names);
         searchingField.setAdapter(adapter);
@@ -90,9 +90,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
     @Override
     public void showRecordMoreFun(final Record record) {
-        if(getContext() == null) return;
+        if (getContext() == null) return;
 
         final Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
+
         @SuppressLint("InflateParams")
         View bottomSheetView = getLayoutInflater()
                 .inflate(R.layout.mlr_bottom_sheet_record_functions, null);
@@ -102,8 +103,11 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                     viewModel.addToPlaylistClicked(record);
                     dialog.dismiss();
                 });
-        bottomSheetView.findViewById(R.id.mlr_download)
-                .setOnClickListener(v -> TestErrorShower.showErrorDevelopment(getContext()));
+        bottomSheetView.findViewById(R.id.mlr_go_to_account)
+                .setOnClickListener(v -> {
+                    ((MainActivity) getActivity()).onClickGoToAccount(record.userUUID);
+                    dialog.dismiss();
+                });
         dialog.show();
     }
 
