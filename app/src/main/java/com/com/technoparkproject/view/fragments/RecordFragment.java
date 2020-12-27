@@ -28,7 +28,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.technopark.recorder.RecordState;
 import com.technopark.recorder.views.RecorderFragment;
 
-import java.util.List;
 
 
 public class RecordFragment extends RecorderFragment {

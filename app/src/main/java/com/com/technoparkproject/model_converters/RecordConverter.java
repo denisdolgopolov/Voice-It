@@ -1,7 +1,5 @@
 package com.com.technoparkproject.model_converters;
 
-import android.util.Log;
-
 import com.com.technoparkproject.models.TopicTypes;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

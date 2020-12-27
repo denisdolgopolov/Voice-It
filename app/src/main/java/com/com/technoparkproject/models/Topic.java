@@ -24,8 +24,8 @@ public final class Topic {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Topic topic = (Topic) o;
-        return uuid.equals(topic.uuid) &&
-                name.equals(topic.name);
+        return uuid.equals(topic.uuid)
+                && name.equals(topic.name);
     }
 
     @Override

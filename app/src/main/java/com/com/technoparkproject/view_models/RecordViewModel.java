@@ -2,7 +2,6 @@ package com.com.technoparkproject.view_models;
 
 import android.app.Application;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -12,9 +11,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
 import com.com.technoparkproject.model_converters.RecordConverter;
-import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
-import com.com.technoparkproject.models.TopicTypes;
 import com.com.technoparkproject.repo.AppRepoImpl;
 import com.technopark.recorder.RecordState;
 import com.technopark.recorder.RecorderApplication;
@@ -25,7 +22,6 @@ import com.technopark.recorder.viewmodels.RecorderViewModel;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
