@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     private RecyclerTopicsWithRecordsAdapter adapter;
     private AutoCompleteTextView searchingField;
     MainListOfRecordsViewModel viewModel;
+    private boolean isReceiverRegistered = false;
 
     private final BroadcastUpdateListRecords receiverUpdateList = new BroadcastUpdateListRecords();
 
@@ -64,6 +66,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
         viewModel.getTopicRecords().observe(getViewLifecycleOwner(), topicRecs -> {
+            if (topicRecs.size() == 0) {
+                Toast.makeText(getContext(), getString(R.string.error_no_connection), Toast.LENGTH_LONG).show();
+                return;
+            }
             List<String> topicNames = new ArrayList<>();
             for (Topic topic : topicRecs.keySet()){
                 topicNames.add(topic.name);
@@ -121,13 +127,15 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     public void onResume() {
         super.onResume();
 
-        getActivity().registerReceiver(receiverUpdateList, receiverUpdateList.getIntentFilter());
+        requireActivity().registerReceiver(receiverUpdateList, receiverUpdateList.getIntentFilter());
         receiverUpdateList.setListener(() -> viewModel.queryRecordTopics());
+        isReceiverRegistered = true;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().unregisterReceiver(receiverUpdateList);
+        if (isReceiverRegistered)
+            getActivity().unregisterReceiver(receiverUpdateList);
     }
 }

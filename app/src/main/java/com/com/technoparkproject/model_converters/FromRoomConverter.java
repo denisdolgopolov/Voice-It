@@ -44,10 +44,26 @@ public final class FromRoomConverter {
         return result;
     }
 
-    public static ArrayMap<Topic,List<Record>> toTopicRecords(List<com.technopark.room.entities.TopicRecords> roomTopicRecords) {
+    public static ArrayMap<Topic,List<Record>> topicRecsToTopicRecords(List<com.technopark.room.entities.TopicRecords> roomTopicRecords) {
         ArrayMap<Topic,List<Record>> topicRecords = new ArrayMap<>();
         for (com.technopark.room.entities.TopicRecords topicRecs: roomTopicRecords) {
             topicRecords.put(toModel(topicRecs.topic),toRecordList(topicRecs.records));
+        }
+        return topicRecords;
+    }
+
+    public static ArrayMap<Topic,List<Record>> recTopicsToTopicRecords(List<com.technopark.room.entities.RecordTopic> roomRecordTopics) {
+        ArrayMap<Topic,List<Record>> topicRecords = new ArrayMap<>();
+        for (com.technopark.room.entities.RecordTopic recordTopic: roomRecordTopics) {
+            Topic topic = toModel(recordTopic.topics.get(0));
+            Record record = toModel(recordTopic.record);
+            if (topicRecords.containsKey(topic))
+                topicRecords.get(topic).add(record);
+            else{
+                ArrayList<Record> records = new ArrayList<>();
+                records.add(record);
+                topicRecords.put(topic,records);
+            }
         }
         return topicRecords;
     }

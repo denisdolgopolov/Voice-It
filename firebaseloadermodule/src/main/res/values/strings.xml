@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_load_ok">Ок</string>
+    <string name="text_load_success">Загрузка завершена</string>
+    <string name="text_load_failed">Загрузка прервалась</string>
+    <string name="text_load_stop">Стоп</string>
+</resources>

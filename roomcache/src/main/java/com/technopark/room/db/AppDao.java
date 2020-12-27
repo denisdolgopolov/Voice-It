@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 
 import com.technopark.room.entities.Record;
+import com.technopark.room.entities.RecordTopic;
 import com.technopark.room.entities.Topic;
 import com.technopark.room.entities.TopicRecords;
 
@@ -31,4 +32,12 @@ public interface AppDao {
     @Transaction
     @Query("SELECT * FROM Topic")
     LiveData<List<TopicRecords>> getAllTopicRecords();
+
+    @Transaction
+    @Query("SELECT * FROM Record WHERE userUUID=:userUUID")
+    LiveData<List<RecordTopic>> getAllTopicRecordsByUser(String userUUID);
+
+    @Transaction
+    @Query("SELECT * FROM Record WHERE userUUID!=:userUUID")
+    LiveData<List<RecordTopic>> getAllTopicRecordsExceptUser(String userUUID);
 }
