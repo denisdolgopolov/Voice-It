@@ -48,7 +48,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.technopark.recorder.service.RecordIntentConstants;
 
 import java.util.HashMap;
-import java.util.Map; 
+import java.util.Map;
 
 import voice.it.firebaseloadermodule.listeners.FirebaseGetListener;
 
@@ -103,8 +103,6 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
 
-    private final String TAG = "TAG";
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,15 +147,13 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         userName = document.getString("userName");
                         listener.onGet(userName);
                     } else {
-                        Log.d(TAG, "No such document");
                         listener.onFailure("No such document");
                     }
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    System.out.println("get failed with " + task.getException());
                 }
             }
         });
@@ -166,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
     private final FirebaseGetListener<String> listener = new FirebaseGetListener<String>() {
         @Override
         public void onFailure(String error) {
-            Log.d(TAG, error);
+            System.out.println(error);
         }
 
         @Override
@@ -175,8 +171,7 @@ public class MainActivity extends AppCompatActivity {
             if (currentFragment.equals(getString(FRAGMENT_PERSONAL_PAGE_NAME))) {
                 userName = item;
                 toolbarTitleView.setText(userName);
-            }
-            else if (currentFragment.equals(getString(FRAGMENT_ANOTHER_ACCOUNT_NAME))) {
+            } else if (currentFragment.equals(getString(FRAGMENT_ANOTHER_ACCOUNT_NAME))) {
                 anotherAccountName = item;
                 toolbarTitleView.setText(anotherAccountName);
             }
@@ -396,13 +391,13 @@ public class MainActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "DocumentSnapshot successfully written!");
+                                System.out.println("DocumentSnapshot successfully written!");
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error writing document", e);
+                                System.out.println("Error writing document " + e);
                             }
                         });
                 setUserName(getCurrentUserId(), listener);
@@ -513,8 +508,7 @@ public class MainActivity extends AppCompatActivity {
                 currentFragment = getString(FRAGMENT_SETTINGS_NAME);
                 undoFragment();
             }
-        }
-        else if (currentFragment.equals(getString(FRAGMENT_EMAIL_NAME))) {
+        } else if (currentFragment.equals(getString(FRAGMENT_EMAIL_NAME))) {
             progressDialog = new ProgressDialog(this);
             editTextCurrentPassword = findViewById(R.id.et_current_password);
             editTextNewEmail = findViewById(R.id.et_enter_new_email);
@@ -522,12 +516,10 @@ public class MainActivity extends AppCompatActivity {
                 currentFragment = getString(FRAGMENT_SETTINGS_NAME);
                 undoFragment();
             }
-        }
-        else if (currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
+        } else if (currentFragment.equals(getString(FRAGMENT_LANGUAGE_NAME))) {
             currentFragment = getString(FRAGMENT_SETTINGS_NAME);
             undoFragment();
-        }
-        else if (currentFragment.equals(getString(FRAGMENT_SETTINGS_NAME))) {
+        } else if (currentFragment.equals(getString(FRAGMENT_SETTINGS_NAME))) {
             editTextNewUsername = findViewById(R.id.et_new_nickname);
             String newUsername = editTextNewUsername.getText().toString().trim();
             DocumentReference currentUserReference = dataBase.collection("users").document(getCurrentUserId());
@@ -545,7 +537,6 @@ public class MainActivity extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error updating userName", e);
                             Toast.makeText(MainActivity.this, R.string.error_username_updated, Toast.LENGTH_LONG).show();
                         }
                     });
