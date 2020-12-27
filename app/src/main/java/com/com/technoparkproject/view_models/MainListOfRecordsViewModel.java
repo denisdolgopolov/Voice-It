@@ -97,7 +97,6 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
 
         this.playerServiceConnection = ((VoiceItApplication) application).getPlayerServiceConnection();
         topicRecords = new MediatorLiveData<>();
-        topicRecords.setValue(new ArrayMap<>());
         queryRecordTopics();
 
         this.nowPlayingRecordUUID = this.playerServiceConnection.nowPlayingRecordUUID;
