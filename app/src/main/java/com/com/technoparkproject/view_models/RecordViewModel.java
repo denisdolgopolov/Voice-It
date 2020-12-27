@@ -12,6 +12,8 @@ import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.model_converters.RecordConverter;
 import com.com.technoparkproject.models.TopicTypes;
+import com.com.technoparkproject.view.activities.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
 import com.technopark.recorder.RecordState;
 import com.technopark.recorder.RecorderApplication;
 import com.technopark.recorder.repository.RecordTopic;
@@ -27,9 +29,12 @@ import voice.it.firebaseloadermodule.FirebaseFileLoader;
 import voice.it.firebaseloadermodule.FirebaseLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseListener;
+import voice.it.firebaseloadermodule.model.FirebaseRecord;
 import voice.it.firebaseloadermodule.model.FirebaseTopic;
 
 public class RecordViewModel extends RecorderViewModel {
+
+    private String currentUserId;
 
     private final RecTimeLimitObserver mRecLimObserver;
 
@@ -40,6 +45,10 @@ public class RecordViewModel extends RecorderViewModel {
                 //make stop progress LiveData, record time limit reached
                 handleStop(false);
         }
+    }
+
+    public void setCurrentUserId(String userId) {
+        currentUserId = userId;
     }
 
     private final MediatorLiveData<RecordState> mRecState;
@@ -106,7 +115,6 @@ public class RecordViewModel extends RecorderViewModel {
 
     }
 
-
     public MediatorLiveData<RecStopState> mRecStopState = new MediatorLiveData<>();
 
     public void onStopClick() {
@@ -131,7 +139,6 @@ public class RecordViewModel extends RecorderViewModel {
         });
     }
 
-
     public void dismissRecording(){
         RecordTopicRepo repo = RecorderApplication.from(getApplication()).getRecordTopicRepo();
         repo.deleteLastRecord();
@@ -147,6 +154,7 @@ public class RecordViewModel extends RecorderViewModel {
             FileInputStream inputStream = new FileInputStream(recTopic.getRecordFile());
             final String recordUUID = UUID.randomUUID().toString();
             final String topicUUID = UUID.randomUUID().toString();
+            final String userUUID = currentUserId;
 
             FirebaseTopic topic = new FirebaseTopic(recTopic.getName(),
                     "randomUUID",
@@ -161,7 +169,7 @@ public class RecordViewModel extends RecorderViewModel {
                             inputStream,
                             FirebaseFileTypes.RECORDS,
                             recTopic.getRecordFile().length(),
-                            RecordConverter.toFirebaseModel(recTopic, recordUUID, topicUUID),
+                            RecordConverter.toFirebaseModel(recTopic, recordUUID, topicUUID, userUUID),
                             new FirebaseListener() {
                                 @Override
                                 public void onSuccess() {
@@ -200,6 +208,7 @@ public class RecordViewModel extends RecorderViewModel {
     public SingleLiveEvent<Void> getSaveEvent() {
         return mSaveEvent;
     }
+
     public void onSaveClick(String recName, String recTopic) {
         if (!isRecTextValid(recName,recTopic)) {
             if (getRecState().getValue() != RecordState.STOP){
