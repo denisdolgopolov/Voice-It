@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -65,6 +66,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
         viewModel.getTopicRecords().observe(getViewLifecycleOwner(), topicRecs -> {
+            if (topicRecs.size() == 0) {
+                Toast.makeText(getContext(), getString(R.string.error_no_connection), Toast.LENGTH_LONG).show();
+                return;
+            }
             List<String> topicNames = new ArrayList<>();
             for (Topic topic : topicRecs.keySet()){
                 topicNames.add(topic.name);
