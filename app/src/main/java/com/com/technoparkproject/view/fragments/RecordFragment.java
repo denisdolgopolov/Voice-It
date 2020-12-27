@@ -5,6 +5,8 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -25,6 +27,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.technopark.recorder.RecordState;
 import com.technopark.recorder.views.RecorderFragment;
+
 
 
 public class RecordFragment extends RecorderFragment {
@@ -76,7 +79,7 @@ public class RecordFragment extends RecorderFragment {
 
 
         final EditText recNameEdit = view.findViewById(R.id.record_name_edit_text);
-        final EditText recTopicEdit = view.findViewById(R.id.topic_edit_text);
+        final AutoCompleteTextView recTopicEdit = view.findViewById(R.id.topic_edit_text);
         final TextInputLayout recNameInput = view.findViewById(R.id.record_name_input_text);
         final TextInputLayout recTopicInput = view.findViewById(R.id.topic_input_text);
         mDoneButton.setOnClickListener(v -> {
@@ -84,6 +87,10 @@ public class RecordFragment extends RecorderFragment {
             String topicName = recTopicEdit.getText().toString();
             recViewModel.onSaveClick(recName, topicName);
         });
+        recViewModel.getTopicNames().observe(getViewLifecycleOwner(),
+                topics -> recTopicEdit.setAdapter(new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                topics)));
         recViewModel.getNameState().observe(getViewLifecycleOwner(), recTextState -> {
             switch (recTextState) {
                 case INVALID:

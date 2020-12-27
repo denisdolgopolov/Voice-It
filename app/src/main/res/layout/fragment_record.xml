@@ -48,9 +48,16 @@
                 app:placeholderText="@string/default_topic_name"
                 style="@style/RecordTextInput">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <!--<com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/topic_edit_text"
-                    style="@style/RecordEditText" />
+                    style="@style/RecordEditText" />-->
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                    android:id="@+id/topic_edit_text"
+                    android:completionThreshold="1"
+                    tools:ignore="LabelFor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/RecordAutoCompleteEditText"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <FrameLayout

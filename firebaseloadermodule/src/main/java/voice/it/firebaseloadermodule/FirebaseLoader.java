@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -149,6 +150,24 @@ public class FirebaseLoader {
                 .get()
                 .addOnCompleteListener(getListOnCompleteListener(listener, FirebaseCollections.Records))
                 .addOnFailureListener(getListOnFailureListener(listener));
+    }
+
+    public <T extends FirebaseModel> void getAllByUser(final FirebaseCollections parentType,
+                                                       final String parentUUID,
+                                                       final String userUUID,
+                                                       final FirebaseGetListListener<T> listener,
+                                                       final boolean exceptUser) {
+        String key = getKeyByParentType(parentType);
+        String userKey = getKeyByParentType(FirebaseCollections.Records);
+        Query query = db.collection(FirebaseCollections.Records.toString())
+                .whereEqualTo(key, parentUUID);
+        if (exceptUser)
+            query = query.whereNotEqualTo(userKey, userUUID);
+        else
+            query = query.whereEqualTo(userKey, userUUID);
+        query.get()
+             .addOnCompleteListener(getListOnCompleteListener(listener, FirebaseCollections.Records))
+             .addOnFailureListener(getListOnFailureListener(listener));
     }
 
 
