@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import voice.it.firebaseloadermodule.FirebaseLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseCollections;
@@ -237,10 +238,8 @@ public class AppRepoImpl implements AppRepo{
                                           boolean exceptUser) {
         ArrayMap<Topic,List<Record>> topicRecords = new ArrayMap<>();
         FirebaseLoader firebaseLoader = new FirebaseLoader();
-        ListIterator<Topic> topicsIter = topics.listIterator();
-        while (topicsIter.hasNext()){
-            int index = topicsIter.nextIndex();
-            Topic topic = topicsIter.next();
+        final AtomicInteger countGetRecords = new AtomicInteger(0);
+        for (Topic topic : topics){
             FirebaseGetListListener<FirebaseRecord> recordsListener = new FirebaseGetListListener<FirebaseRecord>() {
                 @Override
                 public void onFailure(String error) {
@@ -248,12 +247,11 @@ public class AppRepoImpl implements AppRepo{
 
                 @Override
                 public void onGet(List<FirebaseRecord> item) {
-                    if (item.isEmpty())
-                        return;
-                    List<Record> records = new FirebaseConverter().toRecordList(item);
-                    topicRecords.put(topic, records);
-                    topicRecords.size();
-                    if (index == topics.size()-1) {
+                    if (!item.isEmpty()) {
+                        List<Record> records = new FirebaseConverter().toRecordList(item);
+                        topicRecords.put(topic, records);
+                    }
+                    if (countGetRecords.incrementAndGet() == topics.size()) {
                         topicRecordsData.postValue(topicRecords);
                         updateRecordsCache(topicRecords.values());
                     }

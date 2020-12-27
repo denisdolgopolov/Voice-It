@@ -41,7 +41,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
         }
         LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl
                 .getAppRepo(getApplication())
-                .queryAllTopicRecordsByUser(userUUID,true);
+                .queryAllTopicRecordsByUser(userUUID,false);
         topicRecords.addSource(repoRecords, topicRecs -> {
             topicRecords.setValue(topicRecs);
             topicRecords.removeSource(repoRecords);
