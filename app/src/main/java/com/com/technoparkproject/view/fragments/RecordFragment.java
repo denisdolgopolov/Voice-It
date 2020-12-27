@@ -155,24 +155,24 @@ public class RecordFragment extends RecorderFragment {
     private class MyObserver implements Observer<RecordState> {
         @Override
         public void onChanged(RecordState recordState) {
-            switch (recordState) {
-                case INIT: {
+            switch (recordState){
+                case INIT:{
                     mStopButton.setEnabled(false);
                     mRecPauseButton.setEnabled(true);
                     mDoneButton.setEnabled(false);
                     break;
                 }
-                case RECORDING: {
+                case RECORDING:{
                     mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_round_pause_24));
                     mStopButton.setEnabled(true);
                     mDoneButton.setEnabled(true);
                     break;
                 }
-                case PAUSE: {
+                case PAUSE:{
                     mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_round_fiber_manual_record_24));
                     break;
                 }
-                case STOP: {
+                case STOP:{
                     mRecPauseButton.setIcon(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_round_fiber_manual_record_24));
                     mStopButton.setEnabled(false);
                     mRecPauseButton.setEnabled(false);
