@@ -2,7 +2,6 @@ package com.com.technoparkproject.view_models;
 
 import android.app.Application;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -12,8 +11,6 @@ import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.model_converters.RecordConverter;
 import com.com.technoparkproject.models.TopicTypes;
-import com.com.technoparkproject.view.activities.MainActivity;
-import com.google.firebase.auth.FirebaseAuth;
 import com.technopark.recorder.RecordState;
 import com.technopark.recorder.RecorderApplication;
 import com.technopark.recorder.repository.RecordTopic;
@@ -29,7 +26,6 @@ import voice.it.firebaseloadermodule.FirebaseFileLoader;
 import voice.it.firebaseloadermodule.FirebaseLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseListener;
-import voice.it.firebaseloadermodule.model.FirebaseRecord;
 import voice.it.firebaseloadermodule.model.FirebaseTopic;
 
 public class RecordViewModel extends RecorderViewModel {
@@ -266,3 +262,4 @@ public class RecordViewModel extends RecorderViewModel {
         STOP_COMPLETED
     }
 }
+
