@@ -18,6 +18,7 @@ import com.technopark.room.db.AppRoomDatabase;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,9 +73,62 @@ public class AppRepoImpl implements AppRepo{
     }
 
 
-    private static <V> void addSingleSource(MediatorLiveData<V> mediator,LiveData<V> source){
-        mediator.addSource(source, v -> {
-            mediator.setValue(v);
+    private enum SourceType{
+        REMOTE,
+        LOCAL
+    }
+
+    public enum LoadStatus{
+        SUCCESS,
+        NO_DATA,
+        NO_CONNECTION
+    }
+
+    private final MutableLiveData<LoadStatus> mLoadStatus = new MutableLiveData<>();
+
+    public LiveData<LoadStatus> getLoadStatus(){
+        return mLoadStatus;
+    }
+
+    private <K,V> void addSingleMapSource(MediatorLiveData<ArrayMap<K,V>> mediator,
+                                          LiveData<ArrayMap<K,V>> source, SourceType type){
+        mediator.addSource(source, response -> {
+            if (response.isEmpty()) {
+                switch (type) {
+                    case LOCAL:
+                        mLoadStatus.setValue(LoadStatus.NO_CONNECTION);
+                        break;
+                    case REMOTE:
+                        mLoadStatus.setValue(LoadStatus.NO_DATA);
+                        break;
+                }
+            }
+            else {
+                mediator.setValue(response);
+                mLoadStatus.setValue(LoadStatus.SUCCESS);
+            }
+            mediator.removeSource(source);
+        });
+    }
+
+    private <V> void addSingleListSource(MediatorLiveData<List<V>> mediator,
+                                         LiveData<List<V>> source, SourceType type){
+        mediator.addSource(source, response -> {
+
+            if (response.isEmpty()) {
+                switch (type) {
+                    case LOCAL:
+                        mLoadStatus.setValue(LoadStatus.NO_CONNECTION);
+                        break;
+                    case REMOTE:
+                        mLoadStatus.setValue(LoadStatus.NO_DATA);
+                        break;
+                }
+            }
+            else {
+                mediator.setValue(response);
+                mLoadStatus.setValue(LoadStatus.SUCCESS);
+            }
             mediator.removeSource(source);
         });
     }
@@ -84,10 +138,10 @@ public class AppRepoImpl implements AppRepo{
         MediatorLiveData<List<Topic>> topicsData = new MediatorLiveData<>();
         topicsData.addSource(isOnline, online -> {
             if (online){
-                addSingleSource(topicsData,queryOnlineAllTopics());
+                addSingleListSource(topicsData,queryOnlineAllTopics(),SourceType.REMOTE);
             }
             else {
-                addSingleSource(topicsData,queryCacheAllTopics());
+                addSingleListSource(topicsData,queryCacheAllTopics(),SourceType.LOCAL);
             }
             topicsData.removeSource(isOnline);
         });
@@ -125,10 +179,10 @@ public class AppRepoImpl implements AppRepo{
         MediatorLiveData<ArrayMap<Topic,List<Record>>> topicRecords = new MediatorLiveData<>();
         topicRecords.addSource(isOnline, online -> {
             if (online){
-                addSingleSource(topicRecords,queryOnlineAllTopicRecords());
+                addSingleMapSource(topicRecords,queryOnlineAllTopicRecords(),SourceType.REMOTE);
             }
             else {
-                addSingleSource(topicRecords,queryCacheAllTopicRecords());
+                addSingleMapSource(topicRecords,queryCacheAllTopicRecords(),SourceType.LOCAL);
             }
             topicRecords.removeSource(isOnline);
         });
@@ -200,10 +254,10 @@ public class AppRepoImpl implements AppRepo{
         MediatorLiveData<ArrayMap<Topic,List<Record>>> topicRecords = new MediatorLiveData<>();
         topicRecords.addSource(isOnline, online -> {
             if (online){
-                addSingleSource(topicRecords,queryOnlineAllTopicRecordsByUser(userUUID,exceptUser));
+                addSingleMapSource(topicRecords,queryOnlineAllTopicRecordsByUser(userUUID,exceptUser),SourceType.REMOTE);
             }
             else {
-                addSingleSource(topicRecords,queryCacheAllTopicRecordsByUser(userUUID,exceptUser));
+                addSingleMapSource(topicRecords,queryCacheAllTopicRecordsByUser(userUUID,exceptUser),SourceType.LOCAL);
             }
             topicRecords.removeSource(isOnline);
         });

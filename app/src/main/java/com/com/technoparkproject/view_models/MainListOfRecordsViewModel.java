@@ -44,6 +44,11 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
         });
     }
 
+    public LiveData<AppRepoImpl.LoadStatus> getLoadStatus(){
+        return AppRepoImpl
+                .getAppRepo(getApplication()).getLoadStatus();
+    }
+
     public LiveData<String> getSearchingValue() {
         return searchingValue;
     }

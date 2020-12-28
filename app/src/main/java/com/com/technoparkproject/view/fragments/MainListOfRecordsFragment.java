@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ import com.com.technoparkproject.broadcasts.BroadcastUpdateListRecords;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
+import com.com.technoparkproject.repo.AppRepoImpl;
 import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
@@ -65,11 +67,24 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
-        viewModel.getTopicRecords().observe(getViewLifecycleOwner(), topicRecs -> {
-            if (topicRecs.size() == 0) {
-                Toast.makeText(getContext(), getString(R.string.error_no_connection), Toast.LENGTH_LONG).show();
-                return;
+        viewModel.getLoadStatus().observe(getViewLifecycleOwner(), new Observer<AppRepoImpl.LoadStatus>() {
+            @Override
+            public void onChanged(AppRepoImpl.LoadStatus loadStatus) {
+                switch (loadStatus){
+                    case NO_CONNECTION:
+                        Toast.makeText(getContext(),
+                                getString(R.string.error_no_connection),
+                                Toast.LENGTH_LONG).show();
+                        break;
+                    case NO_DATA:
+                        Toast.makeText(getContext(),
+                                getString(R.string.no_available_data),
+                                Toast.LENGTH_LONG).show();
+                        break;
+                }
             }
+        });
+        viewModel.getTopicRecords().observe(getViewLifecycleOwner(), topicRecs -> {
             List<String> topicNames = new ArrayList<>();
             for (Topic topic : topicRecs.keySet()) {
                 topicNames.add(topic.name);

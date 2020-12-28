@@ -78,6 +78,7 @@
     <string name="error_password">Error password not updated</string>
     <string name="error_auth">Error auth failed</string>
     <string name="error_no_connection">Проверьте подключение к сети</string>
+    <string name="no_available_data">Данных по запросу нет</string>
     <string name="enter_your_email">Enter your email!</string>
     <string name="enter_your_password">Enter your password!</string>
     <string name="please_wait">Please wait...</string>
