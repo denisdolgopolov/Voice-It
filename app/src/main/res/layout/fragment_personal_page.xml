@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/dark_background">
+        android:layout_height="fill_parent">
 
     <LinearLayout
             android:id="@+id/fragment_personal_page"
@@ -29,6 +28,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_weight="1"
+                    android:background="@color/colorWhite"
                     android:clickable="true"
                     android:focusable="true"
                     android:orientation="vertical">
@@ -47,7 +47,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/count_publications"
-                        android:textColor="@color/colorDarkGrey"
+                        android:textColor="@color/colorBlack"
                         android:textSize="16sp" />
 
             </LinearLayout>
@@ -58,6 +58,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_weight="1"
+                    android:background="@color/colorWhite"
                     android:clickable="true"
                     android:focusable="true"
                     android:orientation="vertical">
@@ -76,7 +77,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/count_publications"
-                        android:textColor="@color/colorDarkGrey"
+                        android:textColor="@color/colorBlack"
                         android:textSize="16sp" />
 
             </LinearLayout>
@@ -87,6 +88,7 @@
                     android:layout_marginLeft="25dp"
                     android:layout_marginRight="25dp"
                     android:layout_weight="1"
+                    android:background="@color/colorWhite"
                     android:clickable="true"
                     android:focusable="true"
                     android:orientation="vertical">
@@ -105,7 +107,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/count_publications"
-                        android:textColor="@color/colorDarkGrey"
+                        android:textColor="@color/colorBlack"
                         android:textSize="16sp" />
 
             </LinearLayout>
@@ -122,6 +124,22 @@
         <ScrollView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/personal_page_list_container"
+                    android:background="@color/mainBackgroundColor"
+                    android:orientation="vertical">
+                <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:paddingBottom="50dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never"
+                        android:clipToPadding="false"
+                        android:layout_height="match_parent"
+                        android:id="@+id/pplr_pp_list"/>
+            </LinearLayout>
 
         </ScrollView>
 
