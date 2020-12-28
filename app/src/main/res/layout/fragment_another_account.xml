@@ -4,7 +4,7 @@
         android:layout_height="fill_parent">
 
     <LinearLayout
-            android:id="@+id/fragment_personal_page"
+            android:id="@+id/fragment_another_account"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -114,10 +114,15 @@
 
         </LinearLayout>
 
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="14dp"
+                android:text="@string/subscribe" />
+
         <View
                 android:layout_width="wrap_content"
                 android:layout_height="5dp"
-                android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:background="@color/colorGrey" />
 

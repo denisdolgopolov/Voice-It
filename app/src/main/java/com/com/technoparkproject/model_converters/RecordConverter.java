@@ -13,12 +13,8 @@ import voice.it.firebaseloadermodule.model.FirebaseTopic;
 public class RecordConverter {
     public static FirebaseRecord toFirebaseRecord(RecordTopic recordTopic,
                                                  String recUUID,
-                                                 String topicUUID) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String userUUID = "randomUUID";
-        if (user != null) {
-            userUUID = user.getUid();
-        }
+                                                 String topicUUID,
+                                                  String userUUID) {
         return new FirebaseRecord(
                 recUUID,
                 recordTopic.getName(),

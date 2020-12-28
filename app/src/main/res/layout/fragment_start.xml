@@ -14,7 +14,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="200dp"
-                android:layout_marginBottom="200dp"
+                android:layout_marginBottom="100dp"
                 android:fontFamily="sans-serif-light"
                 android:text="@string/voice_it"
                 android:textColor="@color/colorBlack"
@@ -42,52 +42,6 @@
                 android:text="@string/login"
                 android:onClick="onClickRegistrationOrLoginButton"
                 android:id="@+id/btn_login"/>
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/button_border"
-                android:paddingLeft="10dp"
-                android:paddingTop="3dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="3dp"
-                android:text="@string/or_use_social_network"
-                android:textSize="11sp" />
-
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-            <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="14dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_weight="0.8"
-                    android:backgroundTint="@color/colorFacebook"
-                    android:drawableLeft="@drawable/ic_facebook"
-                    android:text="@string/facebook" />
-
-            <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="14dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_weight="1"
-                    android:backgroundTint="@color/colorTwitter"
-                    android:drawableLeft="@drawable/ic_twitter"
-                    android:text="@string/twitter" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
 </LinearLayout>

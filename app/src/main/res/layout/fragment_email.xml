@@ -9,24 +9,17 @@
         android:tag="@string/frag_change_password">
 
     <EditText
+            android:id="@+id/et_enter_new_email"
             style="@style/Button"
-            android:inputType="textPassword"
+            android:textColor="@color/text_black"
+            android:hint="@string/et_enter_new_email"
+            android:inputType="textEmailAddress" />
+
+    <EditText
+            android:id="@+id/et_current_password"
+            style="@style/Button"
+            android:textColor="@color/text_black"
             android:hint="@string/et_enter_current_password"
-            android:textColor="@color/text_black"
-            android:id="@+id/et_enter_current_password"/>
-
-    <EditText
-            style="@style/Button"
-            android:inputType="textPassword"
-            android:hint="@string/et_enter_new_password"
-            android:textColor="@color/text_black"
-            android:id="@+id/et_enter_new_password"/>
-
-    <EditText
-            style="@style/Button"
-            android:inputType="textPassword"
-            android:hint="@string/repeat_new_password"
-            android:textColor="@color/text_black"
-            android:id="@+id/et_repeat_new_password"/>
+            android:inputType="textPassword" />
 
 </LinearLayout>

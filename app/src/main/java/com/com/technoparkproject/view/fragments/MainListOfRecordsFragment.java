@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ import com.com.technoparkproject.broadcasts.BroadcastUpdateListRecords;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
+import com.com.technoparkproject.repo.LoadStatus;
 import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
@@ -36,7 +38,6 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     private RecyclerTopicsWithRecordsAdapter adapter;
     private AutoCompleteTextView searchingField;
     MainListOfRecordsViewModel viewModel;
-    private boolean isReceiverRegistered = false;
 
     private final BroadcastUpdateListRecords receiverUpdateList = new BroadcastUpdateListRecords();
 
@@ -65,13 +66,26 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
-        viewModel.getTopicRecords().observe(getViewLifecycleOwner(), topicRecs -> {
-            if (topicRecs.size() == 0) {
-                Toast.makeText(getContext(), getString(R.string.error_no_connection), Toast.LENGTH_LONG).show();
-                return;
+        viewModel.getLoadStatus().observe(getViewLifecycleOwner(), new Observer<LoadStatus>() {
+            @Override
+            public void onChanged(LoadStatus loadStatus) {
+                switch (loadStatus){
+                    case NO_CONNECTION:
+                        Toast.makeText(getContext(),
+                                getString(R.string.error_no_connection),
+                                Toast.LENGTH_LONG).show();
+                        break;
+                    case NO_DATA:
+                        Toast.makeText(getContext(),
+                                getString(R.string.no_available_data),
+                                Toast.LENGTH_LONG).show();
+                        break;
+                }
             }
+        });
+        viewModel.getTopicRecords().observe(getViewLifecycleOwner(), topicRecs -> {
             List<String> topicNames = new ArrayList<>();
-            for (Topic topic : topicRecs.keySet()){
+            for (Topic topic : topicRecs.keySet()) {
                 topicNames.add(topic.name);
             }
             setAutoCompleteValues(topicNames);
@@ -83,7 +97,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void setAutoCompleteValues(List<String> names) {
-        if(getContext() == null) return;
+        if (getContext() == null) return;
         ArrayAdapter adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, names);
         searchingField.setAdapter(adapter);
@@ -96,9 +110,10 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
     @Override
     public void showRecordMoreFun(final Record record) {
-        if(getContext() == null) return;
+        if (getContext() == null) return;
 
         final Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
+
         @SuppressLint("InflateParams")
         View bottomSheetView = getLayoutInflater()
                 .inflate(R.layout.mlr_bottom_sheet_record_functions, null);
@@ -108,8 +123,11 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
                     viewModel.addToPlaylistClicked(record);
                     dialog.dismiss();
                 });
-        bottomSheetView.findViewById(R.id.mlr_download)
-                .setOnClickListener(v -> TestErrorShower.showErrorDevelopment(getContext()));
+        bottomSheetView.findViewById(R.id.mlr_go_to_account)
+                .setOnClickListener(v -> {
+                    ((MainActivity) getActivity()).onClickGoToAccount(record.userUUID);
+                    dialog.dismiss();
+                });
         dialog.show();
     }
 
@@ -129,13 +147,14 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
         requireActivity().registerReceiver(receiverUpdateList, receiverUpdateList.getIntentFilter());
         receiverUpdateList.setListener(() -> viewModel.queryRecordTopics());
-        isReceiverRegistered = true;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (isReceiverRegistered)
-            getActivity().unregisterReceiver(receiverUpdateList);
+        try {
+            requireActivity().unregisterReceiver(receiverUpdateList);
+        }
+        catch (Exception ignored){}
     }
 }

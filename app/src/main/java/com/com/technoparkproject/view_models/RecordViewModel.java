@@ -13,6 +13,7 @@ import androidx.lifecycle.Transformations;
 import com.com.technoparkproject.model_converters.RecordConverter;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.repo.AppRepoImpl;
+import com.google.firebase.auth.FirebaseAuth;
 import com.technopark.recorder.RecordState;
 import com.technopark.recorder.RecorderApplication;
 import com.technopark.recorder.repository.RecordTopic;
@@ -163,11 +164,12 @@ public class RecordViewModel extends RecorderViewModel {
     private void uploadRecord(RecordTopic recTopic, String recordUUID,String topicUUID){
         try {
             final FileInputStream recInputStream = new FileInputStream(recTopic.getRecordFile());
+            String userUUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
             new FirebaseFileLoader(getApplication()).uploadFile(
                     recInputStream,
                     FirebaseFileTypes.RECORDS,
                     recTopic.getRecordFile().length(),
-                    RecordConverter.toFirebaseRecord(recTopic, recordUUID, topicUUID),
+                    RecordConverter.toFirebaseRecord(recTopic, recordUUID, topicUUID, userUUID),
                     new FirebaseListener() {
                         @Override
                         public void onSuccess() {
@@ -225,6 +227,7 @@ public class RecordViewModel extends RecorderViewModel {
     public SingleLiveEvent<Void> getSaveEvent() {
         return mSaveEvent;
     }
+
     public void onSaveClick(String recName, String recTopic) {
         if (!isRecTextValid(recName,recTopic)) {
             if (getRecState().getValue() != RecordState.STOP){

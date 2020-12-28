@@ -13,5 +13,6 @@ public interface AppRepo {
     LiveData<ArrayMap<Topic, List<Record>>> queryAllTopicRecords();
     LiveData<List<Topic>> queryAllTopics();
     LiveData<ArrayMap<Topic, List<Record>>> queryAllTopicRecordsByUser(String userUUID,boolean exceptUser);
+    LiveData<LoadStatus> getLoadStatus();
 }
 
