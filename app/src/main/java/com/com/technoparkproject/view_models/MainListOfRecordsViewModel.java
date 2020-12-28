@@ -37,7 +37,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
         String userUUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl
                 .getAppRepo(getApplication())
-                .queryAllTopicRecordsByUser(userUUID,false);
+                .queryAllTopicRecordsByUser(userUUID,true);
         topicRecords.addSource(repoRecords, topicRecs -> {
             topicRecords.setValue(topicRecs);
             topicRecords.removeSource(repoRecords);
