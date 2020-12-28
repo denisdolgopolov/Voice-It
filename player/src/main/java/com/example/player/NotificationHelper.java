@@ -24,18 +24,31 @@ public class NotificationHelper {
         MediaMetadataCompat mediaMetadata = controller.getMetadata();
         MediaDescriptionCompat description = mediaMetadata.getDescription();
         String subtitle = "";
-        if (mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_BUFFERING) subtitle = "Loading...";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID);
-        builder
-                .setContentTitle(description.getTitle())
-                .setContentText(subtitle)
-                .setSubText(description.getDescription())
-                .setLargeIcon(description.getIconBitmap())
-                .setContentIntent(controller.getSessionActivity())
-                .setDeleteIntent(
-                        MediaButtonReceiver.buildMediaButtonPendingIntent(context, PlaybackStateCompat.ACTION_STOP)
-                )
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        if (mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            subtitle = context.getResources().getString(R.string.loading_text);
+            builder = new NotificationCompat.Builder(context, CHANNEL_ID);
+            builder
+                    .setContentText(subtitle)
+                    .setLargeIcon(null)
+                    .setContentIntent(controller.getSessionActivity())
+                    .setDeleteIntent(
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(context, PlaybackStateCompat.ACTION_STOP)
+                    )
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        } else {
+            builder = new NotificationCompat.Builder(context, CHANNEL_ID);
+            builder
+                    .setContentTitle(description.getTitle())
+                    .setContentText(subtitle)
+                    .setSubText(description.getDescription())
+                    .setLargeIcon(description.getIconBitmap())
+                    .setContentIntent(controller.getSessionActivity())
+                    .setDeleteIntent(
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(context, PlaybackStateCompat.ACTION_STOP)
+                    )
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        }
         return builder;
     }
 
@@ -47,38 +60,49 @@ public class NotificationHelper {
                         MediaButtonReceiver.buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_STOP)
                 )
         );
-        builder.addAction(new NotificationCompat.Action(R.drawable.ic_previous,
-                        service.getString(R.string.previous),
-                        MediaButtonReceiver.buildMediaButtonPendingIntent(
-                                service,
-                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-                )
-        );
-        if (playbackState == PlaybackStateCompat.STATE_PLAYING)
-            builder.addAction(new NotificationCompat.Action(R.drawable.ic_pause,
-                    service.getString(R.string.pause),
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_PLAY_PAUSE))
+        if (mediaSession.getController().getPlaybackState().getState() != PlaybackStateCompat.STATE_BUFFERING) {
+            builder.addAction(new NotificationCompat.Action(R.drawable.ic_previous,
+                            service.getString(R.string.previous),
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                    service,
+                                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                    )
             );
-        else {
-            builder.addAction(new NotificationCompat.Action(R.drawable.ic_play,
-                    service.getString(R.string.play),
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_PLAY_PAUSE))
+            if (playbackState == PlaybackStateCompat.STATE_PLAYING)
+                builder.addAction(new NotificationCompat.Action(R.drawable.ic_pause,
+                        service.getString(R.string.pause),
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_PLAY_PAUSE))
+                );
+            else {
+                builder.addAction(new NotificationCompat.Action(R.drawable.ic_play,
+                        service.getString(R.string.play),
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_PLAY_PAUSE))
+                );
+            }
+            builder.addAction(new NotificationCompat.Action(R.drawable.ic_next,
+                    service.getString(R.string.next),
+                    MediaButtonReceiver.buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_SKIP_TO_NEXT))
+            );
+            builder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                    .setShowActionsInCompactView(0, 2, 3, 4)
+                    .setShowCancelButton(true)
+                    .setMediaSession(mediaSession.getSessionToken())
+                    .setCancelButtonIntent(MediaButtonReceiver
+                            .buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_STOP))
+                    .setMediaSession(mediaSession.getSessionToken())
+            );
+
+        } else {
+            builder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                    .setShowActionsInCompactView(0)
+                    .setShowCancelButton(true)
+                    .setMediaSession(mediaSession.getSessionToken())
+                    .setCancelButtonIntent(MediaButtonReceiver
+                            .buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_STOP))
+                    .setMediaSession(mediaSession.getSessionToken())
             );
         }
-        builder.addAction(new NotificationCompat.Action(R.drawable.ic_next,
-                service.getString(R.string.next),
-                MediaButtonReceiver.buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_SKIP_TO_NEXT))
-        );
 
-
-        builder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                .setShowActionsInCompactView(0, 2, 3, 4)
-                .setShowCancelButton(true)
-                .setMediaSession(mediaSession.getSessionToken())
-                .setCancelButtonIntent(MediaButtonReceiver
-                        .buildMediaButtonPendingIntent(service, PlaybackStateCompat.ACTION_STOP))
-                .setMediaSession(mediaSession.getSessionToken())
-        );
         builder.setSmallIcon(R.drawable.ic_notificon);
         builder.setColor(ContextCompat.getColor(service, R.color.colorRed));
         builder.setShowWhen(false);
