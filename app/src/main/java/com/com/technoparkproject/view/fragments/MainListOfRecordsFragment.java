@@ -38,7 +38,6 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     private RecyclerTopicsWithRecordsAdapter adapter;
     private AutoCompleteTextView searchingField;
     MainListOfRecordsViewModel viewModel;
-    private boolean isReceiverRegistered = false;
 
     private final BroadcastUpdateListRecords receiverUpdateList = new BroadcastUpdateListRecords();
 
@@ -148,13 +147,14 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
         requireActivity().registerReceiver(receiverUpdateList, receiverUpdateList.getIntentFilter());
         receiverUpdateList.setListener(() -> viewModel.queryRecordTopics());
-        isReceiverRegistered = true;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (isReceiverRegistered)
-            getActivity().unregisterReceiver(receiverUpdateList);
+        try {
+            requireActivity().unregisterReceiver(receiverUpdateList);
+        }
+        catch (Exception ignored){}
     }
 }
