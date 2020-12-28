@@ -235,8 +235,8 @@ public class MainActivity extends AppCompatActivity {
         String newEmail = editTextNewEmail.getText().toString().trim();
 
         if (newEmail.isEmpty()) {
-            editTextNewPassword.setError(getString(R.string.enter_your_new_email));
-            editTextNewPassword.requestFocus();
+            editTextNewEmail.setError(getString(R.string.enter_your_new_email));
+            editTextNewEmail.requestFocus();
             return false;
         }
 
@@ -399,6 +399,13 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, R.string.s9, Toast.LENGTH_LONG).show();
                 clearBackStack();
                 enterToApp();
+                
+                userName = email;
+                for (int i = 0; i < userName.length(); i++) {
+                    if (userName.charAt(i) == '@') {
+                        userName = userName.substring(0, i);
+                    }
+                }
 
                 Map<String, Object> userData = new HashMap<>();
                 userData.put("userName", userName);
