@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickGoToAccount(String userUUID) {
         currentFragment = getString(FRAGMENT_ANOTHER_ACCOUNT_NAME);
         AnotherAccountFragment anotherAccountFragment = new AnotherAccountFragment();
+        anotherAccountFragment.setUserUUID(userUUID);
         loadFragment(anotherAccountFragment, currentFragment);
         setUserName(userUUID, listener);
     }
