@@ -67,7 +67,6 @@ public class SettingsFragment extends Fragment implements FirebaseGetUriListener
                 if (data != null) {
                     Uri imageUri = data.getData();
                     try {
-                        // TODO СПРОСИТЬ, ПОЧЕМУ С ОДНИМ СТРИМОМ НЕ РАБОТАЕТ
                         File file = FileUtil.from(getActivity(), imageUri);
                         FileInputStream fileInputStream = new FileInputStream(file);
                         InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
