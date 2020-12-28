@@ -15,6 +15,7 @@ import voice.it.firebaseloadermodule.model.FirebaseModel;
 public class ServiceLoadFileState extends Service {
     private NotificationBuilder builder;
     private FirebaseModel firebaseModel;
+    public static final String PROFILE_IMAGE = "Profile image";
 
     @Override
     public void onCreate() {
@@ -26,9 +27,9 @@ public class ServiceLoadFileState extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
-        if(intent.getAction() == null) return START_REDELIVER_INTENT;
+        if (intent.getAction() == null) return START_REDELIVER_INTENT;
 
-        switch(intent.getAction()) {
+        switch (intent.getAction()) {
             case ServiceAction.GET_ITEM:
                 firebaseModel = (FirebaseModel)
                         intent.getSerializableExtra(FileLoadState.COMPLETED);
@@ -52,19 +53,22 @@ public class ServiceLoadFileState extends Service {
                 builder.setTitle("load success");
                 builder.setButton("ok");
 
-                assert firebaseModel != null;
-                new FirebaseLoader().add(firebaseModel, new FirebaseListener() {
-                    @Override
-                    public void onSuccess() {
-                        Intent newIntent = new Intent("update_list_records");
-                        sendBroadcast(newIntent);
-                    }
+                if (firebaseModel != null) {
+                    if (!firebaseModel.getName().equals(PROFILE_IMAGE)){
+                        new FirebaseLoader().add(firebaseModel, new FirebaseListener() {
+                            @Override
+                            public void onSuccess() {
+                                Intent newIntent = new Intent("update_list_records");
+                                sendBroadcast(newIntent);
+                            }
 
-                    @Override
-                    public void onFailure(String error) {
+                            @Override
+                            public void onFailure(String error) {
 
+                            }
+                        });
                     }
-                });
+                }
                 break;
             case ServiceAction.STOP:
                 assert firebaseModel != null;

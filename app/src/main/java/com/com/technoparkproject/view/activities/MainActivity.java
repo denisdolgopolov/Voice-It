@@ -3,6 +3,8 @@ package com.com.technoparkproject.view.activities;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.MenuItem;
@@ -20,6 +22,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.avatarfirst.avatargenlib.AvatarConstants;
+import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.fragments.LanguageFragment;
 import com.com.technoparkproject.view.fragments.LoginFragment;
@@ -31,6 +35,7 @@ import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.RegistrationFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.com.technoparkproject.view.fragments.StartFragment;
+import com.example.player.PlayerService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -40,6 +45,15 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.technopark.recorder.service.RecordIntentConstants;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
+import voice.it.firebaseloadermodule.FirebaseFileLoader;
+import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
+import voice.it.firebaseloadermodule.listeners.FirebaseListener;
+import voice.it.firebaseloadermodule.model.FirebaseModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -78,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int FRAGMENT_START_NAME = R.string.fragment_start_name;
     private static final int FRAGMENT_LOGIN_NAME = R.string.fragment_login_name;
 
+    public static final String PROFILE_IMAGE = "Profile image";
+
     BottomNavigationView bottomNavigation;
 
 
@@ -101,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
         } else {
-            checkRecordIntent(getIntent());
+            checkIntent(getIntent());
         }
 
         if (mAuth.getCurrentUser() == null) {
@@ -131,16 +147,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        checkRecordIntent(intent);
+        checkIntent(intent);
     }
 
-    private void checkRecordIntent(Intent intent) {
+    private void checkIntent(Intent intent) {
         String nextFragment = intent.getStringExtra(RecordIntentConstants.NAME);
         if (nextFragment != null) {
             //if activity received intent from record notification go to record fragment
             if (nextFragment.equals(RecordIntentConstants.VALUE)) {
                 BottomNavigationView btmNav = findViewById(R.id.bottom_navigation);
                 btmNav.setSelectedItemId(R.id.nav_record);
+            }
+            if (nextFragment.equals(PlayerService.VALUE)) {
+                BottomNavigationView btmNav = findViewById(R.id.bottom_navigation);
+                btmNav.setSelectedItemId(R.id.nav_playlist);
             }
         }
     }
@@ -252,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
                     clearBackStack();
                     enterToApp();
                 } else {
-                    Toast.makeText(MainActivity.this,  getString(R.string.s2), Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.s2), Toast.LENGTH_LONG).show();
                 }
                 progressDialog.dismiss();
             }
@@ -309,6 +329,28 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, R.string.s9, Toast.LENGTH_LONG).show();
                     clearBackStack();
                     enterToApp();
+                    Bitmap userProfileImage = AvatarGenerator.
+                            Companion.
+                            avatarImage(MainActivity.this, 176, 176, getUsername(), AvatarConstants.Companion.getCOLOR900()).
+                            getBitmap();
+                    new FirebaseFileLoader(MainActivity.this).uploadFile(
+                            bitmap2InputStream(userProfileImage),
+                            FirebaseFileTypes.USER_PROFILE_IMAGES,
+                            (long) userProfileImage.getAllocationByteCount(),
+                            new FirebaseModel(FirebaseAuth.getInstance().getUid(), PROFILE_IMAGE),
+                            new FirebaseListener() {
+
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+
+                                }
+                            }
+                    );
 
                 } else {
                     Toast.makeText(MainActivity.this, R.string.s8, Toast.LENGTH_LONG).show();
@@ -316,6 +358,14 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.dismiss();
             }
         });
+
+    }
+
+    public static InputStream bitmap2InputStream(Bitmap bm) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+        return is;
     }
 
     private void logoutUser() {

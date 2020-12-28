@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.model_converters.RecordConverter;
 import com.com.technoparkproject.models.TopicTypes;
+import com.google.firebase.auth.FirebaseAuth;
 import com.technopark.recorder.RecordState;
 import com.technopark.recorder.RecorderApplication;
 import com.technopark.recorder.repository.RecordTopic;
@@ -161,7 +162,7 @@ public class RecordViewModel extends RecorderViewModel {
                             inputStream,
                             FirebaseFileTypes.RECORDS,
                             recTopic.getRecordFile().length(),
-                            RecordConverter.toFirebaseModel(recTopic, recordUUID, topicUUID),
+                            RecordConverter.toFirebaseModel(recTopic, recordUUID, topicUUID, FirebaseAuth.getInstance().getCurrentUser().getUid()),
                             new FirebaseListener() {
                                 @Override
                                 public void onSuccess() {

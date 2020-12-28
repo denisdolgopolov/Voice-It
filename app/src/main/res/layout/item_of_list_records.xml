@@ -6,7 +6,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:paddingVertical="@dimen/record_padding_vertical"
         android:paddingHorizontal="@dimen/margin_horizontal">
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="@dimen/record_icon_size"
             android:layout_height="@dimen/record_icon_size"
             app:layout_constraintTop_toTopOf="parent"

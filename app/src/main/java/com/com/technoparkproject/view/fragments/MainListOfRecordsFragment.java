@@ -3,6 +3,7 @@ package com.com.technoparkproject.view.fragments;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +32,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainListOfRecordsFragment extends Fragment implements MainListRecordsInterface {
     private RecyclerTopicsWithRecordsAdapter adapter;
@@ -117,6 +120,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         return viewModel.nowPlayingRecordUUID;
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -128,6 +132,5 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().unregisterReceiver(receiverUpdateList);
     }
 }

@@ -3,6 +3,7 @@ package com.example.player;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -16,15 +17,18 @@ import androidx.media.session.MediaButtonReceiver;
 
 public class NotificationHelper {
     public static final String CHANNEL_ID = "default_channel";
+    private static final String CURRENT_FRAGMENT = "CURRENT FRAGMENT";
 
     static NotificationCompat.Builder from(Context context, MediaSessionCompat mediaSession) {
         MediaControllerCompat controller = mediaSession.getController();
         MediaMetadataCompat mediaMetadata = controller.getMetadata();
         MediaDescriptionCompat description = mediaMetadata.getDescription();
+        String subtitle = "";
+        if (mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_BUFFERING) subtitle = "Loading...";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID);
         builder
                 .setContentTitle(description.getTitle())
-                .setContentText(description.getSubtitle())
+                .setContentText(subtitle)
                 .setSubText(description.getDescription())
                 .setLargeIcon(description.getIconBitmap())
                 .setContentIntent(controller.getSessionActivity())
@@ -35,7 +39,8 @@ public class NotificationHelper {
         return builder;
     }
 
-    public Notification getNotification(int playbackState, MediaSessionCompat mediaSession, Service service) {
+    public Notification getNotification(int playbackState, MediaSessionCompat mediaSession, PlayerService service) {
+        final String FRAGMENT_PLAYLIST_NAME = service.getResources().getString(R.string.fragment_playlist_name);
         NotificationCompat.Builder builder = NotificationHelper.from(service, mediaSession);
         builder.addAction(new NotificationCompat.Action(R.drawable.ic_stop_and_close_player,
                         service.getString(R.string.stop_and_close_player),
@@ -80,6 +85,7 @@ public class NotificationHelper {
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
         builder.setOnlyAlertOnce(true);
         builder.setChannelId(CHANNEL_ID);
+        builder.setContentIntent(service.activityIntent);
         return builder.build();
     }
 }

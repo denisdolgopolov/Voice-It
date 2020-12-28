@@ -67,7 +67,9 @@ public class PlayerServiceConnection {
                     timeFuture = scheduledExecutorService.scheduleAtFixedRate(checkPlaybackPosition,
                             0, POSITION_UPDATE_INTERVAL_MILLIS, TimeUnit.MILLISECONDS);
                 } else {
-                    timeFuture.cancel(false);
+                    if (timeFuture != null) {
+                        timeFuture.cancel(false);
+                    }
                 }
             }
         }
@@ -134,5 +136,6 @@ public class PlayerServiceConnection {
     public void setPlaylist(String topicUUID) {
         // TODO
     }
+
 }
 

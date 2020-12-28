@@ -1,5 +1,6 @@
 package com.com.technoparkproject.model_converters;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.technopark.recorder.repository.RecordTopic;
 
 import voice.it.firebaseloadermodule.model.FirebaseRecord;
@@ -7,13 +8,13 @@ import voice.it.firebaseloadermodule.model.FirebaseRecord;
 public class RecordConverter {
     public static FirebaseRecord toFirebaseModel(RecordTopic recordTopic,
                                                  String UUID,
-                                                 String topicUUID) {
+                                                 String topicUUID, String userUUID) {
         return new FirebaseRecord(
                 UUID,
                 recordTopic.getName(),
                 topicUUID,
                 "some date",
-                "randomUUID",
+                userUUID,
                 recordTopic.getDuration());
     }
 }
