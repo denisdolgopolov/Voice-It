@@ -72,7 +72,6 @@ public class RecordFragment extends RecorderFragment {
         mTimeTextView = view.findViewById(R.id.record_time_text);
 
         final RecordViewModel recViewModel = new ViewModelProvider(requireActivity()).get(RecordViewModel.class);
-        recViewModel.setCurrentUserId(((MainActivity) getActivity()).getCurrentUserId());
         mRecPauseButton.setOnClickListener(v -> recViewModel.OnRecPauseClick());
 
         mStopButton.setOnClickListener(v -> recViewModel.onStopClick());

@@ -14,6 +14,8 @@ import androidx.lifecycle.Transformations;
 import com.com.technoparkproject.model_converters.RecordConverter;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.repo.AppRepoImpl;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.technopark.recorder.RecordState;
 import com.technopark.recorder.RecorderApplication;
 import com.technopark.recorder.repository.RecordTopic;
@@ -36,8 +38,6 @@ import voice.it.firebaseloadermodule.model.FirebaseTopic;
 
 public class RecordViewModel extends RecorderViewModel {
 
-    private String currentUserId;
-
     private final RecTimeLimitObserver mRecLimObserver;
 
     private class RecTimeLimitObserver implements Observer<Boolean> {
@@ -48,12 +48,6 @@ public class RecordViewModel extends RecorderViewModel {
                 handleStop(false);
         }
     }
-
-
-    public void setCurrentUserId(String userId) {
-        currentUserId = userId;
-    }
-
 
     private final Map<String,Topic> mTopicMap;
 
@@ -172,11 +166,12 @@ public class RecordViewModel extends RecorderViewModel {
     private void uploadRecord(RecordTopic recTopic, String recordUUID,String topicUUID){
         try {
             final FileInputStream recInputStream = new FileInputStream(recTopic.getRecordFile());
+            String userUUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
             new FirebaseFileLoader(getApplication()).uploadFile(
                     recInputStream,
                     FirebaseFileTypes.RECORDS,
                     recTopic.getRecordFile().length(),
-                    RecordConverter.toFirebaseRecord(recTopic, recordUUID, topicUUID),
+                    RecordConverter.toFirebaseRecord(recTopic, recordUUID, topicUUID, userUUID),
                     new FirebaseListener() {
                         @Override
                         public void onSuccess() {

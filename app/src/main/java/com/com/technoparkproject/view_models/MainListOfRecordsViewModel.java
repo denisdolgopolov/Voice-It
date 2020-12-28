@@ -34,11 +34,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     }
 
     public void queryRecordTopics(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String userUUID = "randomUUID";
-        if (user != null) {
-            userUUID = user.getUid();
-        }
+        String userUUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl
                 .getAppRepo(getApplication())
                 .queryAllTopicRecordsByUser(userUUID,false);
