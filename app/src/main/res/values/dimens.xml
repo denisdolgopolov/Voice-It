@@ -7,4 +7,5 @@
     <dimen name="record_icon_size">50dp</dimen>
     <dimen name="record_padding_vertical">8dp</dimen>
     <dimen name="player_fragment_rad">50dip</dimen>
+    <dimen name="logo_margin">60dp</dimen>
 </resources>

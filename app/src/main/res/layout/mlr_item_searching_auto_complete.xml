@@ -2,6 +2,7 @@
 <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/dark_background"
         android:textColorHint="#B1B1B1"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:theme="@style/TextInputLayoutStyle"
@@ -23,7 +24,7 @@
             android:inputType="text"
             android:maxLines="1"
             android:id="@+id/mlr_et_searching"
-            android:textColor="@color/text_black"
+            android:textColor="@color/colorWhite"
             android:paddingVertical="10dp"
             android:completionThreshold="0"
             />
