@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
+        android:background="@color/dark_background"
         android:layout_height="fill_parent">
 
     <ScrollView
@@ -39,6 +40,7 @@
             <Button
                     android:id="@+id/btn_change_email"
                     style="@style/button_settings_change"
+                    android:textColor="@color/colorWhite"
                     android:drawableEnd="@drawable/ic_email"
                     android:onClick="onClickChangePasswordOrLanguageOrEmailButton"
                     android:text="@string/tv_change_email" />
@@ -46,6 +48,7 @@
             <Button
                     android:id="@+id/btn_change_password"
                     style="@style/button_settings_change"
+                    android:textColor="@color/colorWhite"
                     android:drawableEnd="@drawable/ic_lock"
                     android:onClick="onClickChangePasswordOrLanguageOrEmailButton"
                     android:text="@string/tv_change_password" />
@@ -53,6 +56,7 @@
             <Button
                     android:id="@+id/btn_change_language"
                     style="@style/button_settings_change"
+                    android:textColor="@color/colorWhite"
                     android:drawableEnd="@drawable/ic_globe"
                     android:onClick="onClickChangePasswordOrLanguageOrEmailButton"
                     android:text="@string/tv_change_language" />

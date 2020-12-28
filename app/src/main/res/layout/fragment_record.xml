@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
+        android:background="@color/dark_background"
         android:orientation="vertical">
 
     <ProgressBar
@@ -20,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/dark_background"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:paddingTop="16dp"
@@ -31,6 +31,7 @@
                 app:boxBackgroundColor="@android:color/white"
                 app:endIconDrawable="@drawable/ic_round_create_24"
                 app:endIconMode="custom"
+                app:endIconTint="@color/colorWhite"
                 app:placeholderText="@string/default_record_name"
                 style="@style/RecordTextInput">
 
@@ -44,17 +45,17 @@
                 app:endIconMode="custom"
                 android:hint="@string/topic_hint_text"
                 app:boxBackgroundColor="@android:color/white"
+                app:endIconTint="@color/colorWhite"
                 app:endIconDrawable="@drawable/ic_round_create_24"
                 app:placeholderText="@string/default_topic_name"
                 style="@style/RecordTextInput">
 
-            <!--<com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/topic_edit_text"
-                    style="@style/RecordEditText" />-->
+
             <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                     android:id="@+id/topic_edit_text"
                     android:completionThreshold="1"
                     tools:ignore="LabelFor"
+                    android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/RecordAutoCompleteEditText"/>
@@ -80,7 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/white"
                     android:textSize="30sp"
                     tools:text="00:00" />
         </FrameLayout>
@@ -103,6 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:gravity="center"
+
             android:orientation="horizontal"
             android:paddingHorizontal="24dp">
 

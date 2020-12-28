@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fragment_login"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/dark_background">
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_centerInParent="true">
 
-        <TextView
-                android:layout_width="wrap_content"
+        <ImageView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="10dp"
-                android:fontFamily="sans-serif-light"
-                android:text="@string/voice_it"
-                android:textColor="@color/colorBlack"
-                android:textSize="48sp" />
+                android:src="@drawable/ic_logo_white"
+                android:layout_marginBottom="30dp"
+                android:adjustViewBounds="true"
+                android:layout_marginStart="@dimen/logo_margin"
+                android:layout_marginEnd="@dimen/logo_margin"
+                android:scaleType="fitCenter"
+                />
 
         <EditText
                 android:id="@+id/login_email"
@@ -47,4 +51,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

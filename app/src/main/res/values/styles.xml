@@ -69,9 +69,9 @@
         <item name="iconTint">@drawable/states_recorderbutton</item>
         <item name="backgroundTint">@android:color/white</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.App.Rounded</item>
-        <item name="android:layout_width">72dp</item>
-        <item name="android:layout_height">72dp</item>
-        <item name="iconSize">52dp</item>
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="iconSize">40dp</item>
     </style>
 
     <style name="RecordButton.NoElevation" parent="RecordButton">
@@ -112,6 +112,11 @@
         <item name="android:layout_marginLeft">40dp</item>
         <item name="android:layout_marginRight">40dp</item>
     </style>
+
+    <style name="MyTheme.TextView">
+        <item name="android:background">#00000000</item>
+    </style>
+
 
 </resources>
 

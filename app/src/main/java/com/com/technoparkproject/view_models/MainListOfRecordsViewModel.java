@@ -92,6 +92,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
         playerServiceConnection.mediaController.getTransportControls().play();
     }
 
+    
     public MainListOfRecordsViewModel(@NonNull Application application) {
         super(application);
 
