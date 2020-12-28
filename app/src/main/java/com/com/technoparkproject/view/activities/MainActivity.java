@@ -398,8 +398,7 @@ public class MainActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Toast.makeText(MainActivity.this, R.string.s9, Toast.LENGTH_LONG).show();
                 clearBackStack();
-                enterToApp();
-                
+                enterToApp();                
                 userName = email;
                 for (int i = 0; i < userName.length(); i++) {
                     if (userName.charAt(i) == '@') {
