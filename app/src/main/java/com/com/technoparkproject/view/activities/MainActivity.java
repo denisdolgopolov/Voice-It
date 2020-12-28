@@ -49,7 +49,10 @@ import com.technopark.recorder.service.RecordIntentConstants;
 import java.util.HashMap;
 import java.util.Map;
 
+import voice.it.firebaseloadermodule.FirebaseLoader;
+import voice.it.firebaseloadermodule.cnst.FirebaseCollections;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetListener;
+import voice.it.firebaseloadermodule.listeners.FirebaseListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -96,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int FRAGMENT_ANOTHER_ACCOUNT_NAME = R.string.fragment_another_account_name;
 
     BottomNavigationView bottomNavigation;
-    FirebaseFirestore dataBase;
+    //FirebaseFirestore dataBase;
 
     private Toolbar toolbar;
     private ProgressDialog progressDialog;
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mAuth = FirebaseAuth.getInstance();
-        dataBase = FirebaseFirestore.getInstance();
+        //dataBase = FirebaseFirestore.getInstance();
 
         if (savedInstanceState != null) {
             currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
@@ -139,6 +142,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUserName(String userUUID, FirebaseGetListener<String> listener) {
+        new FirebaseLoader().getByUUID(FirebaseCollections.Users, userUUID, new FirebaseGetListener() {
+            @Override
+            public void onFailure(String error) {
+                listener.onFailure("No such document");
+            }
+
+            @Override
+            public void onGet(Object item) {
+                userName = ((voice.it.firebaseloadermodule.model.FirebaseUser) item).getUserName();
+                listener.onGet(userName);
+                }
+            });
+        /*
+
+
         DocumentReference docRef = dataBase.collection("users").document(userUUID);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -155,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("get failed with " + task.getException());
                 }
             }
-        });
+        });*/
     }
 
     private final FirebaseGetListener<String> listener = new FirebaseGetListener<String>() {
@@ -385,20 +403,35 @@ public class MainActivity extends AppCompatActivity {
                 Map<String, Object> userData = new HashMap<>();
                 userData.put("userName", userName);
                 userData.put("userAuthUUID", getCurrentUserId());
-                dataBase.collection("users").document(getCurrentUserId())
-                        .set(userData)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                new FirebaseLoader().setByUUID(FirebaseCollections.Users, getCurrentUserId(),
+                        userData, new FirebaseListener() {
                             @Override
-                            public void onSuccess(Void aVoid) {
-                                System.out.println("DocumentSnapshot successfully written!");
+                            public void onSuccess() {
+                                //System.out.println("DocumentSnapshot successfully written!");
                             }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
+
                             @Override
-                            public void onFailure(@NonNull Exception e) {
-                                System.out.println("Error writing document " + e);
+                            public void onFailure(String error) {
+                                //System.out.println("Error writing document " + e);
                             }
                         });
+
+
+                /*dataBase.collection("users").document(getCurrentUserId())
+                                .set(userData)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        System.out.println("DocumentSnapshot successfully written!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        System.out.println("Error writing document " + e);
+                                    }
+                                });
+                 */
                 setUserName(getCurrentUserId(), listener);
             } else {
                 Toast.makeText(MainActivity.this, R.string.s8, Toast.LENGTH_LONG).show();
@@ -521,6 +554,24 @@ public class MainActivity extends AppCompatActivity {
         } else if (currentFragment.equals(getString(FRAGMENT_SETTINGS_NAME))) {
             editTextNewUsername = findViewById(R.id.et_new_nickname);
             String newUsername = editTextNewUsername.getText().toString().trim();
+            Map<String,Object> updateData = new HashMap<>();
+            updateData.put("userName",newUsername);
+            new FirebaseLoader().updateByUUID(FirebaseCollections.Users, getCurrentUserId(),
+                    updateData, new FirebaseListener() {
+                        @Override
+                        public void onSuccess() {
+                            userName = newUsername;
+                            editTextNewUsername.setText("");
+                            Toast.makeText(MainActivity.this, R.string.username_updated, Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+
+                            Toast.makeText(MainActivity.this, R.string.error_username_updated, Toast.LENGTH_LONG).show();
+                        }
+                    });
+            /*
             DocumentReference currentUserReference = dataBase.collection("users").document(getCurrentUserId());
 
             currentUserReference
@@ -528,17 +579,15 @@ public class MainActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            userName = newUsername;
-                            editTextNewUsername.setText("");
-                            Toast.makeText(MainActivity.this, R.string.username_updated, Toast.LENGTH_LONG).show();
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(MainActivity.this, R.string.error_username_updated, Toast.LENGTH_LONG).show();
                         }
                     });
+             */
         }
     }
 

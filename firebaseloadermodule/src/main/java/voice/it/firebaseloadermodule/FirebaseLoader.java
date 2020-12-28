@@ -14,6 +14,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import voice.it.firebaseloadermodule.cnst.FirebaseCollections;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetListListener;
@@ -82,6 +83,48 @@ public class FirebaseLoader {
                     }
                 });
 
+    }
+
+    public void setByUUID(final FirebaseCollections collection,
+                          String uuid,
+                          Map<String, Object> data,
+                          final FirebaseListener listener) throws IllegalStateException {
+        db.collection(collection.toString())
+                .document(uuid)
+                .set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        listener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onFailure(e.getLocalizedMessage());
+                    }
+                });
+    }
+
+    public void updateByUUID(final FirebaseCollections collection,
+                          String uuid,
+                          Map<String, Object> data,
+                          final FirebaseListener listener) throws IllegalStateException {
+        db.collection(collection.toString())
+                .document(uuid)
+                .update(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        listener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onFailure(e.getLocalizedMessage());
+                    }
+                });
     }
 
 
