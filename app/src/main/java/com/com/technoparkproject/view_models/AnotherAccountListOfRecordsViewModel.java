@@ -15,7 +15,6 @@ import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.repo.AppRepoImpl;
 import com.example.player.PlayerServiceConnection;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
