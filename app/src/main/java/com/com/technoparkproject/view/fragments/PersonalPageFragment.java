@@ -24,7 +24,6 @@ import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.PersonalPageListOfRecordsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class PersonalPageFragment extends Fragment implements MainListRecordsInterface {
     private RecyclerTopicsWithRecordsAdapter adapter;
