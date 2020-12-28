@@ -25,7 +25,7 @@ import com.com.technoparkproject.broadcasts.BroadcastUpdateListRecords;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
-import com.com.technoparkproject.repo.AppRepoImpl;
+import com.com.technoparkproject.repo.LoadStatus;
 import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
@@ -67,9 +67,9 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
-        viewModel.getLoadStatus().observe(getViewLifecycleOwner(), new Observer<AppRepoImpl.LoadStatus>() {
+        viewModel.getLoadStatus().observe(getViewLifecycleOwner(), new Observer<LoadStatus>() {
             @Override
-            public void onChanged(AppRepoImpl.LoadStatus loadStatus) {
+            public void onChanged(LoadStatus loadStatus) {
                 switch (loadStatus){
                     case NO_CONNECTION:
                         Toast.makeText(getContext(),

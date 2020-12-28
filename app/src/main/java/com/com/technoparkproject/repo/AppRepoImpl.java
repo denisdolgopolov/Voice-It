@@ -18,7 +18,6 @@ import com.technopark.room.db.AppRoomDatabase;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -76,12 +75,6 @@ public class AppRepoImpl implements AppRepo{
     private enum SourceType{
         REMOTE,
         LOCAL
-    }
-
-    public enum LoadStatus{
-        SUCCESS,
-        NO_DATA,
-        NO_CONNECTION
     }
 
     private final MutableLiveData<LoadStatus> mLoadStatus = new MutableLiveData<>();

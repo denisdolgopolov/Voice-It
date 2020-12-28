@@ -17,9 +17,9 @@ import com.com.technoparkproject.model_converters.PlayerConverter;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.repo.AppRepoImpl;
+import com.com.technoparkproject.repo.LoadStatus;
 import com.example.player.PlayerServiceConnection;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
         });
     }
 
-    public LiveData<AppRepoImpl.LoadStatus> getLoadStatus(){
+    public LiveData<LoadStatus> getLoadStatus(){
         return AppRepoImpl
                 .getAppRepo(getApplication()).getLoadStatus();
     }
