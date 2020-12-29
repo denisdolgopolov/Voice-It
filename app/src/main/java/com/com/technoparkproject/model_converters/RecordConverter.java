@@ -5,7 +5,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.technopark.recorder.repository.RecordTopic;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
 
 import voice.it.firebaseloadermodule.model.FirebaseRecord;
 import voice.it.firebaseloadermodule.model.FirebaseTopic;
@@ -15,11 +18,12 @@ public class RecordConverter {
                                                  String recUUID,
                                                  String topicUUID,
                                                   String userUUID) {
+        String date = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date());
         return new FirebaseRecord(
                 recUUID,
                 recordTopic.getName(),
                 topicUUID,
-                "some date",
+                date,
                 userUUID,
                 recordTopic.getDuration());
     }
