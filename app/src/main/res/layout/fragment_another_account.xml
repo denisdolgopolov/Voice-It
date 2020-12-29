@@ -137,6 +137,13 @@
                     android:id="@+id/personal_page_list_container"
                     android:background="@color/dark_background"
                     android:orientation="vertical">
+                <ProgressBar
+                        android:id="@+id/list_load_progress"
+                        style="@style/Base.Widget.AppCompat.ProgressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:indeterminate="true" />
                 <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
                         android:paddingBottom="50dp"

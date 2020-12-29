@@ -127,6 +127,7 @@ public class AppRepoImpl implements AppRepo{
     }
 
     public LiveData<List<Topic>> queryAllTopics() {
+        mLoadStatus.setValue(LoadStatus.SUCCESS);
         testOnline();
         MediatorLiveData<List<Topic>> topicsData = new MediatorLiveData<>();
         topicsData.addSource(isOnline, online -> {
@@ -168,6 +169,7 @@ public class AppRepoImpl implements AppRepo{
 
 
     public LiveData<ArrayMap<Topic,List<Record>>> queryAllTopicRecords(){
+        mLoadStatus.setValue(LoadStatus.INIT);
         testOnline();
         MediatorLiveData<ArrayMap<Topic,List<Record>>> topicRecords = new MediatorLiveData<>();
         topicRecords.addSource(isOnline, online -> {
@@ -243,6 +245,7 @@ public class AppRepoImpl implements AppRepo{
     }
 
     public LiveData<ArrayMap<Topic, List<Record>>> queryAllTopicRecordsByUser(String userUUID, boolean exceptUser) {
+        mLoadStatus.setValue(LoadStatus.INIT);
         testOnline();
         MediatorLiveData<ArrayMap<Topic,List<Record>>> topicRecords = new MediatorLiveData<>();
         topicRecords.addSource(isOnline, online -> {

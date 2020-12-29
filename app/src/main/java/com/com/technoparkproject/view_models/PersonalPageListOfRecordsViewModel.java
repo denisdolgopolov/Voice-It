@@ -15,6 +15,7 @@ import com.com.technoparkproject.model_converters.PlayerConverter;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.repo.AppRepoImpl;
+import com.com.technoparkproject.repo.LoadStatus;
 import com.example.player.PlayerServiceConnection;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -37,11 +38,27 @@ public class PersonalPageListOfRecordsViewModel extends AndroidViewModel {
         LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl
                 .getAppRepo(getApplication())
                 .queryAllTopicRecordsByUser(userUUID, false);
-        System.out.println(userUUID + " query");
+        LiveData<LoadStatus> repoStatus = AppRepoImpl.getAppRepo(getApplication()).getLoadStatus();
+        try {
+            mLoadStatus.addSource(repoStatus, loadStatus -> {
+                if (loadStatus == LoadStatus.INIT)
+                    return;
+                mLoadStatus.setValue(loadStatus);
+                mLoadStatus.removeSource(repoStatus);
+            });
+        }
+        catch (Exception ignored){}
+        //System.out.println(userUUID + " query");
         topicRecords.addSource(repoRecords, topicRecs -> {
             topicRecords.setValue(topicRecs);
             topicRecords.removeSource(repoRecords);
         });
+    }
+
+    private final MediatorLiveData<LoadStatus> mLoadStatus = new MediatorLiveData<>();
+
+    public LiveData<LoadStatus> getLoadStatus(){
+        return mLoadStatus;
     }
 
     public void addToPlaylistClicked(Record record) {

@@ -20,13 +20,13 @@ public interface AppDao {
     @Query("SELECT * FROM Record WHERE topicUUID=:topicUUID")
     LiveData<List<Record>> getRecordsByTopic(String topicUUID);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertRecords(List<Record> records);
 
     @Query("SELECT * FROM Topic")
     LiveData<List<Topic>> getAllTopics();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertTopics(List<Topic> topics);
 
     @Transaction
