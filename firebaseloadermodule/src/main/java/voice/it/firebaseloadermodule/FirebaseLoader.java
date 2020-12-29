@@ -9,10 +9,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import voice.it.firebaseloadermodule.cnst.FirebaseCollections;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetListListener;
@@ -83,6 +85,48 @@ public class FirebaseLoader {
 
     }
 
+    public void setByUUID(final FirebaseCollections collection,
+                          String uuid,
+                          Map<String, Object> data,
+                          final FirebaseListener listener) throws IllegalStateException {
+        db.collection(collection.toString())
+                .document(uuid)
+                .set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        listener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onFailure(e.getLocalizedMessage());
+                    }
+                });
+    }
+
+    public void updateByUUID(final FirebaseCollections collection,
+                          String uuid,
+                          Map<String, Object> data,
+                          final FirebaseListener listener) throws IllegalStateException {
+        db.collection(collection.toString())
+                .document(uuid)
+                .update(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        listener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onFailure(e.getLocalizedMessage());
+                    }
+                });
+    }
+
 
     public void getByUUID(final FirebaseCollections collection,
                           String uuid,
@@ -149,6 +193,24 @@ public class FirebaseLoader {
                 .get()
                 .addOnCompleteListener(getListOnCompleteListener(listener, FirebaseCollections.Records))
                 .addOnFailureListener(getListOnFailureListener(listener));
+    }
+
+    public <T extends FirebaseModel> void getAllByUser(final FirebaseCollections parentType,
+                                                       final String parentUUID,
+                                                       final String userUUID,
+                                                       final FirebaseGetListListener<T> listener,
+                                                       final boolean exceptUser) {
+        String key = getKeyByParentType(parentType);
+        String userKey = getKeyByParentType(FirebaseCollections.Records);
+        Query query = db.collection(FirebaseCollections.Records.toString())
+                .whereEqualTo(key, parentUUID);
+        if (exceptUser)
+            query = query.whereNotEqualTo(userKey, userUUID);
+        else
+            query = query.whereEqualTo(userKey, userUUID);
+        query.get()
+             .addOnCompleteListener(getListOnCompleteListener(listener, FirebaseCollections.Records))
+             .addOnFailureListener(getListOnFailureListener(listener));
     }
 
 

@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/dark_background">
 
     <LinearLayout
             android:id="@+id/fragment_start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_centerInParent="true">
 
-        <TextView
-                android:layout_width="wrap_content"
+        <ImageView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="200dp"
-                android:layout_marginBottom="200dp"
-                android:fontFamily="sans-serif-light"
-                android:text="@string/voice_it"
-                android:textColor="@color/colorBlack"
-                android:textSize="48sp" />
+                android:src="@drawable/logo_white_png"
+                android:layout_marginBottom="40dp"
+                android:adjustViewBounds="true"
+                android:layout_marginStart="@dimen/logo_margin"
+                android:layout_marginEnd="@dimen/logo_margin"
+                android:scaleType="fitCenter"
+                />
 
         <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="14dp"
                 android:layout_marginTop="2dp"
-                android:layout_marginRight="14dp"
+                android:layout_marginHorizontal="14dp"
                 android:layout_marginBottom="2dp"
                 android:text="@string/registration"
                 android:onClick="onClickRegistrationOrLoginButton"
@@ -34,60 +36,13 @@
         <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="14dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginRight="14dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginHorizontal="14dp"
                 android:layout_marginBottom="2dp"
                 android:backgroundTint="@color/colorDarkRed"
                 android:text="@string/login"
                 android:onClick="onClickRegistrationOrLoginButton"
                 android:id="@+id/btn_login"/>
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/button_border"
-                android:paddingLeft="10dp"
-                android:paddingTop="3dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="3dp"
-                android:text="@string/or_use_social_network"
-                android:textSize="11sp" />
-
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-            <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="14dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_weight="0.8"
-                    android:backgroundTint="@color/colorFacebook"
-                    android:drawableLeft="@drawable/ic_facebook"
-                    android:text="@string/facebook" />
-
-            <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="14dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_weight="1"
-                    android:backgroundTint="@color/colorTwitter"
-                    android:drawableLeft="@drawable/ic_twitter"
-                    android:text="@string/twitter" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

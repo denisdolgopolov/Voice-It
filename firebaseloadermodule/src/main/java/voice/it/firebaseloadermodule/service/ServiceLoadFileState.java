@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import voice.it.firebaseloadermodule.FirebaseFileLoader;
 import voice.it.firebaseloadermodule.FirebaseLoader;
+import voice.it.firebaseloadermodule.R;
 import voice.it.firebaseloadermodule.cnst.FileLoadState;
 import voice.it.firebaseloadermodule.listeners.FirebaseListener;
 import voice.it.firebaseloadermodule.model.FirebaseModel;
@@ -37,7 +38,7 @@ public class ServiceLoadFileState extends Service {
                 assert firebaseModel != null;
 
                 builder.setTitle(firebaseModel.getName());
-                builder.setButton("stop");
+                builder.setButton(getString(R.string.text_load_stop));
                 break;
             case ServiceAction.PROGRESS:
                 int progress = intent.getIntExtra(FileLoadState.PROGRESS, 0);
@@ -45,13 +46,13 @@ public class ServiceLoadFileState extends Service {
                 break;
             case ServiceAction.FAILED:
                 builder.setProgress(0);
-                builder.setTitle("load failed");
-                builder.setButton("ok");
+                builder.setTitle(getString(R.string.text_load_failed));
+                builder.setButton(getString(R.string.text_load_ok));
                 break;
             case ServiceAction.SUCCESS:
                 builder.setProgress(100);
-                builder.setTitle("load success");
-                builder.setButton("ok");
+                builder.setTitle(getString(R.string.text_load_success));
+                builder.setButton(getString(R.string.text_load_ok));
 
                 if (firebaseModel != null) {
                     if (!firebaseModel.getName().equals(PROFILE_IMAGE)){

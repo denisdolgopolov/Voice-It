@@ -45,6 +45,7 @@ public class NotificationBuilder {
 
     public void setProgress(int progress) {
         builder.setProgress(100, progress, false);
+        builder.setColor(context.getResources().getColor(R.color.service_notification_color));
         notifyNotification();
     }
 

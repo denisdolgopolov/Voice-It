@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import voice.it.firebaseloadermodule.FirebaseLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseCollections;
@@ -71,22 +72,110 @@ public class AppRepoImpl implements AppRepo{
     }
 
 
-    private static <V> void addSingleSource(MediatorLiveData<V> mediator,LiveData<V> source){
-        mediator.addSource(source, v -> {
-            mediator.setValue(v);
+    private enum SourceType{
+        REMOTE,
+        LOCAL
+    }
+
+    private final MutableLiveData<LoadStatus> mLoadStatus = new MutableLiveData<>();
+
+    public LiveData<LoadStatus> getLoadStatus(){
+        return mLoadStatus;
+    }
+
+    private <K,V> void addSingleMapSource(MediatorLiveData<ArrayMap<K,V>> mediator,
+                                          LiveData<ArrayMap<K,V>> source, SourceType type){
+        mediator.addSource(source, response -> {
+            if (response.isEmpty()) {
+                switch (type) {
+                    case LOCAL:
+                        mLoadStatus.setValue(LoadStatus.NO_CONNECTION);
+                        break;
+                    case REMOTE:
+                        mLoadStatus.setValue(LoadStatus.NO_DATA);
+                        break;
+                }
+            }
+            else {
+                mediator.setValue(response);
+                mLoadStatus.setValue(LoadStatus.SUCCESS);
+            }
             mediator.removeSource(source);
         });
     }
+
+    private <V> void addSingleListSource(MediatorLiveData<List<V>> mediator,
+                                         LiveData<List<V>> source, SourceType type){
+        mediator.addSource(source, response -> {
+
+            if (response.isEmpty()) {
+                switch (type) {
+                    case LOCAL:
+                        mLoadStatus.setValue(LoadStatus.NO_CONNECTION);
+                        break;
+                    case REMOTE:
+                        mLoadStatus.setValue(LoadStatus.NO_DATA);
+                        break;
+                }
+            }
+            else {
+                mediator.setValue(response);
+                mLoadStatus.setValue(LoadStatus.SUCCESS);
+            }
+            mediator.removeSource(source);
+        });
+    }
+
+    public LiveData<List<Topic>> queryAllTopics() {
+        testOnline();
+        MediatorLiveData<List<Topic>> topicsData = new MediatorLiveData<>();
+        topicsData.addSource(isOnline, online -> {
+            if (online){
+                addSingleListSource(topicsData,queryOnlineAllTopics(),SourceType.REMOTE);
+            }
+            else {
+                addSingleListSource(topicsData,queryCacheAllTopics(),SourceType.LOCAL);
+            }
+            topicsData.removeSource(isOnline);
+        });
+        return topicsData;
+    }
+
+    private LiveData<List<Topic>> queryCacheAllTopics(){
+        return Transformations.map(mAppDb.appDao().getAllTopics(),
+                FromRoomConverter::toTopicList);
+    }
+
+    private LiveData<List<Topic>> queryOnlineAllTopics() {
+        MutableLiveData<List<Topic>> topicsData = new MutableLiveData<>();
+        mNetworkIO.execute(() -> new FirebaseLoader().getAll(FirebaseCollections.Topics, new FirebaseGetListListener<FirebaseTopic>() {
+            @Override
+            public void onFailure(String error) {
+            }
+
+            @Override
+            public void onGet(List<FirebaseTopic> item) {
+                if (item.size() == 0) {
+                    return;
+                }
+                List<Topic> topics = new FirebaseConverter().toTopicList(item);
+                topicsData.postValue(topics);
+                mDiskIO.execute(() -> mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics)));
+            }
+        }));
+        return topicsData;
+    }
+
 
     public LiveData<ArrayMap<Topic,List<Record>>> queryAllTopicRecords(){
         testOnline();
         MediatorLiveData<ArrayMap<Topic,List<Record>>> topicRecords = new MediatorLiveData<>();
         topicRecords.addSource(isOnline, online -> {
             if (online){
-                addSingleSource(topicRecords,queryOnlineAllTopicRecords());
+                addSingleMapSource(topicRecords,queryOnlineAllTopicRecords(),SourceType.REMOTE);
             }
             else {
-                addSingleSource(topicRecords,queryCacheAllTopicRecords());
+                addSingleMapSource(topicRecords,queryCacheAllTopicRecords(),SourceType.LOCAL);
             }
             topicRecords.removeSource(isOnline);
         });
@@ -95,7 +184,7 @@ public class AppRepoImpl implements AppRepo{
 
     private LiveData<ArrayMap<Topic,List<Record>>> queryCacheAllTopicRecords(){
         return Transformations.map(mAppDb.appDao().getAllTopicRecords(),
-                FromRoomConverter::toTopicRecords);
+                FromRoomConverter::topicRecsToTopicRecords);
     }
 
     private LiveData<ArrayMap<Topic,List<Record>>> queryOnlineAllTopicRecords(){
@@ -130,7 +219,6 @@ public class AppRepoImpl implements AppRepo{
                         @Override
                         public void onFailure(String error) {
                         }
-
                         @Override
                         public void onGet(List<FirebaseRecord> item) {
                             List<Record> records = new FirebaseConverter().toRecordList(item);
@@ -154,5 +242,79 @@ public class AppRepoImpl implements AppRepo{
 
     }
 
+    public LiveData<ArrayMap<Topic, List<Record>>> queryAllTopicRecordsByUser(String userUUID, boolean exceptUser) {
+        testOnline();
+        MediatorLiveData<ArrayMap<Topic,List<Record>>> topicRecords = new MediatorLiveData<>();
+        topicRecords.addSource(isOnline, online -> {
+            if (online){
+                addSingleMapSource(topicRecords,queryOnlineAllTopicRecordsByUser(userUUID,exceptUser),SourceType.REMOTE);
+            }
+            else {
+                addSingleMapSource(topicRecords,queryCacheAllTopicRecordsByUser(userUUID,exceptUser),SourceType.LOCAL);
+            }
+            topicRecords.removeSource(isOnline);
+        });
+        return topicRecords;
+    }
+
+    private LiveData<ArrayMap<Topic,List<Record>>> queryOnlineAllTopicRecordsByUser(String userUUID,boolean exceptUser){
+        MutableLiveData<ArrayMap<Topic,List<Record>>> topicRecordsData = new MutableLiveData<>();
+        mNetworkIO.execute(() -> new FirebaseLoader().getAll(FirebaseCollections.Topics, new FirebaseGetListListener<FirebaseTopic>() {
+                    @Override
+                    public void onFailure(String error) {
+                    }
+
+                    @Override
+                    public void onGet(List<FirebaseTopic> item) {
+                        if (item.size() == 0) {
+                            return;
+                        }
+                        List<Topic> topics = new FirebaseConverter().toTopicList(item);
+                        mDiskIO.execute(() -> mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics)));
+                        queryOnlineRecordsByUser(topicRecordsData,topics, userUUID, exceptUser);
+                    }
+                })
+        );
+        return topicRecordsData;
+    }
+
+    private void queryOnlineRecordsByUser(MutableLiveData<ArrayMap<Topic, List<Record>>> topicRecordsData,
+                                          List<Topic> topics,
+                                          String userUUID,
+                                          boolean exceptUser) {
+        ArrayMap<Topic,List<Record>> topicRecords = new ArrayMap<>();
+        FirebaseLoader firebaseLoader = new FirebaseLoader();
+        final AtomicInteger countGetRecords = new AtomicInteger(0);
+        for (Topic topic : topics){
+            FirebaseGetListListener<FirebaseRecord> recordsListener = new FirebaseGetListListener<FirebaseRecord>() {
+                @Override
+                public void onFailure(String error) {
+                }
+
+                @Override
+                public void onGet(List<FirebaseRecord> item) {
+                    if (!item.isEmpty()) {
+                        List<Record> records = new FirebaseConverter().toRecordList(item);
+                        topicRecords.put(topic, records);
+                    }
+                    if (countGetRecords.incrementAndGet() == topics.size()) {
+                        topicRecordsData.postValue(topicRecords);
+                        updateRecordsCache(topicRecords.values());
+                    }
+                }
+            };
+            firebaseLoader.getAllByUser(FirebaseCollections.Topics, topic.uuid,
+                    userUUID,recordsListener,exceptUser);
+        }
+    }
+
+    private LiveData<ArrayMap<Topic,List<Record>>> queryCacheAllTopicRecordsByUser(String userUUID, boolean exceptUser){
+        if (exceptUser)
+            return Transformations.map(mAppDb.appDao().getAllTopicRecordsExceptUser(userUUID),
+                    FromRoomConverter::recTopicsToTopicRecords);
+        else
+           return Transformations.map(mAppDb.appDao().getAllTopicRecordsByUser(userUUID),
+              FromRoomConverter::recTopicsToTopicRecords);
+    }
 
 }

@@ -1,10 +1,8 @@
 package com.com.technoparkproject.view.fragments;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,10 +101,10 @@ public class PlaylistFragment extends Fragment {
                         if (record.uuid.equals(playlistViewModel.currentMetadata.getValue().getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))) {
                             holder.itemView.setBackgroundColor(getResources().getColor(R.color.selected_record_color));
                         } else {
-                            holder.itemView.setBackgroundColor(getResources().getColor(R.color.mainBackgroundColor));
+                            holder.itemView.setBackgroundColor(getResources().getColor(R.color.dark_background));
                         }
                     } else {
-                        holder.itemView.setBackgroundColor(getResources().getColor(R.color.mainBackgroundColor));
+                        holder.itemView.setBackgroundColor(getResources().getColor(R.color.dark_background));
                     }
                 }
             });

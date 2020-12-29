@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/dark_background"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:paddingVertical="@dimen/record_padding_vertical"
@@ -13,7 +14,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:background="@drawable/mlr_image_shape_round"
-            android:src="@drawable/mlr_test_record_image"
+            android:src="@drawable/ic_logo_round"
             android:id="@+id/mlr_record_logo"
             android:contentDescription="@string/record_image"/>
 
@@ -25,7 +26,7 @@
             app:layout_constraintStart_toEndOf="@id/mlr_record_logo"
             app:layout_constraintBottom_toTopOf="@id/mlr_text_view_desc"
             android:textSize="16sp"
-            android:textColor="@color/text_black"
+            android:textColor="@color/colorWhite"
             android:layout_marginStart="@dimen/item_record_text_margin"
             tools:text="Ыфвфывфывфывфыв"
             android:maxWidth="@dimen/item_record_max_width"

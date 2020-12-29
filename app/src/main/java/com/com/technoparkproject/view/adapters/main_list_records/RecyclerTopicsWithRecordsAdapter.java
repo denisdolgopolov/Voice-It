@@ -1,16 +1,13 @@
 package com.com.technoparkproject.view.adapters.main_list_records;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.ArrayMap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -83,10 +80,10 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
                             if (record.uuid.equals(listener.getNowPlayingRecordUUID().getValue())) {
                                 holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.selected_record_color));
                             } else {
-                                holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.mainBackgroundColor));
+                                holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.dark_background));
                             }
                         } else {
-                            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.mainBackgroundColor));
+                            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.dark_background));
                         }
                     }
                 });

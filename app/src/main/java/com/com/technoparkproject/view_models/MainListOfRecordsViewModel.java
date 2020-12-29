@@ -17,6 +17,7 @@ import com.com.technoparkproject.model_converters.PlayerConverter;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.repo.AppRepoImpl;
+import com.com.technoparkproject.repo.LoadStatus;
 import com.example.player.PlayerService;
 import com.example.player.PlayerServiceConnection;
 
@@ -34,11 +35,19 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     }
 
     public void queryRecordTopics(){
-        LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl.getAppRepo(getApplication()).queryAllTopicRecords();
+        //String userUUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl
+                .getAppRepo(getApplication())
+                .queryAllTopicRecords();
         topicRecords.addSource(repoRecords, topicRecs -> {
             topicRecords.setValue(topicRecs);
             topicRecords.removeSource(repoRecords);
         });
+    }
+
+    public LiveData<LoadStatus> getLoadStatus(){
+        return AppRepoImpl
+                .getAppRepo(getApplication()).getLoadStatus();
     }
 
     public LiveData<String> getSearchingValue() {
@@ -63,7 +72,6 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
     }
 
     public void addToPlaylistClicked(Record record) {
-        //TODO
         playerServiceConnection.addToPlaylist(PlayerConverter.toPlayerRecord(record));
     }
 
@@ -82,12 +90,12 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
         playerServiceConnection.mediaController.getTransportControls().play();
     }
 
+
     public MainListOfRecordsViewModel(@NonNull Application application) {
         super(application);
 
         this.playerServiceConnection = ((VoiceItApplication) application).getPlayerServiceConnection();
         topicRecords = new MediatorLiveData<>();
-        topicRecords.setValue(new ArrayMap<>());
         queryRecordTopics();
 
         this.nowPlayingRecordUUID = this.playerServiceConnection.nowPlayingRecordUUID;

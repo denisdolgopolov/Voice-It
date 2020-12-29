@@ -4,29 +4,25 @@
         android:id="@+id/fragment_language"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="56sp"
-        android:layout_marginBottom="56sp"
+        android:layout_marginTop="56dp"
+        android:layout_marginBottom="56dp"
         android:orientation="vertical"
+        android:background="@color/dark_background"
         android:tag="@string/frag_change_language">
 
     <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/button_settings_russian"
+            android:textColor="@color/colorWhite"
             style="@style/button_settings_change"
             android:gravity="start" />
 
     <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
             android:text="@string/button_settings_english"
-            style="@style/button_settings_change"
-            android:gravity="start" />
-
-    <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/button_settings_itd"
             style="@style/button_settings_change"
             android:gravity="start" />
 

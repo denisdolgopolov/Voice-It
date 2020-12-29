@@ -24,4 +24,5 @@
 
     <color name="selected_record_color">#FFC4C4</color>
     <color name="colorDarkGrey">#858585</color>
+    <color name="dark_background">#202020</color>
 </resources>

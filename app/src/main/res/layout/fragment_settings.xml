@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:background="@color/dark_background"
+        android:layout_height="fill_parent">
 
     <ScrollView
             android:layout_width="fill_parent"
@@ -35,30 +35,35 @@
                     android:textSize="16sp" />
 
             <EditText
+                    android:id="@+id/et_new_nickname"
                     style="@style/Button"
                     android:autofillHints="username"
-                    android:inputType="textAutoCorrect"
-                    android:hint="@string/et_new_nickname" />
+                    android:hint="@string/et_new_nickname"
+                    android:inputType="textAutoCorrect" />
 
-            <EditText
-                    style="@style/Button"
-                    android:autofillHints="user_email"
-                    android:inputType="textEmailAddress"
-                    android:hint="@string/et_new_email" />
+            <Button
+                    android:id="@+id/btn_change_email"
+                    style="@style/button_settings_change"
+                    android:textColor="@color/colorWhite"
+                    android:drawableEnd="@drawable/ic_email"
+                    android:onClick="onClickChangePasswordOrLanguageOrEmailButton"
+                    android:text="@string/tv_change_email" />
 
             <Button
                     android:id="@+id/btn_change_password"
                     style="@style/button_settings_change"
+                    android:textColor="@color/colorWhite"
                     android:drawableEnd="@drawable/ic_lock"
-                    android:text="@string/tv_change_password"
-                    android:onClick="onClickChangePasswordOrLanguageButton"/>
+                    android:onClick="onClickChangePasswordOrLanguageOrEmailButton"
+                    android:text="@string/tv_change_password" />
 
             <Button
                     android:id="@+id/btn_change_language"
                     style="@style/button_settings_change"
+                    android:textColor="@color/colorWhite"
                     android:drawableEnd="@drawable/ic_globe"
-                    android:text="@string/tv_change_language"
-                    android:onClick="onClickChangePasswordOrLanguageButton"/>
+                    android:onClick="onClickChangePasswordOrLanguageOrEmailButton"
+                    android:text="@string/tv_change_language" />
 
         </LinearLayout>
     </ScrollView>

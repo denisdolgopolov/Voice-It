@@ -1,6 +1,7 @@
 package com.com.technoparkproject.models;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class Topic {
     public final String uuid;
@@ -16,5 +17,19 @@ public final class Topic {
         this.logoImageUUID = logoImageUUID;
         this.records = records;
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Topic topic = (Topic) o;
+        return uuid.equals(topic.uuid)
+                && name.equals(topic.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, name);
     }
 }

@@ -2,16 +2,19 @@ package com.com.technoparkproject.view_models;
 
 import android.app.Application;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.Transformations;
 
 import com.com.technoparkproject.model_converters.RecordConverter;
 import com.com.technoparkproject.models.TopicTypes;
+import com.google.firebase.auth.FirebaseAuth;
+import com.com.technoparkproject.models.Topic;
+import com.com.technoparkproject.repo.AppRepoImpl;
 import com.google.firebase.auth.FirebaseAuth;
 import com.technopark.recorder.RecordState;
 import com.technopark.recorder.RecorderApplication;
@@ -21,7 +24,10 @@ import com.technopark.recorder.utils.SingleLiveEvent;
 import com.technopark.recorder.viewmodels.RecorderViewModel;
 
 import java.io.FileInputStream;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import voice.it.firebaseloadermodule.FirebaseFileLoader;
@@ -41,6 +47,19 @@ public class RecordViewModel extends RecorderViewModel {
                 //make stop progress LiveData, record time limit reached
                 handleStop(false);
         }
+    }
+
+    private final Map<String,Topic> mTopicMap;
+
+    public LiveData<List<String>> getTopicNames(){
+        return Transformations.map(AppRepoImpl.getAppRepo(getApplication()).queryAllTopics(),
+                topics -> {
+                    mTopicMap.clear();
+                    for (Topic topic : topics) {
+                        mTopicMap.put(topic.name, topic);
+                    }
+                    return new ArrayList<>(mTopicMap.keySet());
+                });
     }
 
     private final MediatorLiveData<RecordState> mRecState;
@@ -68,6 +87,7 @@ public class RecordViewModel extends RecorderViewModel {
         mRecState.setValue(RecordState.INIT);
         mRecTime = new MediatorLiveData<>();
         mRecTime.setValue(0);
+        mTopicMap = new HashMap<>();
     }
 
     @Override
@@ -143,46 +163,54 @@ public class RecordViewModel extends RecorderViewModel {
         loadFile(repo.getLastRecord());
     }
 
-    private void loadFile(RecordTopic recTopic) {
+    private void uploadRecord(RecordTopic recTopic, String recordUUID,String topicUUID){
         try {
-            FileInputStream inputStream = new FileInputStream(recTopic.getRecordFile());
+            final FileInputStream recInputStream = new FileInputStream(recTopic.getRecordFile());
+            String userUUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            new FirebaseFileLoader(getApplication()).uploadFile(
+                    recInputStream,
+                    FirebaseFileTypes.RECORDS,
+                    recTopic.getRecordFile().length(),
+                    RecordConverter.toFirebaseRecord(recTopic, recordUUID, topicUUID, userUUID),
+                    new FirebaseListener() {
+                        @Override
+                        public void onSuccess() {
+                            dismissRecording();
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+                        }
+                    }
+            );
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadFile(RecordTopic recTopic) {
+        Topic topic = mTopicMap.get(recTopic.getTopic());
+        if (topic!=null){
+            final String topicUUID = topic.uuid;
+            final String recordUUID = UUID.randomUUID().toString();
+            uploadRecord(recTopic,recordUUID,topicUUID);
+        }
+        else {
             final String recordUUID = UUID.randomUUID().toString();
             final String topicUUID = UUID.randomUUID().toString();
-
-            FirebaseTopic topic = new FirebaseTopic(recTopic.getName(),
-                    "randomUUID",
-                    Collections.singletonList(recordUUID),
-                    TopicTypes.TOPIC_THEMATIC.toString(),
-                    topicUUID);
-
-            new FirebaseLoader().add(topic, new FirebaseListener() {
+            FirebaseTopic firebaseTopic = RecordConverter
+                    .toFirebaseTopic(recTopic,recordUUID,topicUUID);
+            new FirebaseLoader().add(firebaseTopic, new FirebaseListener() {
                 @Override
                 public void onSuccess() {
-                    new FirebaseFileLoader(getApplication()).uploadFile(
-                            inputStream,
-                            FirebaseFileTypes.RECORDS,
-                            recTopic.getRecordFile().length(),
-                            RecordConverter.toFirebaseModel(recTopic, recordUUID, topicUUID, FirebaseAuth.getInstance().getCurrentUser().getUid()),
-                            new FirebaseListener() {
-                                @Override
-                                public void onSuccess() {
-                                    dismissRecording();
-                                }
-
-                                @Override
-                                public void onFailure(String error) {
-                                }
-                            }
-                    );
+                    uploadRecord(recTopic,recordUUID,topicUUID);
                 }
 
                 @Override
                 public void onFailure(String error) {
                 }
             });
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -201,6 +229,7 @@ public class RecordViewModel extends RecorderViewModel {
     public SingleLiveEvent<Void> getSaveEvent() {
         return mSaveEvent;
     }
+
     public void onSaveClick(String recName, String recTopic) {
         if (!isRecTextValid(recName,recTopic)) {
             if (getRecState().getValue() != RecordState.STOP){
