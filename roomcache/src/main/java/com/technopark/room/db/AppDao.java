@@ -40,4 +40,10 @@ public interface AppDao {
     @Transaction
     @Query("SELECT * FROM Record WHERE userUUID!=:userUUID")
     LiveData<List<RecordTopic>> getAllTopicRecordsExceptUser(String userUUID);
+
+    @Query("DELETE FROM Record WHERE userUUID=:userUUID")
+    void deleteAllRecordsByUser(String userUUID);
+
+    @Query("DELETE FROM Record WHERE userUUID!=:userUUID")
+    void deleteAllRecordsExceptUser(String userUUID);
 }

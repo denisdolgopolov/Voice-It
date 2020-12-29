@@ -270,7 +270,14 @@ public class AppRepoImpl implements AppRepo{
                             return;
                         }
                         List<Topic> topics = new FirebaseConverter().toTopicList(item);
-                        mDiskIO.execute(() -> mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics)));
+                        mDiskIO.execute(() -> {
+                                    if (exceptUser)
+                                        mAppDb.appDao().deleteAllRecordsExceptUser(userUUID);
+                                    else
+                                        mAppDb.appDao().deleteAllRecordsByUser(userUUID);
+                                    mAppDb.appDao().insertTopics(ToRoomConverter.toTopicList(topics));
+                                }
+                        );
                         queryOnlineRecordsByUser(topicRecordsData,topics, userUUID, exceptUser);
                     }
                 })
