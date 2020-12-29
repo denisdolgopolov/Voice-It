@@ -1,6 +1,7 @@
 package com.com.technoparkproject.view_models;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
@@ -22,12 +23,15 @@ public class AnotherAccountListOfRecordsViewModel extends AndroidViewModel {
     PlayerServiceConnection playerServiceConnection;
     private final MediatorLiveData<ArrayMap<Topic, List<Record>>> topicRecords;
     public MutableLiveData<String> nowPlayingRecordUUID;
+    private Bitmap profileImage = null;
+    public String userUUID;
 
     public LiveData<ArrayMap<Topic, List<Record>>> getTopicRecords() {
         return topicRecords;
     }
 
     public void queryRecordTopics(String userUUID) {
+        this.userUUID = userUUID;
         LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl
                 .getAppRepo(getApplication())
                 .queryAllTopicRecordsByUser(userUUID,false);
@@ -69,6 +73,14 @@ public class AnotherAccountListOfRecordsViewModel extends AndroidViewModel {
         topicRecords = new MediatorLiveData<>();
 
         this.nowPlayingRecordUUID = this.playerServiceConnection.nowPlayingRecordUUID;
+    }
+
+    public void setProfileImage(Bitmap profileImage){
+        this.profileImage = profileImage;
+    }
+
+    public Bitmap getProfileImage() {
+        return profileImage;
     }
 
 }
