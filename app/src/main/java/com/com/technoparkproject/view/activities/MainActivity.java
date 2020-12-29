@@ -126,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
-            System.out.println(currentFragment + " currentFragment");
         } else {
             checkRecordIntent(getIntent());
             if (mAuth.getCurrentUser() == null) {
