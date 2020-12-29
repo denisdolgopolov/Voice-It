@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.TestErrorShower;
@@ -29,6 +31,7 @@ import com.com.technoparkproject.repo.LoadStatus;
 import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.MainListOfRecordsViewModel;
+import com.com.technoparkproject.view_models.RecordViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
@@ -56,6 +59,30 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
         adapter = new RecyclerTopicsWithRecordsAdapter(this);
         rvMainList.setAdapter(adapter);
         searchingField = view.findViewById(R.id.mlr_et_searching);
+        final ProgressBar loadProgress = view.findViewById(R.id.list_load_progress);
+        loadProgress.setVisibility(View.VISIBLE);
+        viewModel.getLoadStatus().observe(getViewLifecycleOwner(), loadStatus -> {
+            switch (loadStatus){
+                case NO_CONNECTION:
+                    Toast.makeText(getContext(),
+                            getString(R.string.error_no_connection),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case NO_DATA:
+                    Toast.makeText(getContext(),
+                            getString(R.string.no_available_data),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            loadProgress.setVisibility(View.GONE);
+        });
+
+        SwipeRefreshLayout swipeLayout = view.findViewById(R.id.swipe_container);
+        swipeLayout.setColorSchemeResources(R.color.colorRed);
+        swipeLayout.setOnRefreshListener(() -> {
+            viewModel.queryRecordTopics();
+            swipeLayout.setRefreshing(false);
+        });
         return view;
     }
 
@@ -66,23 +93,6 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void observeToData(final MainListOfRecordsViewModel viewModel) {
-        viewModel.getLoadStatus().observe(getViewLifecycleOwner(), new Observer<LoadStatus>() {
-            @Override
-            public void onChanged(LoadStatus loadStatus) {
-                switch (loadStatus){
-                    case NO_CONNECTION:
-                        Toast.makeText(getContext(),
-                                getString(R.string.error_no_connection),
-                                Toast.LENGTH_LONG).show();
-                        break;
-                    case NO_DATA:
-                        Toast.makeText(getContext(),
-                                getString(R.string.no_available_data),
-                                Toast.LENGTH_LONG).show();
-                        break;
-                }
-            }
-        });
         viewModel.getTopicRecords().observe(getViewLifecycleOwner(), topicRecs -> {
             List<String> topicNames = new ArrayList<>();
             for (Topic topic : topicRecs.keySet()) {
