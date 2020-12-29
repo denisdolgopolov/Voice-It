@@ -2,6 +2,7 @@ package com.com.technoparkproject.view.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.TestErrorShower;
 import com.com.technoparkproject.broadcasts.BroadcastUpdateListRecords;
@@ -24,12 +26,19 @@ import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.AnotherAccountListOfRecordsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
 
-public class AnotherAccountFragment extends Fragment implements MainListRecordsInterface {
+import de.hdodenhof.circleimageview.CircleImageView;
+import voice.it.firebaseloadermodule.FirebaseFileLoader;
+import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
+import voice.it.firebaseloadermodule.listeners.FirebaseGetUriListener;
+
+public class AnotherAccountFragment extends Fragment implements MainListRecordsInterface, FirebaseGetUriListener {
     private RecyclerTopicsWithRecordsAdapter adapter;
     AnotherAccountListOfRecordsViewModel viewModel;
     private static final int FRAGMENT_ANOTHER_ACCOUNT_NAME = R.string.fragment_another_account_name;
     String userUUID = null;
+    CircleImageView profileImageView;
 
     private final BroadcastUpdateListRecords receiverUpdateList = new BroadcastUpdateListRecords();
 
@@ -51,6 +60,13 @@ public class AnotherAccountFragment extends Fragment implements MainListRecordsI
         rvAnotherAccountList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new RecyclerTopicsWithRecordsAdapter(this);
         rvAnotherAccountList.setAdapter(adapter);
+        profileImageView = view.findViewById(R.id.profile_image_view);
+        if (viewModel.getProfileImage() == null) {
+            new FirebaseFileLoader(getActivity().getApplicationContext())
+                    .getDownloadUri(FirebaseFileTypes.USER_PROFILE_IMAGES, viewModel.userUUID, this);
+        } else {
+            profileImageView.setImageBitmap(viewModel.getProfileImage());
+        }
         return view;
     }
 
@@ -115,5 +131,18 @@ public class AnotherAccountFragment extends Fragment implements MainListRecordsI
     public void onDestroy() {
         super.onDestroy();
         getActivity().unregisterReceiver(receiverUpdateList);
+    }
+
+    @Override
+    public void onGet(Uri uri) {
+        Glide
+                .with(profileImageView)
+                .load(uri.toString())
+                .into(profileImageView);
+    }
+
+    @Override
+    public void onFailure(String error) {
+
     }
 }

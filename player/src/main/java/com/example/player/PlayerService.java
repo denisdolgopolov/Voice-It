@@ -52,7 +52,7 @@ import voice.it.firebaseloadermodule.FirebaseFileLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetUriListener;
 
-final public class PlayerService extends Service implements ImageLoadingListener{
+final public class PlayerService extends Service implements ImageLoadingListener {
     public static final String NOTIFICATION_CHANNEL_NAME = "PlayerControl";
     private static final MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
     private static final int NOTIFICATION_ID = 404;
@@ -293,22 +293,23 @@ final public class PlayerService extends Service implements ImageLoadingListener
                     long position = exoPlayer.getCurrentPosition();
                     mediaSession.setPlaybackState(
                             stateBuilder.setState(
-                                    PlaybackStateCompat.STATE_BUFFERING,
+                                    PlaybackStateCompat.STATE_PLAYING,
                                     position, 1).build()
 
                     );
+                    currentState = PlaybackStateCompat.STATE_PLAYING;
+                    refreshNotificationAndForegroundStatus(currentState);
+                } else {
                     currentState = PlaybackStateCompat.STATE_BUFFERING;
+                    mediaSession.setMetadata(metadataBuilder.build());
+                    mediaSession.setPlaybackState(
+                            stateBuilder.setState(
+                                    PlaybackStateCompat.STATE_BUFFERING,
+                                    0, 1).build()
+
+                    );
                     refreshNotificationAndForegroundStatus(currentState);
                 }
-                currentState = PlaybackStateCompat.STATE_BUFFERING;
-                mediaSession.setMetadata(metadataBuilder.build());
-                mediaSession.setPlaybackState(
-                        stateBuilder.setState(
-                                PlaybackStateCompat.STATE_BUFFERING,
-                                0, 1).build()
-
-                );
-                refreshNotificationAndForegroundStatus(currentState);
             }
 
         }
@@ -410,6 +411,14 @@ final public class PlayerService extends Service implements ImageLoadingListener
                 refreshNotificationAndForegroundStatus(currentState);
                 if (currentState != PlaybackStateCompat.STATE_PAUSED) {
                     exoPlayer.seekTo(0L);
+                    mediaSession.setPlaybackState(
+                            stateBuilder.setState(
+                                    PlaybackStateCompat.STATE_PLAYING,
+                                    0, 1).build()
+
+                    );
+                    currentState = PlaybackStateCompat.STATE_PLAYING;
+                    refreshNotificationAndForegroundStatus(currentState);
                 }
             }
         }

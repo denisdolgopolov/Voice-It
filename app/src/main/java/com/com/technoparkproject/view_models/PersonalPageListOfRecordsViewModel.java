@@ -1,6 +1,7 @@
 package com.com.technoparkproject.view_models;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
@@ -19,10 +20,13 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class PersonalPageListOfRecordsViewModel extends AndroidViewModel {
     PlayerServiceConnection playerServiceConnection;
     private final MediatorLiveData<ArrayMap<Topic, List<Record>>> topicRecords;
     public MutableLiveData<String> nowPlayingRecordUUID;
+    private Bitmap profileImage = null;
 
     public LiveData<ArrayMap<Topic, List<Record>>> getTopicRecords() {
         return topicRecords;
@@ -32,7 +36,7 @@ public class PersonalPageListOfRecordsViewModel extends AndroidViewModel {
         String userUUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl
                 .getAppRepo(getApplication())
-                .queryAllTopicRecordsByUser(userUUID,false);
+                .queryAllTopicRecordsByUser(userUUID, false);
         System.out.println(userUUID + " query");
         topicRecords.addSource(repoRecords, topicRecs -> {
             topicRecords.setValue(topicRecs);
@@ -72,6 +76,14 @@ public class PersonalPageListOfRecordsViewModel extends AndroidViewModel {
         queryRecordTopics();
 
         this.nowPlayingRecordUUID = this.playerServiceConnection.nowPlayingRecordUUID;
+    }
+
+    public void setProfileImage(Bitmap profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public Bitmap getProfileImage() {
+        return profileImage;
     }
 
 }

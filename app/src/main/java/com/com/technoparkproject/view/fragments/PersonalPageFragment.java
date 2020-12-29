@@ -2,6 +2,7 @@ package com.com.technoparkproject.view.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.TestErrorShower;
 import com.com.technoparkproject.broadcasts.BroadcastUpdateListRecords;
@@ -24,11 +26,19 @@ import com.com.technoparkproject.view.activities.MainActivity;
 import com.com.technoparkproject.view.adapters.main_list_records.RecyclerTopicsWithRecordsAdapter;
 import com.com.technoparkproject.view_models.PersonalPageListOfRecordsViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
 
-public class PersonalPageFragment extends Fragment implements MainListRecordsInterface {
+import de.hdodenhof.circleimageview.CircleImageView;
+import voice.it.firebaseloadermodule.FirebaseFileLoader;
+import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
+import voice.it.firebaseloadermodule.listeners.FirebaseGetUriListener;
+
+public class PersonalPageFragment extends Fragment implements MainListRecordsInterface, FirebaseGetUriListener {
     private RecyclerTopicsWithRecordsAdapter adapter;
     PersonalPageListOfRecordsViewModel viewModel;
     private static final int FRAGMENT_PERSONAL_PAGE_NAME = R.string.fragment_personal_page_name;
+    String userUUID = null;
+    CircleImageView profileImageView;
 
     private final BroadcastUpdateListRecords receiverUpdateList = new BroadcastUpdateListRecords();
 
@@ -44,6 +54,13 @@ public class PersonalPageFragment extends Fragment implements MainListRecordsInt
         rvPersonalPageList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new RecyclerTopicsWithRecordsAdapter(this);
         rvPersonalPageList.setAdapter(adapter);
+        profileImageView = view.findViewById(R.id.current_profile_image_view);
+        if (viewModel.getProfileImage() == null) {
+            new FirebaseFileLoader(getActivity().getApplicationContext())
+                    .getDownloadUri(FirebaseFileTypes.USER_PROFILE_IMAGES, FirebaseAuth.getInstance().getUid(), this);
+        } else {
+            profileImageView.setImageBitmap(viewModel.getProfileImage());
+        }
         return view;
     }
 
@@ -104,5 +121,18 @@ public class PersonalPageFragment extends Fragment implements MainListRecordsInt
     public void onDestroy() {
         super.onDestroy();
         getActivity().unregisterReceiver(receiverUpdateList);
+    }
+
+    @Override
+    public void onGet(Uri uri) {
+        Glide
+                .with(profileImageView)
+                .load(uri.toString())
+                .into(profileImageView);
+    }
+
+    @Override
+    public void onFailure(String error) {
+
     }
 }
