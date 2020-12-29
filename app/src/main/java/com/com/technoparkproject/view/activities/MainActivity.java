@@ -4,10 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Patterns;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,39 +35,35 @@ import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.RegistrationFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.com.technoparkproject.view.fragments.StartFragment;
-/*import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;*/
 import com.example.player.PlayerService;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-/*import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;*/
 import com.technopark.recorder.service.RecordIntentConstants;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-
-import voice.it.firebaseloadermodule.FirebaseFileLoader;
-import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
-import voice.it.firebaseloadermodule.listeners.FirebaseListener;
-import voice.it.firebaseloadermodule.model.FirebaseModel;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import voice.it.firebaseloadermodule.FirebaseFileLoader;
 import voice.it.firebaseloadermodule.FirebaseLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseCollections;
+import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetListener;
 import voice.it.firebaseloadermodule.listeners.FirebaseListener;
+import voice.it.firebaseloadermodule.model.FirebaseModel;
+
+/*import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;*/
+/*import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;*/
 
 public class MainActivity extends AppCompatActivity {
 
@@ -156,10 +150,10 @@ public class MainActivity extends AppCompatActivity {
         currentFragment = getString(FRAGMENT_ANOTHER_ACCOUNT_NAME);
         AnotherAccountFragment anotherAccountFragment = new AnotherAccountFragment();
         loadFragment(anotherAccountFragment, currentFragment);
-        setUserName(userUUID, listener);
+        getUserName(userUUID, listener);
     }
 
-    private void setUserName(String userUUID, FirebaseGetListener<String> listener) {
+    private void getUserName(String userUUID, FirebaseGetListener<String> listener) {
         new FirebaseLoader().getByUUID(FirebaseCollections.Users, userUUID, new FirebaseGetListener() {
             @Override
             public void onFailure(String error) {
@@ -353,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
-                setUserName(getCurrentUserId(), listener);
+                getUserName(getCurrentUserId(), listener);
                 Toast.makeText(MainActivity.this, getString(R.string.s1), Toast.LENGTH_LONG).show();
                 clearBackStack();
                 enterToApp();
@@ -423,9 +417,11 @@ public class MainActivity extends AppCompatActivity {
                                 //System.out.println("Error writing document " + e);
                             }
                         });
+
+
                 Bitmap userProfileImage = AvatarGenerator.
                         Companion.
-                        avatarImage(MainActivity.this, 176, 176, getUsername(), AvatarConstants.Companion.getCOLOR900()).
+                        avatarImage(MainActivity.this, 176, 176, userName, AvatarConstants.Companion.getCOLOR900()).
                         getBitmap();
                 new FirebaseFileLoader(MainActivity.this).uploadFile(
                         bitmap2InputStream(userProfileImage),
@@ -445,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                 );
-                setUserName(getCurrentUserId(), listener);
+                getUserName(getCurrentUserId(), listener);
             } else {
                 Toast.makeText(MainActivity.this, R.string.s8, Toast.LENGTH_LONG).show();
             }
@@ -592,23 +588,6 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, R.string.error_username_updated, Toast.LENGTH_LONG).show();
                         }
                     });
-            /*
-            DocumentReference currentUserReference = dataBase.collection("users").document(getCurrentUserId());
-
-            currentUserReference
-                    .update("userName", newUsername)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                        }
-                    });
-             */
         }
     }
 
@@ -639,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
                 toolbarTickButton.setVisibility(View.VISIBLE);
                 break;
             case "personal_page":
-                setUserName(getCurrentUserId(), listener);
+                getUserName(getCurrentUserId(), listener);
                 toolbarLogoutButton.setVisibility(View.VISIBLE);
                 break;
             case "email":
