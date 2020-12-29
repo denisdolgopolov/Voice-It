@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +17,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.com.technoparkproject.R;
@@ -61,6 +64,23 @@ public class PersonalPageFragment extends Fragment implements MainListRecordsInt
         } else {
             profileImageView.setImageBitmap(viewModel.getProfileImage());
         }
+        final ProgressBar loadProgress = view.findViewById(R.id.list_load_progress);
+        loadProgress.setVisibility(View.VISIBLE);
+        viewModel.getLoadStatus().observe(getViewLifecycleOwner(), loadStatus -> {
+            switch (loadStatus){
+                case NO_CONNECTION:
+                    Toast.makeText(getContext(),
+                            getString(R.string.error_no_connection),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case NO_DATA:
+                    Toast.makeText(getContext(),
+                            getString(R.string.no_available_data),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            loadProgress.setVisibility(View.GONE);
+        });
         return view;
     }
 
@@ -120,7 +140,10 @@ public class PersonalPageFragment extends Fragment implements MainListRecordsInt
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().unregisterReceiver(receiverUpdateList);
+        try {
+            requireActivity().unregisterReceiver(receiverUpdateList);
+        }
+        catch (Exception ignored){}
     }
 
     @Override

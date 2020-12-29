@@ -11,6 +11,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.com.technoparkproject.VoiceItApplication;
 import com.com.technoparkproject.model_converters.PlayerConverter;
@@ -39,15 +40,27 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
         LiveData<ArrayMap<Topic, List<Record>>> repoRecords = AppRepoImpl
                 .getAppRepo(getApplication())
                 .queryAllTopicRecords();
+        LiveData<LoadStatus> repoStatus = AppRepoImpl.getAppRepo(getApplication()).getLoadStatus();
+        try {
+        mLoadStatus.addSource(repoStatus,loadStatus -> {
+            if (loadStatus==LoadStatus.INIT)
+                return;
+            mLoadStatus.setValue(loadStatus);
+            mLoadStatus.removeSource(repoStatus);
+        });
+        }
+        catch (Exception ignored){}
+
         topicRecords.addSource(repoRecords, topicRecs -> {
             topicRecords.setValue(topicRecs);
             topicRecords.removeSource(repoRecords);
         });
     }
 
+    private final MediatorLiveData<LoadStatus> mLoadStatus = new MediatorLiveData<>();
+
     public LiveData<LoadStatus> getLoadStatus(){
-        return AppRepoImpl
-                .getAppRepo(getApplication()).getLoadStatus();
+        return mLoadStatus;
     }
 
     public LiveData<String> getSearchingValue() {
