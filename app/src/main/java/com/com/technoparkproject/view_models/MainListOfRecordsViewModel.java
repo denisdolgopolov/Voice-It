@@ -18,6 +18,7 @@ import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.repo.AppRepoImpl;
 import com.com.technoparkproject.repo.LoadStatus;
+import com.example.player.PlayerService;
 import com.example.player.PlayerServiceConnection;
 
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class MainListOfRecordsViewModel extends AndroidViewModel {
         playerServiceConnection.mediaController.getTransportControls().play();
     }
 
-    
+
     public MainListOfRecordsViewModel(@NonNull Application application) {
         super(application);
 

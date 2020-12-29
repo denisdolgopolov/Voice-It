@@ -26,7 +26,7 @@ class ItemTopicNameViewHolder extends RecyclerView.ViewHolder {
     private String getTopicPrefixByType(TopicTypes type) {
         String prefix = "";
         if(type == TopicTypes.TOPIC_THEMATIC) {
-            prefix = "☀";
+            prefix = "#";
         }
         if(type == TopicTypes.TOPIC_FRIEND) {
             prefix = "§";

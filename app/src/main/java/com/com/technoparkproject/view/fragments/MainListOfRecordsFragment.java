@@ -3,6 +3,7 @@ package com.com.technoparkproject.view.fragments;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainListOfRecordsFragment extends Fragment implements MainListRecordsInterface {
     private RecyclerTopicsWithRecordsAdapter adapter;
@@ -97,7 +99,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     }
 
     private void setAutoCompleteValues(List<String> names) {
-        if (getContext() == null) return;
+        if(getContext() == null) return;
         ArrayAdapter adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, names);
         searchingField.setAdapter(adapter);
@@ -110,7 +112,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
 
     @Override
     public void showRecordMoreFun(final Record record) {
-        if (getContext() == null) return;
+        if(getContext() == null) return;
 
         final Dialog dialog = new BottomSheetDialog(getContext(), R.style.BottomSheetDialog);
 
@@ -140,6 +142,7 @@ public class MainListOfRecordsFragment extends Fragment implements MainListRecor
     public LiveData<String> getNowPlayingRecordUUID() {
         return viewModel.nowPlayingRecordUUID;
     }
+
 
     @Override
     public void onResume() {

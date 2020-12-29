@@ -29,6 +29,7 @@ import voice.it.firebaseloadermodule.service.ServiceLoadFileState;
 public class FirebaseFileLoader {
     private final FirebaseStorage db = FirebaseStorage.getInstance();
     private final Context context;
+    public static final String PROFILE_IMAGE = "Profile image";
 
     public FirebaseFileLoader(Context context) {
         this.context = context;
@@ -109,6 +110,7 @@ public class FirebaseFileLoader {
     }
 
     public void stopUpload(FirebaseModel firebaseModel) {
+        if (!firebaseModel.getName().equals(PROFILE_IMAGE)){
         List<UploadTask> tasks = db
                 .getReference(FirebaseHelper.getCollectionNameByModel(firebaseModel))
                 .child(firebaseModel.getUuid())
@@ -116,5 +118,5 @@ public class FirebaseFileLoader {
         for (UploadTask task : tasks) {
             task.cancel();
         }
-    }
+    }}
 }

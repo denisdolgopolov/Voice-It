@@ -12,6 +12,7 @@
     <string name="toolbar_personal_page_name">personal_page</string>
     <string name="record_image">record image</string>
     <string name="why_you_search">что хотите найти?</string>
+    <string name="fragment_playlist_name">playlist</string>
     <string name="add_to_queue">Добавить в очередь</string>
     <string name="download">Загрузить</string>
     <string name="record_logo">логотип записи</string>
@@ -27,4 +28,5 @@
     <string name="unknown_record">UNKNOWN RECORD</string>
     <string name="unknown_author">UNKNOWN AUTHOR</string>
     <string name="unknown_duration">--:--</string>
+    <string name="loading_text">Loading...</string>
 </resources>

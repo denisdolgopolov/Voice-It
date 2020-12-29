@@ -15,6 +15,9 @@ import com.com.technoparkproject.R;
 import com.com.technoparkproject.interfaces.MainListRecordsInterface;
 import com.com.technoparkproject.models.Record;
 import com.com.technoparkproject.models.Topic;
+import com.example.player.PlayerService;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +25,13 @@ import java.util.Set;
 
 public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     public static final String TAG = "ADAPTER_TAG";
+    public static final int POSITION_UNKNOWN = -1;
     private final ArrayList<Object> items = new ArrayList<>();
     private final ArrayMap<Topic, List<Record>> allTopics = new ArrayMap<>();
     private static final int COUNT_RECORDS_SHOW = 3;
     private final MainListRecordsInterface listener;
+    public int activeElementPosition = POSITION_UNKNOWN;
+    ImageLoader imageLoader;
 
     public RecyclerTopicsWithRecordsAdapter(MainListRecordsInterface listener) {
         this.listener = listener;
@@ -35,6 +41,8 @@ public class RecyclerTopicsWithRecordsAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(new ImageLoaderConfiguration.Builder(parent.getContext()).build());
         switch (viewType) {
             case ViewTypes.TYPE_TOPIC_NAME:
                 View viewTopicName = inflater.inflate(R.layout.mlr_item_topic_name,

@@ -11,6 +11,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
 import com.com.technoparkproject.model_converters.RecordConverter;
+import com.com.technoparkproject.models.TopicTypes;
+import com.google.firebase.auth.FirebaseAuth;
 import com.com.technoparkproject.models.Topic;
 import com.com.technoparkproject.repo.AppRepoImpl;
 import com.google.firebase.auth.FirebaseAuth;

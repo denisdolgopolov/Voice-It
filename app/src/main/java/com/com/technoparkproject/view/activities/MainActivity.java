@@ -3,6 +3,7 @@ package com.com.technoparkproject.view.activities;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -19,6 +20,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.avatarfirst.avatargenlib.AvatarConstants;
+import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.com.technoparkproject.R;
 import com.com.technoparkproject.view.fragments.AnotherAccountFragment;
 import com.com.technoparkproject.view.fragments.EmailFragment;
@@ -32,27 +35,35 @@ import com.com.technoparkproject.view.fragments.RecordFragment;
 import com.com.technoparkproject.view.fragments.RegistrationFragment;
 import com.com.technoparkproject.view.fragments.SettingsFragment;
 import com.com.technoparkproject.view.fragments.StartFragment;
-/*import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;*/
+import com.example.player.PlayerService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-/*import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;*/
 import com.technopark.recorder.service.RecordIntentConstants;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import voice.it.firebaseloadermodule.FirebaseFileLoader;
 import voice.it.firebaseloadermodule.FirebaseLoader;
 import voice.it.firebaseloadermodule.cnst.FirebaseCollections;
+import voice.it.firebaseloadermodule.cnst.FirebaseFileTypes;
 import voice.it.firebaseloadermodule.listeners.FirebaseGetListener;
 import voice.it.firebaseloadermodule.listeners.FirebaseListener;
+import voice.it.firebaseloadermodule.model.FirebaseModel;
+
+/*import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;*/
+/*import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;*/
 
 public class MainActivity extends AppCompatActivity {
 
@@ -98,8 +109,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int FRAGMENT_LOGIN_NAME = R.string.fragment_login_name;
     private static final int FRAGMENT_ANOTHER_ACCOUNT_NAME = R.string.fragment_another_account_name;
 
+    public static final String PROFILE_IMAGE = "Profile image";
+
     BottomNavigationView bottomNavigation;
-    //FirebaseFirestore dataBase;
+
 
     private Toolbar toolbar;
     private ProgressDialog progressDialog;
@@ -117,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mAuth = FirebaseAuth.getInstance();
-        //dataBase = FirebaseFirestore.getInstance();
 
         if (savedInstanceState != null) {
             currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
@@ -138,10 +150,10 @@ public class MainActivity extends AppCompatActivity {
         currentFragment = getString(FRAGMENT_ANOTHER_ACCOUNT_NAME);
         AnotherAccountFragment anotherAccountFragment = new AnotherAccountFragment();
         loadFragment(anotherAccountFragment, currentFragment);
-        setUserName(userUUID, listener);
+        getUserName(userUUID, listener);
     }
 
-    private void setUserName(String userUUID, FirebaseGetListener<String> listener) {
+    private void getUserName(String userUUID, FirebaseGetListener<String> listener) {
         new FirebaseLoader().getByUUID(FirebaseCollections.Users, userUUID, new FirebaseGetListener() {
             @Override
             public void onFailure(String error) {
@@ -154,26 +166,6 @@ public class MainActivity extends AppCompatActivity {
                 listener.onGet(userName);
                 }
             });
-        /*
-
-
-        DocumentReference docRef = dataBase.collection("users").document(userUUID);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        userName = document.getString("userName");
-                        listener.onGet(userName);
-                    } else {
-                        listener.onFailure("No such document");
-                    }
-                } else {
-                    System.out.println("get failed with " + task.getException());
-                }
-            }
-        });*/
     }
 
     private final FirebaseGetListener<String> listener = new FirebaseGetListener<String>() {
@@ -226,6 +218,10 @@ public class MainActivity extends AppCompatActivity {
             if (nextFragment.equals(RecordIntentConstants.VALUE)) {
                 BottomNavigationView btmNav = findViewById(R.id.bottom_navigation);
                 btmNav.setSelectedItemId(R.id.nav_record);
+            }
+            if (nextFragment.equals(PlayerService.VALUE)) {
+                BottomNavigationView btmNav = findViewById(R.id.bottom_navigation);
+                btmNav.setSelectedItemId(R.id.nav_playlist);
             }
         }
     }
@@ -351,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()) {
-                setUserName(getCurrentUserId(), listener);
+                getUserName(getCurrentUserId(), listener);
                 Toast.makeText(MainActivity.this, getString(R.string.s1), Toast.LENGTH_LONG).show();
                 clearBackStack();
                 enterToApp();
@@ -398,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Toast.makeText(MainActivity.this, R.string.s9, Toast.LENGTH_LONG).show();
                 clearBackStack();
-                enterToApp();                
+                enterToApp();
                 userName = email;
                 for (int i = 0; i < userName.length(); i++) {
                     if (userName.charAt(i) == '@') {
@@ -423,27 +419,42 @@ public class MainActivity extends AppCompatActivity {
                         });
 
 
-                /*dataBase.collection("users").document(getCurrentUserId())
-                                .set(userData)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        System.out.println("DocumentSnapshot successfully written!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        System.out.println("Error writing document " + e);
-                                    }
-                                });
-                 */
-                setUserName(getCurrentUserId(), listener);
+                Bitmap userProfileImage = AvatarGenerator.
+                        Companion.
+                        avatarImage(MainActivity.this, 176, 176, userName, AvatarConstants.Companion.getCOLOR900()).
+                        getBitmap();
+                new FirebaseFileLoader(MainActivity.this).uploadFile(
+                        bitmap2InputStream(userProfileImage),
+                        FirebaseFileTypes.USER_PROFILE_IMAGES,
+                        (long) userProfileImage.getAllocationByteCount(),
+                        new FirebaseModel(FirebaseAuth.getInstance().getUid(), PROFILE_IMAGE),
+                        new FirebaseListener() {
+
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+
+                            }
+                        }
+                );
+                getUserName(getCurrentUserId(), listener);
             } else {
                 Toast.makeText(MainActivity.this, R.string.s8, Toast.LENGTH_LONG).show();
             }
             progressDialog.dismiss();
         });
+
+    }
+
+    public static InputStream bitmap2InputStream(Bitmap bm) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        InputStream is = new ByteArrayInputStream(baos.toByteArray());
+        return is;
     }
 
     private void logoutUser() {
@@ -577,23 +588,6 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, R.string.error_username_updated, Toast.LENGTH_LONG).show();
                         }
                     });
-            /*
-            DocumentReference currentUserReference = dataBase.collection("users").document(getCurrentUserId());
-
-            currentUserReference
-                    .update("userName", newUsername)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                        }
-                    });
-             */
         }
     }
 
@@ -624,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
                 toolbarTickButton.setVisibility(View.VISIBLE);
                 break;
             case "personal_page":
-                setUserName(getCurrentUserId(), listener);
+                getUserName(getCurrentUserId(), listener);
                 toolbarLogoutButton.setVisibility(View.VISIBLE);
                 break;
             case "email":
