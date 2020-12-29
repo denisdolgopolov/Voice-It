@@ -39,7 +39,12 @@ public class AnotherAccountFragment extends Fragment implements MainListRecordsI
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         ((MainActivity) getActivity()).setToolbar(getString(FRAGMENT_ANOTHER_ACCOUNT_NAME));
-        ViewGroup view = (ViewGroup) LayoutInflater.from(getContext()).inflate(R.layout.fragment_another_account, container, false);
+        ViewGroup view = (ViewGroup) LayoutInflater.from(getContext()).inflate(R.layout.fragment_another_account,
+                container, false);
+
+        view.findViewById(R.id.b_subscribe).setOnClickListener(button -> {
+            TestErrorShower.showErrorDevelopment(getContext());
+        });
         viewModel = new ViewModelProvider(getActivity()).get(AnotherAccountListOfRecordsViewModel.class);
         viewModel.queryRecordTopics(userUUID);
         RecyclerView rvAnotherAccountList = view.findViewById(R.id.aclr_list);

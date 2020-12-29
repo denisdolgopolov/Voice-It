@@ -5,9 +5,10 @@ import android.content.Context;
 
 public class TestErrorShower {
     public static void showErrorDevelopment(Context context) {
+        if(context == null) return;
         new AlertDialog.Builder(context)
-                .setTitle("Находится в разработке")
-                .setPositiveButton("ок, жду", null)
+                .setTitle(R.string.in_development)
+                .setPositiveButton(R.string.ok_wait, null)
                 .create()
                 .show();
     }

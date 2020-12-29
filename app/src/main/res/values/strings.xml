@@ -102,4 +102,6 @@
     <string name="email_update">E-mail successfully updated</string>
     <string name="username_updated">UserName successfully updated!</string>
     <string name="error_username_updated">Error updating userame</string>
+    <string name="in_development">Находится в разработке</string>
+    <string name="ok_wait">ок, жду</string>
 </resources>
