@@ -128,12 +128,9 @@ public class MainActivity extends AppCompatActivity {
             currentFragment = savedInstanceState.getString(CURRENT_FRAGMENT);
         } else {
             checkRecordIntent(getIntent());
-        }
-
-        if (mAuth.getCurrentUser() == null) {
-            firstEnterInApp();
-        } else {
-            if (currentFragment == null) {
+            if (mAuth.getCurrentUser() == null) {
+                firstEnterInApp();
+            } else if (currentFragment == null) {
                 enterToApp();
             }
         }
