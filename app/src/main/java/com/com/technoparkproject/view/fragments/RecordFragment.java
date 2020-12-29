@@ -39,6 +39,8 @@ public class RecordFragment extends RecorderFragment {
     @Override
     public void setPermissionRequestLayout() {
         LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
+        if (recLayout==null)
+            return;
         LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
         recLayout.setVisibility(View.GONE);
         recButtonsLayout.setVisibility(View.GONE);
@@ -47,6 +49,8 @@ public class RecordFragment extends RecorderFragment {
     @Override
     protected void setPermissionDeniedLayout() {
         TextView recDenyTextView = requireActivity().findViewById(R.id.record_deny_text);
+        if (recDenyTextView==null)
+            return;
         recDenyTextView.setText(R.string.text_record_permission_denied);
         recDenyTextView.setVisibility(View.VISIBLE);
     }
@@ -54,6 +58,8 @@ public class RecordFragment extends RecorderFragment {
     @Override
     protected void setPermissionGrantedLayout() {
         LinearLayout recLayout = requireActivity().findViewById(R.id.record_layout);
+        if (recLayout==null)
+            return;
         LinearLayout recButtonsLayout = requireActivity().findViewById(R.id.buttons_layout);
         recLayout.setVisibility(View.VISIBLE);
         recButtonsLayout.setVisibility(View.VISIBLE);
