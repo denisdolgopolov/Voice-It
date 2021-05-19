@@ -1,4 +1,4 @@
-package com.com.technoparkproject.utils;
+ package com.com.technoparkproject.utils;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -6,21 +6,24 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 
-public final class FileUtil {
+public final class FileUtil  {
         private static final int EOF = -1;
         private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
         private FileUtil() {
-
         }
+
 
         public static File from(Context context, Uri uri) throws IOException {
             InputStream inputStream = context.getContentResolver().openInputStream(uri);
